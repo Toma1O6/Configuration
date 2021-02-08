@@ -4,32 +4,6 @@ license="All rights reserved"
 #issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
 
 [[mods]]
-modId="betterhitboxes"
-version="0.1.0"
-displayName="Example Mod"
-#updateJSONURL="https://change.me.example.invalid/updates.json"
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
-#logoFile="examplemod.png"
-credits="Thanks for this example mod goes to Java"
-authors="Toma"
-description='''
-'''
-
-[[dependencies.betterhitboxes]]
-    modId="forge"
-    mandatory=true
-    versionRange="[36,)"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.betterhitboxes]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.16.5,1.17)"
-    ordering="NONE"
-    side="BOTH"
-
-[[mods]]
 modId="configuration"
 version="0.1.0"
 displayName="Configuration"
