@@ -1,7 +1,6 @@
 package dev.toma.configuration.client.screen;
 
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.client.IModID;
 import dev.toma.configuration.client.screen.component.Component;
@@ -12,7 +11,6 @@ import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -55,22 +53,22 @@ public class ComponentScreen extends Screen implements IModID {
         return 0x999999;
     }
 
-    public void renderHoveredInfo(MatrixStack stack, int mouseX, int mouseY) {
+    public void renderHoveredInfo(int mouseX, int mouseY) {
         for (Component component : components) {
             if(component.isMouseOver(mouseX, mouseY) && component instanceof ConfigComponent<?>) {
-                this.drawComments(stack, (ConfigComponent<?>) component, mouseX, mouseY);
+                this.drawComments((ConfigComponent<?>) component, mouseX, mouseY);
             }
         }
     }
 
-    protected void drawComments(MatrixStack stack, ConfigComponent<?> configComponent, int mouseX, int mouseY) {
+    protected void drawComments(ConfigComponent<?> configComponent, int mouseX, int mouseY) {
         AbstractConfigType<?> type = configComponent.getConfigElement();
         String[] desc = type.getComments();
-        renderWrappedToolTip(stack, Arrays.stream(desc).map(StringTextComponent::new).collect(Collectors.toList()), mouseX, mouseY, font);
+        renderTooltip(Arrays.stream(desc).collect(Collectors.toList()), mouseX, mouseY, font);
     }
 
     @Override
-    public void closeScreen() {
+    public void onClose() {
         if(selectedTextField != null) {
             selectedTextField.onUnselect();
             selectedTextField = null;
@@ -78,12 +76,12 @@ public class ComponentScreen extends Screen implements IModID {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(int mouseX, int mouseY, float partialTicks) {
         boolean hoveredOnce = false;
         for (Component component : components) {
             boolean mouseOver = component.isMouseOver(mouseX, mouseY);
             boolean componentHovered = !hoveredOnce && mouseOver;
-            component.drawComponent(matrixStack, font, mouseX, mouseY, partialTicks, componentHovered);
+            component.drawComponent(font, mouseX, mouseY, partialTicks, componentHovered);
             if(componentHovered) {
                 hoveredOnce = true;
             }

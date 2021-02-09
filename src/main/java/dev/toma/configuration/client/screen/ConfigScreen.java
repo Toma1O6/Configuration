@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.ConfigPlugin;
@@ -17,7 +16,6 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
@@ -62,8 +60,8 @@ public class ConfigScreen extends ComponentScreen {
     }
 
     @Override
-    public void closeScreen() {
-        super.closeScreen();
+    public void onClose() {
+        super.onClose();
         minecraft.displayGuiScreen(screen);
         if(!(screen instanceof IModID)) {
             Configuration.getPlugin(getModID()).ifPresent(plugin -> ConfigHandler.write(plugin, type));
@@ -86,25 +84,25 @@ public class ConfigScreen extends ComponentScreen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderer.drawBackground(this, matrixStack, mouseX, mouseY, partialTicks);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderHeader(matrixStack, font);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        this.renderer.drawBackground(this, mouseX, mouseY, partialTicks);
+        super.render(mouseX, mouseY, partialTicks);
+        this.renderHeader(font);
         int count = type.get().size();
         if(count > displayCount) {
-            this.renderScrollbar(matrixStack, count);
+            this.renderScrollbar(count);
         }
-        this.renderHoveredInfo(matrixStack, mouseX, mouseY);
+        this.renderHoveredInfo(mouseX, mouseY);
     }
 
-    void renderScrollbar(MatrixStack stack, int count) {
+    void renderScrollbar(int count) {
         int height = (displayCount * 25) - 5;
         double step = height / (double) count;
         double start = 35 + scrollIndex * step;
         double end = 35 + (scrollIndex + displayCount) * step;
         int left = width - 20;
         int right = width - 10;
-        Component.drawColorShape(stack, left, 35, right, 35 + height, 0.0F, 0.0F, 0.0F, 1.0F);
+        Component.drawColorShape(left, 35, right, 35 + height, 0.0F, 0.0F, 0.0F, 1.0F);
         GlStateManager.disableTexture();
         BufferBuilder builder = Tessellator.getInstance().getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
@@ -117,18 +115,17 @@ public class ConfigScreen extends ComponentScreen {
         GlStateManager.enableTexture();
     }
 
-    void renderHeader(MatrixStack stack, FontRenderer renderer) {
-        Matrix4f matrix4f = stack.getLast().getMatrix();
+    void renderHeader(FontRenderer renderer) {
         GlStateManager.disableTexture();
         GlStateManager.enableBlend();
         int headerHeight = 20;
         float headerAlpha = 0.4F;
         BufferBuilder builder = Tessellator.getInstance().getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        builder.pos(matrix4f, 0, headerHeight, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
-        builder.pos(matrix4f, width, headerHeight, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
-        builder.pos(matrix4f, width, 0, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
-        builder.pos(matrix4f, 0, 0, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
+        builder.pos(0, headerHeight, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
+        builder.pos(width, headerHeight, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
+        builder.pos(width, 0, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
+        builder.pos(0, 0, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
         builder.finishDrawing();
         WorldVertexBufferUploader.draw(builder);
         GlStateManager.disableBlend();
@@ -136,6 +133,6 @@ public class ConfigScreen extends ComponentScreen {
 
         String headerText = TextFormatting.BOLD + title.getUnformattedComponentText();
         int headerTextWidth = renderer.getStringWidth(headerText);
-        renderer.drawStringWithShadow(stack, headerText, (width - headerTextWidth) / 2f, (headerHeight - renderer.FONT_HEIGHT) / 2f, 0xFFFFFF);
+        renderer.drawStringWithShadow(headerText, (width - headerTextWidth) / 2f, (headerHeight - renderer.FONT_HEIGHT) / 2f, 0xFFFFFF);
     }
 }
