@@ -5,12 +5,15 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class StringType extends AbstractConfigType<String> {
 
@@ -20,13 +23,14 @@ public class StringType extends AbstractConfigType<String> {
         this(name, value, null, desc);
     }
 
-    public StringType(String name, String value, Pattern pattern, String... desc) {
+    public StringType(String name, String value, Pattern pattern, String... desc) throws PatternSyntaxException {
         super(name, value, desc);
         if(pattern != null) {
             this.pattern = pattern;
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public ComponentFactory getDisplayFactory() {
         return ComponentFactory.STRING;
@@ -59,7 +63,7 @@ public class StringType extends AbstractConfigType<String> {
     protected String[] createDescription(String... strings) {
         List<String> comments = new ArrayList<>();
         comments.addAll(Arrays.asList(strings));
-        if(pattern != null) {
+        if(pattern != null && addPatternIntoDescription()) {
             comments.add("Allowed pattern: " + pattern.pattern());
         }
         return comments.toArray(new String[0]);
@@ -76,5 +80,9 @@ public class StringType extends AbstractConfigType<String> {
     @Override
     public int getSortIndex() {
         return 3;
+    }
+
+    public boolean addPatternIntoDescription() {
+        return true;
     }
 }

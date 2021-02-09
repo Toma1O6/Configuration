@@ -5,14 +5,14 @@ license="All rights reserved"
 
 [[mods]]
 modId="configuration"
-version="0.1.0"
+version="1.0.0"
 displayName="Configuration"
-#updateJSONURL="https://change.me.example.invalid/updates.json"
+updateJSONURL="https://change.me.example.invalid/updates.json"
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
 #logoFile="examplemod.png"
-credits="Thanks for this example mod goes to Java"
 authors="Toma"
 description='''
+Library mod which add .json based configs and enables config edits via UI ingame
 '''
 
 [[dependencies.configuration]]

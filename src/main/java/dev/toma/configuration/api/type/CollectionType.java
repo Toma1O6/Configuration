@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,7 @@ public class CollectionType<T extends AbstractConfigType<?>> extends AbstractCon
         return factory.get();
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public ComponentFactory getDisplayFactory() {
         return ComponentFactory.COLLECTION;

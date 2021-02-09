@@ -8,6 +8,8 @@ import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.Ranged;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +35,7 @@ public class IntType extends AbstractConfigType<Integer> implements Ranged<Integ
         set(this.getMin() + (int) (diff * pct));
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public ComponentFactory getDisplayFactory() {
         return ComponentFactory.INTEGER;

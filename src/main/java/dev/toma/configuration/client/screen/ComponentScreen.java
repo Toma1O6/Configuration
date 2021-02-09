@@ -8,9 +8,13 @@ import dev.toma.configuration.client.screen.component.Component;
 import dev.toma.configuration.client.screen.component.ConfigComponent;
 import dev.toma.configuration.client.screen.component.TextFieldComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +23,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@OnlyIn(Dist.CLIENT)
 public class ComponentScreen extends Screen implements IModID {
 
     final String modID;
@@ -42,9 +47,12 @@ public class ComponentScreen extends Screen implements IModID {
         super.init(minecraft, width, height);
     }
 
-    public <C extends Component> C addComponent(C component) {
+    public void addComponent(Component component) {
         components.add(component);
-        return component;
+    }
+
+    public int getTextColor() {
+        return 0x999999;
     }
 
     public void renderHoveredInfo(MatrixStack stack, int mouseX, int mouseY) {
@@ -92,8 +100,13 @@ public class ComponentScreen extends Screen implements IModID {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if(selectedTextField != null && !selectedTextField.isMouseOver(mouseX, mouseY)) {
+            selectedTextField.onUnselect();
+            selectedTextField = null;
+        }
         for (Component component : components) {
             if(component.isMouseOver(mouseX, mouseY) && component.hasClicked(mouseX, mouseY, button)) {
+                minecraft.getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 component.processClicked(mouseX, mouseY);
                 if(component instanceof TextFieldComponent) {
                     if(selectedTextField == component) {
@@ -102,10 +115,6 @@ public class ComponentScreen extends Screen implements IModID {
                     } else selectedTextField = (TextFieldComponent<?>) component;
                 }
             }
-        }
-        if(selectedTextField != null && !selectedTextField.isMouseOver(mouseX, mouseY)) {
-            selectedTextField.onUnselect();
-            selectedTextField = null;
         }
         return false;
     }

@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.client.ComponentFactory;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,7 @@ public abstract class ObjectType extends AbstractConfigType<Map<String, Abstract
 
     public abstract void buildStructure(ConfigCreator configCreator);
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public ComponentFactory getDisplayFactory() {
         return ComponentFactory.OBJECT;

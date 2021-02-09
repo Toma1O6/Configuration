@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 /**
  * @author Toma
  */
-// This annotation makes sure your config class is found automatically
 @Config
 public class ExampleConfig implements ConfigPlugin {
 
@@ -27,6 +26,8 @@ public class ExampleConfig implements ConfigPlugin {
     public static EnumType<ExampleEnum> exampleEnum;
     public static ExampleObject exampleObject;
     public static CollectionType<StringType> exampleCollection;
+    public static ColorType rgb;
+    public static ColorType argb;
 
     @Override
     public void buildConfigStructure(ConfigCreator builder) {
@@ -52,6 +53,8 @@ public class ExampleConfig implements ConfigPlugin {
             listType.add(new StringType("", "value 9"));
             listType.add(new StringType("", "value 10"));
         }, "This is an example of element list");
+        rgb = builder.createColorRGB("RGB", "#00FF00", "Color in RGB format");
+        argb = builder.createColorARGB("ARGB", "#56FFFF00", "Color in ARGB format");
     }
 
     @Override

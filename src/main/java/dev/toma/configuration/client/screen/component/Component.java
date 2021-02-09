@@ -8,7 +8,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public abstract class Component {
 
     public int x, y, width, height;
@@ -58,5 +61,19 @@ public abstract class Component {
         WorldVertexBufferUploader.draw(builder);
         GlStateManager.disableBlend();
         GlStateManager.enableTexture();
+    }
+
+    public static void drawTexturedShape(MatrixStack stack, int x1, int y1, int x2, int y2) {
+        GlStateManager.enableBlend();
+        Matrix4f matrix4f = stack.getLast().getMatrix();
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        builder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        builder.pos(matrix4f, x1, y2, 0).tex(0, 1).endVertex();
+        builder.pos(matrix4f, x2, y2, 0).tex(1, 1).endVertex();
+        builder.pos(matrix4f, x2, y1, 0).tex(1, 0).endVertex();
+        builder.pos(matrix4f, x1, y1, 0).tex(0, 0).endVertex();
+        builder.finishDrawing();
+        WorldVertexBufferUploader.draw(builder);
+        GlStateManager.disableBlend();
     }
 }

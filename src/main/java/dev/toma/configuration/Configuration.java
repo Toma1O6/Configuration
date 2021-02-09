@@ -4,9 +4,8 @@ import dev.toma.configuration.api.Config;
 import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.ConfigHandler;
-import dev.toma.configuration.client.screen.ConfigScreen;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -18,13 +17,27 @@ import org.objectweb.asm.Type;
 
 import java.util.*;
 
+/**
+ * Configuration's main class <p>
+ *
+ * How to create your own config with this API:
+ * <li> Create your main config file
+ * <li> Annotate your class with {@link Config}
+ * <li> Implement {@link ConfigPlugin} interface and it's required methods
+ * <li> Well done, you have created your config file
+ * <p>
+ * This class also provides few methods you might like: <p>
+ * {@link Configuration#getPlugin(String)} <p> {@link Configuration#getConfig(String)}
+ *
+ * @author Toma
+ */
 @Mod(Configuration.MODID)
 public class Configuration {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("configs");
-    private static final Map<String, ConfigPlugin> pluginMap = new HashMap<>();
-    private static final Map<String, ObjectType> configMap = new HashMap<>();
+    protected static final Map<String, ConfigPlugin> pluginMap = new HashMap<>();
+    protected static final Map<String, ObjectType> configMap = new HashMap<>();
 
     public Configuration() {
         loadPlugins();
@@ -38,20 +51,23 @@ public class Configuration {
     }
 
     void setupClient(FMLClientSetupEvent event) {
-        for (Map.Entry<String, ObjectType> entry : configMap.entrySet()) {
-            String modid = entry.getKey();
-            ObjectType type = entry.getValue();
-            Optional<? extends ModContainer> container = ModList.get().getModContainerById(modid);
-            container.ifPresent(mc -> mc.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (minecraft, screen) -> new ConfigScreen(screen, type, modid)));
-        }
+        DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> ClientManager::setupModExtensions);
     }
 
-    public static ConfigPlugin getPlugin(String modID) {
-        return pluginMap.get(modID);
+    /**
+     * @param modID ID of very specific mod
+     * @return {@link Optional} object possibly containing {@link ConfigPlugin} for specified modID
+     */
+    public static Optional<ConfigPlugin> getPlugin(String modID) {
+        return Optional.ofNullable(pluginMap.get(modID));
     }
 
-    public static ObjectType getConfig(String modID) {
-        return configMap.get(modID);
+    /**
+     * @param modID ID of very specific mod
+     * @return {@link Optional} object possibly containing {@link ObjectType} for specified modID
+     */
+    public static Optional<ObjectType> getConfig(String modID) {
+        return Optional.ofNullable(configMap.get(modID));
     }
 
     void loadPlugins() {

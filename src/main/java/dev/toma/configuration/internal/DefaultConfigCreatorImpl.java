@@ -1,5 +1,6 @@
 package dev.toma.configuration.internal;
 
+import com.google.common.base.Preconditions;
 import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.type.*;
 import dev.toma.configuration.api.util.Nameable;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class DefaultConfigCreatorImpl implements ConfigCreator {
 
@@ -33,7 +35,9 @@ public class DefaultConfigCreatorImpl implements ConfigCreator {
     }
 
     @Override
-    public IntType createInt(String name, int value, int min, int max, String... desc) {
+    public IntType createInt(String name, int value, int min, int max, String... desc) throws IllegalArgumentException {
+        if(max < min)
+            throw new IllegalArgumentException("Max value cannot be smaller than Min value");
         IntType type = new IntType(name, value, min, max, desc);
         config.get().put(name, type);
         return type;
@@ -45,7 +49,9 @@ public class DefaultConfigCreatorImpl implements ConfigCreator {
     }
 
     @Override
-    public DoubleType createDouble(String name, double value, double min, double max, String... desc) {
+    public DoubleType createDouble(String name, double value, double min, double max, String... desc) throws IllegalArgumentException {
+        if(max < min)
+            throw new IllegalArgumentException("Max value cannot be smaller than Min value");
         DoubleType type = new DoubleType(name, value, min, max, desc);
         config.get().put(name, type);
         return type;
@@ -57,8 +63,30 @@ public class DefaultConfigCreatorImpl implements ConfigCreator {
     }
 
     @Override
-    public StringType createString(String name, String value, Pattern pattern, String... desc) {
+    public StringType createString(String name, String value, Pattern pattern, String... desc) throws PatternSyntaxException {
+        if(pattern != null) {
+            Preconditions.checkState(pattern.matcher(value).matches(), "Invalid default value");
+        }
         StringType type = new StringType(name, value, pattern, desc);
+        config.get().put(name, type);
+        return type;
+    }
+
+    @Override
+    public ColorType createColorRGB(String name, String colorRgb, String... desc) {
+        return createColor(name, colorRgb, Pattern.compile("#[0-9a-fA-F]{1,6}"), desc);
+    }
+
+    @Override
+    public ColorType createColorARGB(String name, String colorArgb, String... desc) {
+        return createColor(name, colorArgb, Pattern.compile("#[0-9a-fA-F]{1,8}"), desc);
+    }
+
+    @Override
+    public ColorType createColor(String name, String color, Pattern pattern, String... desc) {
+        Preconditions.checkNotNull(pattern, "Pattern cannot be null");
+        Preconditions.checkState(pattern.matcher(color).matches(), "Invalid default color definition");
+        ColorType type = new ColorType(name, color, pattern, desc);
         config.get().put(name, type);
         return type;
     }

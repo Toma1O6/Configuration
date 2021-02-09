@@ -5,10 +5,12 @@ import net.minecraft.client.gui.FontRenderer;
 
 public class PlainTextComponent extends Component {
 
+    final int textColor;
     final String displayText;
 
-    public PlainTextComponent(int x, int y, int width, int height, String text) {
+    public PlainTextComponent(int x, int y, int width, int height, int textColor, String text) {
         super(x, y, width, height);
+        this.textColor = textColor;
         this.displayText = text;
     }
 
@@ -19,6 +21,6 @@ public class PlainTextComponent extends Component {
 
     @Override
     public void drawComponent(MatrixStack matrixStack, FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
-        font.drawStringWithShadow(matrixStack, displayText, x + 2, y + 6, 0x999999);
+        font.drawStringWithShadow(matrixStack, displayText, x + 2, y + 6, textColor);
     }
 }

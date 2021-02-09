@@ -9,6 +9,8 @@ import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.Formatting;
 import dev.toma.configuration.internal.Ranged;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -55,6 +57,7 @@ public class DoubleType extends AbstractConfigType<Double> implements Formatting
         return this;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public ComponentFactory getDisplayFactory() {
         return ComponentFactory.DECIMAL;

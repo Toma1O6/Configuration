@@ -7,6 +7,8 @@ import dev.toma.configuration.api.util.Nameable;
 import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.internal.Collectible;
 import dev.toma.configuration.internal.ConfigHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +58,7 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
         return values;
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public ComponentFactory getDisplayFactory() {
         return ComponentFactory.MULTI_CHOICE;

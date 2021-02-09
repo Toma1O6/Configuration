@@ -1,7 +1,10 @@
 package dev.toma.configuration.client.screen.component;
 
 import dev.toma.configuration.api.type.AbstractConfigType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public abstract class ConfigComponent<T extends AbstractConfigType<?>> extends Component {
 
     protected final T configType;

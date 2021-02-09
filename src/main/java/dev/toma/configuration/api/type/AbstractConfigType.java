@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.client.ComponentFactory;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Objects;
 
@@ -24,6 +26,7 @@ public abstract class AbstractConfigType<T> {
         this.desc = this.createDescription(desc);
     }
 
+    @OnlyIn(Dist.CLIENT)
     public ComponentFactory getDisplayFactory() {
         return null;
     }

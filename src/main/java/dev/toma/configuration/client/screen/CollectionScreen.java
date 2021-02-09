@@ -2,6 +2,9 @@ package dev.toma.configuration.client.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import dev.toma.configuration.Configuration;
+import dev.toma.configuration.api.ConfigPlugin;
+import dev.toma.configuration.api.client.BackgroundRenderer;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
 import dev.toma.configuration.client.ComponentFactory;
@@ -17,13 +20,18 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
+import java.util.Optional;
 
+@OnlyIn(Dist.CLIENT)
 public class CollectionScreen<T extends AbstractConfigType<?>> extends ComponentScreen {
 
     final Screen screen;
     final CollectionType<T> type;
+    final BackgroundRenderer renderer;
     int displayCount;
     int scrollIndex;
 
@@ -31,6 +39,10 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
         super(new StringTextComponent(type.getId() != null ? type.getId() : "Unnamed collection"), modid);
         this.screen = parentScreen;
         this.type = type;
+        Optional<ConfigPlugin> optional = Configuration.getPlugin(modid);
+        if(optional.isPresent() && optional.get().getBackgroundRenderer() != null) {
+            this.renderer = optional.get().getBackgroundRenderer();
+        } else this.renderer = BackgroundRenderer.DirtBackground.INSTANCE;
     }
 
     @Override
@@ -49,6 +61,11 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
     public void closeScreen() {
         super.closeScreen();
         minecraft.displayGuiScreen(screen);
+    }
+
+    @Override
+    public int getTextColor() {
+        return renderer.getTextColor();
     }
 
     @Override
@@ -72,7 +89,7 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        renderDirtBackground(0);
+        this.renderer.drawBackground(this, matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderHeader(matrixStack, font);
         int count = type.get().size();

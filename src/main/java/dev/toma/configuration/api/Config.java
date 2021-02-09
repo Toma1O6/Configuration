@@ -6,7 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marker interface for finding correct config classes
+ * Use this to mark your main config class.
+ * Class annotated with this must also implement {@link ConfigPlugin}
+ *
+ * @author Toma
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
