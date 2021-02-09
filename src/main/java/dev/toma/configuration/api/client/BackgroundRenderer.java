@@ -1,6 +1,5 @@
 package dev.toma.configuration.api.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.client.screen.ComponentScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,16 +15,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public interface BackgroundRenderer {
 
     /**
-     * Called every render tick from {@link net.minecraft.client.gui.screen.Screen#render(MatrixStack, int, int, float)}
+     * Called every render tick from {@link net.minecraft.client.gui.screen.Screen#render(int, int, float)}
      *
      * @param screen Screen being rendered
-     * @param matrixStack {@link MatrixStack} passed into {@link net.minecraft.client.gui.screen.Screen#render(MatrixStack, int, int, float)} method
      * @param mouseX X position of mouse on {@link net.minecraft.client.gui.screen.Screen}
      * @param mouseY Y position of mouse on {@link net.minecraft.client.gui.screen.Screen}
      * @param partialTicks Partial tick parameter for smooth rendering
      */
     @OnlyIn(Dist.CLIENT)
-    void drawBackground(ComponentScreen screen, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
+    void drawBackground(ComponentScreen screen, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Allows you to change color of config entry names
@@ -47,7 +45,7 @@ public interface BackgroundRenderer {
 
         @OnlyIn(Dist.CLIENT)
         @Override
-        public void drawBackground(ComponentScreen screen, MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void drawBackground(ComponentScreen screen, int mouseX, int mouseY, float partialTicks) {
             screen.renderDirtBackground(0);
         }
     }

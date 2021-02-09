@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.screen.component;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
 
 public class PlainTextComponent extends Component {
@@ -20,7 +19,7 @@ public class PlainTextComponent extends Component {
     }
 
     @Override
-    public void drawComponent(MatrixStack matrixStack, FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
-        font.drawStringWithShadow(matrixStack, displayText, x + 2, y + 6, textColor);
+    public void drawComponent(FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
+        font.drawStringWithShadow(displayText, x + 2, y + 6, textColor);
     }
 }

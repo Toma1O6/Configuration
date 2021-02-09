@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.screen.component;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
@@ -31,21 +30,21 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     public abstract void updateValue(String value);
 
     @Override
-    public void drawComponent(MatrixStack matrixStack, FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
+    public void drawComponent(FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
         boolean selected = parentScreen.isSelected(this);
         int color = this.getBackgroundColor(selected);
         float r = ((color >> 16) & 255) / 255.0F;
         float g = ((color >> 8) & 255) / 255.0F;
         float b = (color & 255) / 255.0F;
-        drawColorShape(matrixStack, x, y, x + width, y + height, r, g, b, 1.0F);
-        drawColorShape(matrixStack, x + 1, y + 1, x + width - 1, y + height - 1, 0.0F, 0.0F, 0.0F, 1.0F);
+        drawColorShape(x, y, x + width, y + height, r, g, b, 1.0F);
+        drawColorShape(x + 1, y + 1, x + width - 1, y + height - 1, 0.0F, 0.0F, 0.0F, 1.0F);
         if(characterRenderOffset == 0) {
-            font.drawStringWithShadow(matrixStack, displayedText, x + 5, y + 6, selected ? 0xFFFF00 : 0xFFFFFF);
-            drawCursor(matrixStack, selected, displayedText, font);
+            font.drawStringWithShadow(displayedText, x + 5, y + 6, selected ? 0xFFFF00 : 0xFFFFFF);
+            drawCursor(selected, displayedText, font);
         } else {
             String text = displayedText.substring(characterRenderOffset);
-            font.drawStringWithShadow(matrixStack, text, x + 5, y + 6, selected ? 0xFFFF00 : 0xFFFFFF);
-            drawCursor(matrixStack, selected, text, font);
+            font.drawStringWithShadow(text, x + 5, y + 6, selected ? 0xFFFF00 : 0xFFFFFF);
+            drawCursor(selected, text, font);
         }
     }
 
@@ -95,10 +94,10 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
         this.displayedText = configType.get().toString();
     }
 
-    void drawCursor(MatrixStack stack, boolean selected, String text, FontRenderer font) {
+    void drawCursor(boolean selected, String text, FontRenderer font) {
         if(selected && System.currentTimeMillis() % 1000L <= 500L) {
             int w = font.getStringWidth(text);
-            drawColorShape(stack, x + 5 + w, y + 5, x + 6 + w, y + 15, 1.0F, 1.0F, 1.0F, 1.0F);
+            drawColorShape(x + 5 + w, y + 5, x + 6 + w, y + 15, 1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
