@@ -21,10 +21,10 @@ import java.util.*;
  * Configuration's main class <p>
  *
  * How to create your own config with this API:
- * <li> Create your main config file
- * <li> Annotate your class with {@link Config}
- * <li> Implement {@link ConfigPlugin} interface and it's required methods
- * <li> Well done, you have created your config file
+ * 1) Create your main config file
+ * 2) Annotate your class with {@link Config}
+ * 3) Implement {@link ConfigPlugin} interface and it's required methods
+ * 4) Well done, you have created your config file
  * <p>
  * This class also provides few methods you might like: <p>
  * {@link Configuration#getPlugin(String)} <p> {@link Configuration#getConfig(String)}

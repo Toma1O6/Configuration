@@ -107,7 +107,7 @@ public interface ConfigCreator {
 
     /**
      * Construct and insert string object into config
-     * Sets {@link Pattern} to null -> all characters are allowed
+     * Sets {@link Pattern} to null = all characters are allowed
      *
      * @param name ID of the object
      * @param value Default value
@@ -249,9 +249,10 @@ public interface ConfigCreator {
      *
      * @param object Object instance, see {@link ExampleConfig.ExampleObject} for example
      * @param <T> Type of object
+     * @param plugin Your plugin implementation
      * @return new instance of {@link ObjectType}
      */
-    <T extends ObjectType> T createObject(T object);
+    <T extends ObjectType> T createObject(T object, ConfigPlugin plugin);
 
     /**
      * Used to assign this instance to specific {@link ObjectType}

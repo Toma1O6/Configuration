@@ -40,7 +40,7 @@ public class ExampleConfig implements ConfigPlugin {
         exampleString = builder.createString("String", "This is string value", "Example of string data type");
         exampleStringPattern = builder.createString("Pattern String", "namespace:path", Pattern.compile("([a-z0-9]+[_.-]?)+:([a-z0-9]+[/._-]?)+"), "Example of resource location pattern");
         exampleEnum = builder.createEnum("Enum", ExampleEnum.ENTRY_2, "Example of enum data type");
-        exampleObject = builder.createObject(new ExampleObject("Example Object", 12, "This is an object which contains multiple entries"));
+        exampleObject = builder.createObject(new ExampleObject("Example Object", 12, "This is an object which contains multiple entries"), this);
         exampleCollection = builder.createFillList("List", () -> new StringType("", "null", Pattern.compile("[a-zA-z]*")), listType -> {
             listType.add(new StringType("", "value 1"));
             listType.add(new StringType("", "value 2"));

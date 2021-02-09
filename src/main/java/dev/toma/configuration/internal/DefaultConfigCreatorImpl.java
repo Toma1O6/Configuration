@@ -2,6 +2,7 @@ package dev.toma.configuration.internal;
 
 import com.google.common.base.Preconditions;
 import dev.toma.configuration.api.ConfigCreator;
+import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.*;
 import dev.toma.configuration.api.util.Nameable;
 import net.minecraft.util.math.MathHelper;
@@ -131,9 +132,8 @@ public class DefaultConfigCreatorImpl implements ConfigCreator {
     }
 
     @Override
-    public <T extends ObjectType> T createObject(T object) {
-        ConfigCreator creator = new DefaultConfigCreatorImpl();
-        creator.assignTo(object);
+    public <T extends ObjectType> T createObject(T object, ConfigPlugin plugin) {
+        ConfigCreator creator = plugin.builder(object);
         object.buildStructure(creator);
         config.get().put(object.getId(), object);
         return object;
