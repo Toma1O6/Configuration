@@ -1,4 +1,4 @@
-# Configuration
+# Configuration ![](https://img.shields.io/badge/Author-Toma-aqua.svg) ![](https://img.shields.io/badge/API-stable-blue.svg) ![](https://img.shields.io/badge/Latest_Version-1.0.0-green.svg)
 Introduces `.json` based configs. Let's you edit config values through user-friendly UI.\
 Stable API for other mods.
 
