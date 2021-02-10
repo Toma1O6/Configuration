@@ -13,9 +13,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class FileChecker {
+public class FileTracker {
 
-    public static final FileChecker INSTANCE = new FileChecker();
+    public static final FileTracker INSTANCE = new FileTracker();
     private final Logger logger = LogManager.getLogger("FileChecker");
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final List<Entry> entryList = new ArrayList<>();

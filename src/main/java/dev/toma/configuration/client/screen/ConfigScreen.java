@@ -10,7 +10,7 @@ import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.client.IModID;
 import dev.toma.configuration.client.screen.component.Component;
-import dev.toma.configuration.internal.FileChecker;
+import dev.toma.configuration.internal.FileTracker;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -67,7 +67,7 @@ public class ConfigScreen extends ComponentScreen {
         super.closeScreen();
         minecraft.displayGuiScreen(screen);
         if(!(screen instanceof IModID)) {
-            FileChecker.INSTANCE.scheduleConfigUpdate(this.getModID(), FileChecker.UpdateAction.WRITE);
+            FileTracker.INSTANCE.scheduleConfigUpdate(this.getModID(), FileTracker.UpdateAction.WRITE);
         }
     }
 

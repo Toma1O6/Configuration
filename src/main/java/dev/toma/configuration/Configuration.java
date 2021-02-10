@@ -4,7 +4,7 @@ import dev.toma.configuration.api.Config;
 import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.ConfigHandler;
-import dev.toma.configuration.internal.FileChecker;
+import dev.toma.configuration.internal.FileTracker;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
@@ -48,7 +48,7 @@ public class Configuration {
                 configMap.put(modid, type);
             }
         });
-        FileChecker.INSTANCE.initialize();
+        FileTracker.INSTANCE.initialize();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
     }
 

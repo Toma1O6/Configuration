@@ -90,7 +90,7 @@ public class ConfigHandler {
         }
     }
 
-    public synchronized static void write(ConfigPlugin plugin, ObjectType type, FileChecker.Entry entry) {
+    public synchronized static void write(ConfigPlugin plugin, ObjectType type, FileTracker.Entry entry) {
         File configDir = new File(".", "config");
         if (!configDir.exists() || !configDir.isDirectory()) {
             Configuration.LOGGER.fatal("Couldn't locate config directory at {}", configDir.getAbsolutePath());
