@@ -9,7 +9,7 @@ import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.client.IModID;
 import dev.toma.configuration.client.screen.component.Component;
-import dev.toma.configuration.internal.ConfigHandler;
+import dev.toma.configuration.internal.FileTracker;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -31,8 +31,9 @@ public class ConfigScreen extends ComponentScreen {
     int displayCount;
     int scrollIndex;
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public ConfigScreen(Screen screen, ObjectType type, String modid) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : String.format("%s config", modid)), modid);
+        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName()), modid);
         this.screen = screen;
         this.type = type;
         Optional<ConfigPlugin> optional = Configuration.getPlugin(modid);
@@ -63,7 +64,7 @@ public class ConfigScreen extends ComponentScreen {
         super.onClose();
         minecraft.displayGuiScreen(screen);
         if(!(screen instanceof IModID)) {
-            Configuration.getPlugin(getModID()).ifPresent(plugin -> ConfigHandler.write(plugin, type));
+            FileTracker.INSTANCE.scheduleConfigUpdate(this.getModID(), FileTracker.UpdateAction.WRITE);
         }
     }
 

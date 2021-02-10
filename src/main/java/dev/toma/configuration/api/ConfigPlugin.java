@@ -30,6 +30,14 @@ public interface ConfigPlugin {
     void buildConfigStructure(ConfigCreator builder);
 
     /**
+     * You can change your config's file name
+     * @return Name for your config file
+     */
+    default String getConfigFileName() {
+        return this.getModID();
+    }
+
+    /**
      * This allows you to create your own implementations of
      * {@link ConfigCreator} if you feel like you need one
      *
