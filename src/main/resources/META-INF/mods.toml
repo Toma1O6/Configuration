@@ -5,11 +5,11 @@ issueTrackerURL="https://github.com/Toma1O6/Configuration/issues" #optional
 
 [[mods]]
 modId="configuration"
-version="1.0.0"
+version="1.0.1"
 displayName="Configuration"
 updateJSONURL="https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json"
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
-#logoFile="examplemod.png"
+logoFile="logo.png"
 authors="Toma"
 description='''
 Library mod which add .json based configs and enables config edits via UI ingame
