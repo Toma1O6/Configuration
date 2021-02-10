@@ -4,6 +4,7 @@ import dev.toma.configuration.api.Config;
 import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.ConfigHandler;
+import dev.toma.configuration.internal.FileChecker;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
@@ -47,6 +48,7 @@ public class Configuration {
                 configMap.put(modid, type);
             }
         });
+        FileChecker.INSTANCE.initialize();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
     }
 
@@ -58,7 +60,7 @@ public class Configuration {
      * @param modID ID of very specific mod
      * @return {@link Optional} object possibly containing {@link ConfigPlugin} for specified modID
      */
-    public static Optional<ConfigPlugin> getPlugin(String modID) {
+    public synchronized static Optional<ConfigPlugin> getPlugin(String modID) {
         return Optional.ofNullable(pluginMap.get(modID));
     }
 
@@ -66,8 +68,12 @@ public class Configuration {
      * @param modID ID of very specific mod
      * @return {@link Optional} object possibly containing {@link ObjectType} for specified modID
      */
-    public static Optional<ObjectType> getConfig(String modID) {
+    public synchronized static Optional<ObjectType> getConfig(String modID) {
         return Optional.ofNullable(configMap.get(modID));
+    }
+
+    public static Map<String, ConfigPlugin> getPluginMap() {
+        return pluginMap;
     }
 
     void loadPlugins() {

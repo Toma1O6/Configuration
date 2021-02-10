@@ -23,18 +23,13 @@ public class ConfigHandler {
             Configuration.LOGGER.fatal("Couldn't locate config directory at {}", configDir.getAbsolutePath());
             return null;
         }
-        File jsonFile = new File(configDir, plugin.getModID() + ".json");
+        File jsonFile = new File(configDir, plugin.getConfigFileName() + ".json");
         ObjectType configObject = new BaseObjectType();
         if (!jsonFile.exists()) {
             createDefaultConfigFile(jsonFile, plugin, configObject);
         } else {
             try {
-                JsonParser parser = new JsonParser();
-                JsonElement element = parser.parse(new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8));
-                if(!element.isJsonObject()) {
-                    throw new JsonParseException("Found corrupted config file for " + plugin.getModID() + " plugin");
-                }
-                loadData(plugin, configObject, element.getAsJsonObject());
+                loadData(plugin, configObject, jsonFile);
             } catch (FileNotFoundException ex) {
                 Configuration.LOGGER.error(ex.toString());
                 return null;
@@ -60,7 +55,13 @@ public class ConfigHandler {
         }
     }
 
-    public static void loadData(ConfigPlugin plugin, ObjectType type, JsonObject savedData) throws JsonParseException {
+    public static void loadData(ConfigPlugin plugin, ObjectType type, File jsonFile) throws JsonParseException, FileNotFoundException {
+        JsonParser parser = new JsonParser();
+        JsonElement element = parser.parse(new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8));;
+        if(!element.isJsonObject()) {
+            throw new JsonParseException("Found corrupted config file for " + plugin.getModID() + " plugin");
+        }
+        JsonObject savedData = element.getAsJsonObject();
         ConfigCreator creator = new DefaultConfigCreatorImpl();
         creator.assignTo(type);
         plugin.buildConfigStructure(creator);
@@ -89,17 +90,18 @@ public class ConfigHandler {
         }
     }
 
-    public static void write(ConfigPlugin plugin, ObjectType type) {
+    public synchronized static void write(ConfigPlugin plugin, ObjectType type, FileChecker.Entry entry) {
         File configDir = new File(".", "config");
         if (!configDir.exists() || !configDir.isDirectory()) {
             Configuration.LOGGER.fatal("Couldn't locate config directory at {}", configDir.getAbsolutePath());
             return;
         }
-        File jsonFile = new File(configDir, plugin.getModID() + ".json");
+        File jsonFile = new File(configDir, plugin.getConfigFileName() + ".json");
         if (!jsonFile.exists()) {
             return;
         }
         writeData(type, jsonFile, true);
+        entry.modified = jsonFile.lastModified();
     }
 
     static class BaseObjectType extends ObjectType {
