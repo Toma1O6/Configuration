@@ -102,7 +102,9 @@ public interface ConfigCreator {
      * @return new instance of {@link StringType}
      * @throws PatternSyntaxException when supplied {@link Pattern} is invalid
      * @see Pattern
+     * @deprecated Pattern parameter will be changed in 1.0.2
      */
+    @Deprecated
     StringType createString(String name, String value, @Nullable Pattern pattern, String... desc) throws PatternSyntaxException;
 
     /**
