@@ -1,5 +1,7 @@
 package dev.toma.configuration.api.client.component;
 
+import dev.toma.configuration.ClientManager;
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.ObjectType;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.api.distmarker.Dist;
