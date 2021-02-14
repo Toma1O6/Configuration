@@ -1,9 +1,6 @@
-package dev.toma.configuration.client.screen.component;
+package dev.toma.configuration.api.client.component;
 
 import dev.toma.configuration.api.type.ObjectType;
-import dev.toma.configuration.client.screen.ComponentScreen;
-import dev.toma.configuration.client.screen.ConfigScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -28,6 +25,6 @@ public class ObjectTypeComponent extends ConfigComponent<ObjectType> {
 
     @Override
     public void processClicked(double mouseX, double mouseY) {
-        Minecraft.getInstance().displayGuiScreen(new ConfigScreen(parentScreen, configType, parentScreen.getModID()));
+        ClientManager.displayObjectScreen(parentScreen, configType);
     }
 }

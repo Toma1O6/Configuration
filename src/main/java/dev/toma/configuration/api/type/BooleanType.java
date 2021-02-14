@@ -3,7 +3,7 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import dev.toma.configuration.client.ComponentFactory;
+import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,7 +16,7 @@ public class BooleanType extends AbstractConfigType<Boolean> {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public ComponentFactory getDisplayFactory() {
+    public ComponentFactory getComponentFactory() {
         return ComponentFactory.BOOLEAN;
     }
 

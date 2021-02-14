@@ -2,16 +2,14 @@ package dev.toma.configuration.api.type;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import dev.toma.configuration.client.ComponentFactory;
+import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CollectionType<T extends AbstractConfigType<?>> extends AbstractConfigType<List<T>> {
@@ -25,6 +23,12 @@ public class CollectionType<T extends AbstractConfigType<?>> extends AbstractCon
 
     public CollectionType(String name, Supplier<T> objectFactory, String... desc) {
         this(name, new ArrayList<>(), objectFactory, desc);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public ComponentFactory getComponentFactory() {
+        return ComponentFactory.COLLECTION;
     }
 
     public void add(T t) {
@@ -68,12 +72,6 @@ public class CollectionType<T extends AbstractConfigType<?>> extends AbstractCon
 
     public T createElement() {
         return factory.get();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public ComponentFactory getDisplayFactory() {
-        return ComponentFactory.COLLECTION;
     }
 
     @Override

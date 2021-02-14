@@ -1,10 +1,12 @@
 package dev.toma.configuration.example;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.*;
+import dev.toma.configuration.api.ConfigCreator;
+import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.*;
 import dev.toma.configuration.api.util.Nameable;
 import dev.toma.configuration.api.util.NumberDisplayType;
+import dev.toma.configuration.api.util.Restriction;
 
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
@@ -12,7 +14,7 @@ import java.util.regex.Pattern;
 /**
  * @author Toma
  */
-@Config
+//@Config  This is just example config, won't be loaded
 public class ExampleConfig implements ConfigPlugin {
 
     public static BooleanType exampleBoolean;
@@ -38,20 +40,20 @@ public class ExampleConfig implements ConfigPlugin {
         exampleDecimalRanged = builder.createDouble("Ranged Decimal", 43.21, 27.5, 55.0, "Example of decimal with value range from 27.5 to 55.0").setDisplay(NumberDisplayType.SLIDER);
         exampleDecimalFormatted = builder.createDouble("Formatted Decimal", 43.123456, "Example of formatted decimal to two decimal spaces").setFormatting(new DecimalFormat("#.##"));
         exampleString = builder.createString("String", "This is string value", "Example of string data type");
-        exampleStringPattern = builder.createString("Pattern String", "namespace:path", Pattern.compile("([a-z0-9]+[_.-]?)+:([a-z0-9]+[/._-]?)+"), "Example of resource location pattern");
+        exampleStringPattern = builder.createString("Pattern String", "namespace:path", Restriction.newRestriction(Pattern.compile("([a-z0-9]+[_.-]?)+:([a-z0-9]+[/._-]?)+"), "Non a-z_.- character is not allowed", "Must be separated by :"), "Example of resource location pattern");
         exampleEnum = builder.createEnum("Enum", ExampleEnum.ENTRY_2, "Example of enum data type");
         exampleObject = builder.createObject(new ExampleObject("Example Object", 12, "This is an object which contains multiple entries"), this);
-        exampleCollection = builder.createFillList("List", () -> new StringType("", "null", Pattern.compile("[a-zA-z]*")), listType -> {
-            listType.add(new StringType("", "value 1"));
-            listType.add(new StringType("", "value 2"));
-            listType.add(new StringType("", "value 3"));
-            listType.add(new StringType("", "value 4"));
-            listType.add(new StringType("", "value 5"));
-            listType.add(new StringType("", "value 6"));
-            listType.add(new StringType("", "value 7"));
-            listType.add(new StringType("", "value 8"));
-            listType.add(new StringType("", "value 9"));
-            listType.add(new StringType("", "value 10"));
+        exampleCollection = builder.createFillList("List", () -> new StringType("", "null", Restriction.newRestriction(Pattern.compile("[a-zA-z\\s]*"), "Only A-Z character are allowed")), listType -> {
+            listType.add(new StringType("", "a"));
+            listType.add(new StringType("", "b"));
+            listType.add(new StringType("", "c"));
+            listType.add(new StringType("", "d"));
+            listType.add(new StringType("", "e"));
+            listType.add(new StringType("", "f"));
+            listType.add(new StringType("", "g"));
+            listType.add(new StringType("", "h"));
+            listType.add(new StringType("", "i"));
+            listType.add(new StringType("", "j"));
         }, "This is an example of element list");
         rgb = builder.createColorRGB("RGB", "#00FF00", "Color in RGB format");
         argb = builder.createColorARGB("ARGB", "#56FFFF00", "Color in ARGB format");

@@ -1,13 +1,14 @@
-package dev.toma.configuration.client.screen.component;
+package dev.toma.configuration.api.client.component;
 
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
 import dev.toma.configuration.api.type.StringType;
-import dev.toma.configuration.client.screen.ComponentScreen;
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
+import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,11 +17,24 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     private final ComponentScreen parentScreen;
     protected String displayedText;
     int characterRenderOffset;
+    String[] errorMessage = new String[0];
+    int errWidth;
+    boolean errorBlock;
 
     public TextFieldComponent(ComponentScreen parentScreen, T t, int x, int y, int width, int height) {
         super(t, x, y, width, height);
         this.parentScreen = parentScreen;
         this.displayedText = t.get().toString();
+    }
+
+    public TextFieldComponent<T> blockErrors() {
+        this.errorBlock = true;
+        return this;
+    }
+
+    public void setErrorMessage(@Nullable String... error) {
+        this.errorMessage = error;
+        this.errWidth = error != null ? this.getWidth(error) : 0;
     }
 
     public abstract boolean isValid(char character);
@@ -46,6 +60,20 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             font.drawStringWithShadow(text, x + 5, y + 6, selected ? 0xFFFF00 : 0xFFFFFF);
             drawCursor(selected, text, font);
         }
+        if(selected && errorMessage.length > 0 && !errorBlock) {
+            int height = errorMessage.length * 10;
+            int centerX = x + width / 2;
+            int halfTextWidth = errWidth / 2;
+            int textEnd = centerX + halfTextWidth;
+            int posX = x - 11 - errWidth;
+            int posY = y + (this.height - (height + 6)) / 2;
+            drawColorShape(matrixStack, posX - 3, posY, posX + errWidth + 3, posY + height + 5, 0.75F, 0.2F, 0.2F, 0.7F);
+            drawColorShape(matrixStack, posX - 2, posY + 1, posX + errWidth + 2, posY + height + 4, 0.0F, 0.0F, 0.0F, 0.7F);
+            for (int i = 0; i < errorMessage.length; i++) {
+                String message = errorMessage[i];
+                font.drawStringWithShadow(matrixStack, message, posX, posY + 4 + i * 10, 0xAA4444);
+            }
+        }
     }
 
     @Override
@@ -65,6 +93,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     @Override
     public void charTyped(char character, int modifiers) {
         if(this.isValid(character)) {
+            setErrorMessage();
             this.displayedText += character;
             if(characterRenderOffset > 0) {
                 ++characterRenderOffset;
@@ -87,6 +116,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             this.updateValue(displayedText);
             this.parentScreen.sendUpdate();
         }
+        setErrorMessage();
     }
 
     @Override
@@ -99,6 +129,17 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             int w = font.getStringWidth(text);
             drawColorShape(x + 5 + w, y + 5, x + 6 + w, y + 15, 1.0F, 1.0F, 1.0F, 1.0F);
         }
+    }
+
+    int getWidth(String[] input) {
+        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        int width = 0;
+        for (String s : input) {
+            int i = font.getStringWidth(s);
+            if(i > width)
+                width = i;
+        }
+        return width;
     }
 
     public static class IntegerField extends TextFieldComponent<IntType> {
@@ -114,11 +155,18 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             if(matcher.matches()) {
                 try {
                     int value = Integer.parseInt(entry);
-                    return configType.isInRange(value);
+                    if(configType.isInRange(value)) {
+                        setErrorMessage();
+                        return true;
+                    } else {
+                        setErrorMessage(value + " is outside allowed range!", "Allowed range is <" + configType.getMin() + ";" + configType.getMax() + ">");
+                        return false;
+                    }
                 } catch (NumberFormatException ex) {
+                    setErrorMessage(ex.getClass().getCanonicalName(), ex.getMessage());
                     return false;
                 }
-            }
+            } else setErrorMessage("Only numbers and '-' are allowed");
             return false;
         }
 
@@ -145,7 +193,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
 
     public static class DecimalField extends TextFieldComponent<DoubleType> {
 
-        private static final Pattern PATTERN = Pattern.compile("(?:-)?|(?:-)?[0-9]+(?:.([0-9]*))?");
+        private static final Pattern PATTERN = Pattern.compile("(?:-)?|(?:-)?[0-9]+(?:[.]([0-9]*))?");
 
         public DecimalField(ComponentScreen screen, DoubleType type, int x, int y, int width, int height) {
             super(screen, type, x, y, width, height);
@@ -156,10 +204,19 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             if(matcher.matches()) {
                 try {
                     double value = Double.parseDouble(entry);
-                    return configType.isInRange(value);
+                    if(configType.isInRange(value)) {
+                        setErrorMessage();
+                        return true;
+                    } else {
+                        setErrorMessage(value + " is outside allowed range!", "Allowed range is <" + configType.getMin() + ";" + configType.getMax() + ">");
+                        return false;
+                    }
                 } catch (NumberFormatException ex) {
+                    setErrorMessage(ex.getClass().getCanonicalName(), ex.getMessage());
                     return false;
                 }
+            } else {
+                setErrorMessage("Not a valid number");
             }
             return false;
         }
@@ -193,7 +250,14 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
 
         @Override
         public boolean validate() {
-            return !configType.hasPattern() || configType.getPattern().matcher(displayedText).matches();
+            if(configType.hasRestriction()) {
+                boolean valid = configType.getRestriction().isStringValid(displayedText);
+                if(!valid) {
+                    setErrorMessage(configType.getRestriction().getUserFeedback());
+                } else setErrorMessage();
+                return valid;
+            }
+            return true;
         }
 
         @Override

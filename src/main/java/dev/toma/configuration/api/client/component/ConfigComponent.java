@@ -1,4 +1,4 @@
-package dev.toma.configuration.client.screen.component;
+package dev.toma.configuration.api.client.component;
 
 import dev.toma.configuration.api.type.AbstractConfigType;
 import net.minecraftforge.api.distmarker.Dist;

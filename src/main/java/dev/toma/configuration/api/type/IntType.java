@@ -3,8 +3,8 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.NumberDisplayType;
-import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.Ranged;
 import net.minecraft.util.math.MathHelper;
@@ -37,7 +37,7 @@ public class IntType extends AbstractConfigType<Integer> implements Ranged<Integ
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public ComponentFactory getDisplayFactory() {
+    public ComponentFactory getComponentFactory() {
         return ComponentFactory.INTEGER;
     }
 

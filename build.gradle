@@ -13,9 +13,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.0.1'
+version = "${mc_version}-${configuration_version}"
 group = 'dev.toma.configuration' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'configuration-1.15.2'
+archivesBaseName = 'configuration'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -120,12 +120,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
-            "Specification-Version": "1", // We are version 1 of ourselves
+            "Specification-Title": "Configuration",
+            "Specification-Vendor": "Toma",
+            "Specification-Version": "${configuration_version}",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"examplemodsareus",
+            "Implementation-Vendor" :"Toma",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
