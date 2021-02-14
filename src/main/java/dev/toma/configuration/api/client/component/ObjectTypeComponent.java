@@ -1,7 +1,7 @@
 package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.toma.configuration.api.ConfigurationClient;
+import dev.toma.configuration.ClientManager;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.ObjectType;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,6 +28,6 @@ public class ObjectTypeComponent extends ConfigComponent<ObjectType> {
 
     @Override
     public void processClicked(double mouseX, double mouseY) {
-        ConfigurationClient.displayObjectScreen(parentScreen, configType);
+        ClientManager.displayObjectScreen(parentScreen, configType);
     }
 }

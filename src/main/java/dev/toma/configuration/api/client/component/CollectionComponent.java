@@ -1,7 +1,7 @@
 package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.toma.configuration.api.ConfigurationClient;
+import dev.toma.configuration.ClientManager;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
@@ -18,7 +18,7 @@ public class CollectionComponent<T extends AbstractConfigType<?>> extends Config
 
     @Override
     public void processClicked(double mouseX, double mouseY) {
-        ConfigurationClient.displayCollectionScreen(parentScreen, configType);
+        ClientManager.displayCollectionScreen(parentScreen, configType);
     }
 
     @Override
