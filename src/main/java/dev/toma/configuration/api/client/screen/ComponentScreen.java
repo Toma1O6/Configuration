@@ -1,12 +1,12 @@
-package dev.toma.configuration.client.screen;
+package dev.toma.configuration.api.client.screen;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.type.AbstractConfigType;
-import dev.toma.configuration.client.IModID;
-import dev.toma.configuration.client.screen.component.Component;
-import dev.toma.configuration.client.screen.component.ConfigComponent;
-import dev.toma.configuration.client.screen.component.TextFieldComponent;
+import dev.toma.configuration.api.client.IModID;
+import dev.toma.configuration.api.client.component.Component;
+import dev.toma.configuration.api.client.component.ConfigComponent;
+import dev.toma.configuration.api.client.component.TextFieldComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,10 +30,16 @@ public class ComponentScreen extends Screen implements IModID {
     protected List<Component> components = new ArrayList<>();
     public TextFieldComponent<?> selectedTextField;
     Queue<Consumer<ComponentScreen>> queue = Queues.newArrayDeque();
+    protected int textColor;
 
-    public ComponentScreen(ITextComponent title, String modID) {
+    public ComponentScreen(ITextComponent title, String modID, int textColor) {
         super(title);
         this.modID = modID;
+        this.textColor = textColor;
+    }
+
+    public void renderBackground() {
+        renderDirtBackground(0);
     }
 
     @Override
@@ -52,7 +58,7 @@ public class ComponentScreen extends Screen implements IModID {
     }
 
     public int getTextColor() {
-        return 0x999999;
+        return textColor;
     }
 
     public void renderHoveredInfo(MatrixStack stack, int mouseX, int mouseY) {

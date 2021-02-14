@@ -1,6 +1,7 @@
 package dev.toma.configuration.api;
 
-import dev.toma.configuration.api.client.BackgroundRenderer;
+import dev.toma.configuration.api.client.ClientHandles;
+import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.DefaultConfigCreatorImpl;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,13 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  *
  * @author Toma
  */
-public interface ConfigPlugin {
-
-    /**
-     * Function to match plugin to specific mod
-     * @return Your mod ID
-     */
-    String getModID();
+public interface ConfigPlugin extends IModID {
 
     /**
      * Construct your config structure here
@@ -57,7 +52,7 @@ public interface ConfigPlugin {
      * @return your implementation
      */
     @OnlyIn(Dist.CLIENT)
-    default BackgroundRenderer getBackgroundRenderer() {
-        return BackgroundRenderer.DirtBackground.INSTANCE;
+    default ClientHandles getClientHandles() {
+        return ClientHandles.DefaultClientHandles.DEFAULT_CLIENT_HANDLES;
     }
 }

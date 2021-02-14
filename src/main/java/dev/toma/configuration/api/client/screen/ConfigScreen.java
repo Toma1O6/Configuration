@@ -1,15 +1,13 @@
-package dev.toma.configuration.client.screen;
+package dev.toma.configuration.api.client.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.ConfigPlugin;
-import dev.toma.configuration.api.client.BackgroundRenderer;
+import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.client.IModID;
+import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.ObjectType;
-import dev.toma.configuration.client.ComponentFactory;
-import dev.toma.configuration.client.IModID;
-import dev.toma.configuration.client.screen.component.Component;
 import dev.toma.configuration.internal.FileTracker;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,31 +21,24 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ConfigScreen extends ComponentScreen {
 
     final Screen screen;
     final ObjectType type;
-    final BackgroundRenderer renderer;
     int displayCount;
     int scrollIndex;
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public ConfigScreen(Screen screen, ObjectType type, String modid) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName()), modid);
+    public ConfigScreen(Screen screen, ObjectType type, String modid, int textColor) {
+        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName()), modid, textColor);
         this.screen = screen;
         this.type = type;
-        Optional<ConfigPlugin> optional = Configuration.getPlugin(modid);
-        if(optional.isPresent() && optional.get().getBackgroundRenderer() != null) {
-            this.renderer = optional.get().getBackgroundRenderer();
-        } else this.renderer = BackgroundRenderer.DirtBackground.INSTANCE;
-    }
-
-    @Override
-    public int getTextColor() {
-        return renderer.getTextColor();
     }
 
     @Override
@@ -81,14 +72,14 @@ public class ConfigScreen extends ComponentScreen {
         for (int i = scrollIndex; i < end; i++) {
             int offset = i - scrollIndex;
             AbstractConfigType<?> type = list.get(i);
-            ComponentFactory display = type.getDisplayFactory();
-            display.addComponents(this, type, 30, 35 + offset * 25, width - 60, 20);
+            ComponentFactory factory = type.getComponentFactory();
+            factory.addComponents(this, type, 30, 35 + offset * 25, width - 60, 20);
         }
     }
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderer.drawBackground(this, matrixStack, mouseX, mouseY, partialTicks);
+        this.renderBackground();
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderHeader(matrixStack, font);
         int count = type.get().size();

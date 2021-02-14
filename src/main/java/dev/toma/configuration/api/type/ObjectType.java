@@ -3,7 +3,7 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.toma.configuration.api.ConfigCreator;
-import dev.toma.configuration.client.ComponentFactory;
+import dev.toma.configuration.api.client.ComponentFactory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,13 +20,13 @@ public abstract class ObjectType extends AbstractConfigType<Map<String, Abstract
         super(name, dataTree, desc);
     }
 
-    public abstract void buildStructure(ConfigCreator configCreator);
-
     @OnlyIn(Dist.CLIENT)
     @Override
-    public ComponentFactory getDisplayFactory() {
+    public ComponentFactory getComponentFactory() {
         return ComponentFactory.OBJECT;
     }
+
+    public abstract void buildStructure(ConfigCreator configCreator);
 
     @Override
     public Map<String, AbstractConfigType<?>> load(JsonElement element) {

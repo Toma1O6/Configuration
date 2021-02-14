@@ -1,11 +1,10 @@
-package dev.toma.configuration.client.screen.component;
+package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import dev.toma.configuration.api.ConfigurationClient;
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
-import dev.toma.configuration.client.screen.CollectionScreen;
-import dev.toma.configuration.client.screen.ComponentScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
 public class CollectionComponent<T extends AbstractConfigType<?>> extends ConfigComponent<CollectionType<T>> {
@@ -19,7 +18,7 @@ public class CollectionComponent<T extends AbstractConfigType<?>> extends Config
 
     @Override
     public void processClicked(double mouseX, double mouseY) {
-        Minecraft.getInstance().displayGuiScreen(new CollectionScreen<>(parentScreen, configType, parentScreen.getModID()));
+        ConfigurationClient.displayCollectionScreen(parentScreen, configType);
     }
 
     @Override

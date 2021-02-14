@@ -1,7 +1,7 @@
 package dev.toma.configuration.api.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.toma.configuration.client.screen.ComponentScreen;
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

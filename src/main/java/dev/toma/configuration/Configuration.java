@@ -53,7 +53,7 @@ public class Configuration {
     }
 
     void setupClient(FMLClientSetupEvent event) {
-        DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> ClientManager::setupModExtensions);
+        DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> ClientManager::setupPluginClient);
     }
 
     /**
