@@ -1,0 +1,15 @@
+[
+{
+  "modid": "configuration",
+  "name": "Configuration",
+  "description": "Library mod which add .json based configs and enables config edits via UI ingame",
+  "version": "${version}",
+  "mcversion": "${mc_version}",
+  "url": "",
+  "updateUrl": "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json",
+  "authorList": ["Toma"],
+  "logoFile": "logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
