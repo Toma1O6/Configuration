@@ -1,5 +1,6 @@
 package dev.toma.configuration.api.client.component;
 
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;

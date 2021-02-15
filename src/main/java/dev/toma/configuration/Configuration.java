@@ -56,7 +56,7 @@ public class Configuration {
     }
 
     void setupClient(FMLClientSetupEvent event) {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientManager::setupModExtensions);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientManager::setupPluginClient);
     }
 
     /**
