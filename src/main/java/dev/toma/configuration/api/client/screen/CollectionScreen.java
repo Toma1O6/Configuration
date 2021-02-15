@@ -86,7 +86,7 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderer.drawBackground(this, mouseX, mouseY, partialTicks);
+        this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
         this.renderHeader(font);
         int count = type.get().size();

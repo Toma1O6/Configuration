@@ -1,10 +1,10 @@
 package dev.toma.configuration.api.client.component;
 
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
 import dev.toma.configuration.api.type.StringType;
-import dev.toma.configuration.api.client.screen.ComponentScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -67,11 +67,11 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             int textEnd = centerX + halfTextWidth;
             int posX = x - 11 - errWidth;
             int posY = y + (this.height - (height + 6)) / 2;
-            drawColorShape(matrixStack, posX - 3, posY, posX + errWidth + 3, posY + height + 5, 0.75F, 0.2F, 0.2F, 0.7F);
-            drawColorShape(matrixStack, posX - 2, posY + 1, posX + errWidth + 2, posY + height + 4, 0.0F, 0.0F, 0.0F, 0.7F);
+            drawColorShape(posX - 3, posY, posX + errWidth + 3, posY + height + 5, 0.75F, 0.2F, 0.2F, 0.7F);
+            drawColorShape(posX - 2, posY + 1, posX + errWidth + 2, posY + height + 4, 0.0F, 0.0F, 0.0F, 0.7F);
             for (int i = 0; i < errorMessage.length; i++) {
                 String message = errorMessage[i];
-                font.drawStringWithShadow(matrixStack, message, posX, posY + 4 + i * 10, 0xAA4444);
+                font.drawStringWithShadow(message, posX, posY + 4 + i * 10, 0xAA4444);
             }
         }
     }
