@@ -42,8 +42,9 @@ public class FileTracker {
             entryList.add(new Entry(plugin, configFile.getName(), configFile.lastModified()));
             logger.info("Added {} plugin into FileTracker", plugin.getModID());
         }
-        if(!entryList.isEmpty()) {
-            this.task = this.executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(dir), 5L, 5L, TimeUnit.SECONDS);
+        int secs = Configuration.InternalConfig.fileCheckTimer.get();
+        if(!entryList.isEmpty() && secs > 0) {
+            this.task = this.executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(dir), 10L, secs, TimeUnit.SECONDS);
         }
     }
 

@@ -1,7 +1,7 @@
-package dev.toma.configuration.client.screen.component;
+package dev.toma.configuration.api.client.component;
 
 import dev.toma.configuration.api.type.AbstractConfigType;
-import dev.toma.configuration.client.screen.ComponentScreen;
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.internal.Formatting;
 import dev.toma.configuration.internal.Ranged;
 import net.minecraft.client.gui.FontRenderer;

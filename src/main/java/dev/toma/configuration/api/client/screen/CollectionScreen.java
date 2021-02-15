@@ -1,15 +1,12 @@
-package dev.toma.configuration.client.screen;
+package dev.toma.configuration.api.client.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.ConfigPlugin;
-import dev.toma.configuration.api.client.BackgroundRenderer;
+import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.client.component.AddCollectionElementComponent;
+import dev.toma.configuration.api.client.component.Component;
+import dev.toma.configuration.api.client.component.RemoveCollectionElementComponent;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
-import dev.toma.configuration.client.ComponentFactory;
-import dev.toma.configuration.client.screen.component.AddCollectionElementComponent;
-import dev.toma.configuration.client.screen.component.Component;
-import dev.toma.configuration.client.screen.component.RemoveCollectionElementComponent;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -21,25 +18,19 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
-import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class CollectionScreen<T extends AbstractConfigType<?>> extends ComponentScreen {
 
     final Screen screen;
     final CollectionType<T> type;
-    final BackgroundRenderer renderer;
     int displayCount;
     int scrollIndex;
 
-    public CollectionScreen(Screen parentScreen, CollectionType<T> type, String modid) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : "Unnamed collection"), modid);
+    public CollectionScreen(Screen parentScreen, CollectionType<T> type, String modid, int textColor) {
+        super(new StringTextComponent(type.getId() != null ? type.getId() : "Unnamed collection"), modid, textColor);
         this.screen = parentScreen;
         this.type = type;
-        Optional<ConfigPlugin> optional = Configuration.getPlugin(modid);
-        if(optional.isPresent() && optional.get().getBackgroundRenderer() != null) {
-            this.renderer = optional.get().getBackgroundRenderer();
-        } else this.renderer = BackgroundRenderer.DirtBackground.INSTANCE;
     }
 
     @Override
@@ -61,11 +52,6 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
     }
 
     @Override
-    public int getTextColor() {
-        return renderer.getTextColor();
-    }
-
-    @Override
     protected void init() {
         displayCount = ((height - 40) / 25) - 1;
         List<T> list = type.get();
@@ -75,8 +61,8 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
         int end = Math.min(scrollIndex + displayCount, list.size());
         for (int i = scrollIndex; i < end; i++) {
             int offset = i - scrollIndex;
-            AbstractConfigType<?> type = list.get(i);
-            ComponentFactory display = type.getDisplayFactory();
+            T type = list.get(i);
+            ComponentFactory display = type.getComponentFactory();
             display.addComponents(this, type, 30, 35 + offset * 25, width - 85, 20);
             addComponent(new RemoveCollectionElementComponent(this, this.type, i, width - 50, 35 + offset * 25, 20, 20));
         }
@@ -86,7 +72,7 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderer.drawBackground(this, mouseX, mouseY, partialTicks);
+        this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
         this.renderHeader(font);
         int count = type.get().size();

@@ -5,14 +5,15 @@ import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.*;
 import dev.toma.configuration.api.util.Nameable;
+import dev.toma.configuration.api.util.Restriction;
 import net.minecraft.util.math.MathHelper;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class DefaultConfigCreatorImpl implements ConfigCreator {
 
@@ -64,11 +65,11 @@ public class DefaultConfigCreatorImpl implements ConfigCreator {
     }
 
     @Override
-    public StringType createString(String name, String value, Pattern pattern, String... desc) throws PatternSyntaxException {
-        if(pattern != null) {
-            Preconditions.checkState(pattern.matcher(value).matches(), "Invalid default value");
+    public StringType createString(String name, String value, @Nullable Restriction restriction, String... desc) {
+        if(restriction != null) {
+            Preconditions.checkState(restriction.isStringValid(value), "Invalid default value");
         }
-        StringType type = new StringType(name, value, pattern, desc);
+        StringType type = new StringType(name, value, restriction, desc);
         config.get().put(name, type);
         return type;
     }

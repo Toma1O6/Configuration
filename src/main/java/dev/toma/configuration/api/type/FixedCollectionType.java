@@ -3,8 +3,8 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.Nameable;
-import dev.toma.configuration.client.ComponentFactory;
 import dev.toma.configuration.internal.Collectible;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,6 +21,12 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
     public FixedCollectionType(String name, T value, T[] array, String... desc) {
         super(name, value, desc);
         this.values = array;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public ComponentFactory getComponentFactory() {
+        return ComponentFactory.ARRAY;
     }
 
     @Override
@@ -56,12 +62,6 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
     @Override
     public T[] collect() {
         return values;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public ComponentFactory getDisplayFactory() {
-        return ComponentFactory.MULTI_CHOICE;
     }
 
     @Override

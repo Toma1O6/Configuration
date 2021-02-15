@@ -3,6 +3,7 @@ package dev.toma.configuration.api;
 import dev.toma.configuration.api.type.*;
 import dev.toma.configuration.api.util.Nameable;
 import dev.toma.configuration.api.util.NumberDisplayType;
+import dev.toma.configuration.api.util.Restriction;
 import dev.toma.configuration.example.ExampleConfig;
 
 import javax.annotation.Nullable;
@@ -97,15 +98,13 @@ public interface ConfigCreator {
      *
      * @param name ID of the object
      * @param value Default value
-     * @param pattern Allowed string {@link Pattern}. Can be null
+     * @param restriction Value {@link Restriction} for this type. Can be null
      * @param desc Comments
      * @return new instance of {@link StringType}
      * @throws PatternSyntaxException when supplied {@link Pattern} is invalid
-     * @see Pattern
-     * @deprecated Pattern parameter will be changed in 1.0.2
+     * @see Restriction
      */
-    @Deprecated
-    StringType createString(String name, String value, @Nullable Pattern pattern, String... desc) throws PatternSyntaxException;
+    StringType createString(String name, String value, @Nullable Restriction restriction, String... desc);
 
     /**
      * Construct and insert string object into config
