@@ -1,11 +1,8 @@
 package dev.toma.configuration;
 
 import dev.toma.configuration.api.Config;
-import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.ConfigPlugin;
-import dev.toma.configuration.api.type.IntType;
 import dev.toma.configuration.api.type.ObjectType;
-import dev.toma.configuration.api.util.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.FileTracker;
 import net.minecraftforge.api.distmarker.Dist;
@@ -56,7 +53,7 @@ public class Configuration {
     }
 
     void setupClient(FMLClientSetupEvent event) {
-        DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> ClientManager::setupPluginClient);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientManager::setupModExtensions);
     }
 
     /**
@@ -100,28 +97,6 @@ public class Configuration {
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
                 LOGGER.error("Failed to load {}", classpath, e);
             }
-        }
-    }
-
-    @Config
-    public static class InternalConfig implements ConfigPlugin {
-
-        public static IntType fileCheckTimer;
-
-        @Override
-        public String getModID() {
-            return MODID;
-        }
-
-        @Override
-        public void buildConfigStructure(ConfigCreator builder) {
-            fileCheckTimer = builder.createInt(
-                    "File Check Timer",
-                    5,
-                    0,
-                    60,
-                    "Set timer for checking config file changes", "Unit: seconds", "Set to 0 to disable file checks"
-            ).setDisplay(NumberDisplayType.TEXT_FIELD_SLIDER);
         }
     }
 }

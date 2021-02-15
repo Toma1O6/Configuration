@@ -1,6 +1,5 @@
 package dev.toma.configuration.api.client.component;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.internal.Formatting;
@@ -26,20 +25,20 @@ public class SliderComponent<T extends AbstractConfigType<? extends Number> & Ra
     }
 
     @Override
-    public void drawComponent(MatrixStack matrixStack, FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
-        drawColorShape(matrixStack, x, y + 2, x + width, y + height - 2, 1.0F, 1.0F, 1.0F, 1.0F);
-        drawColorShape(matrixStack, x + 1, y + 3, x + width - 1, y + height - 3, 0.0F, 0.0F, 0.0F, 1.0F);
+    public void drawComponent(FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
+        drawColorShape(x, y + 2, x + width, y + height - 2, 1.0F, 1.0F, 1.0F, 1.0F);
+        drawColorShape(x + 1, y + 3, x + width - 1, y + height - 3, 0.0F, 0.0F, 0.0F, 1.0F);
         int sliderTrailWidth = width - 4;
         int sliderX = x + 2 + (int)(sliderTrailWidth * sliderPos);
-        drawColorShape(matrixStack, sliderX - 2, y, sliderX + 2, y + height, 0.2F, 0.2F, 0.2F, 1.0F);
-        drawColorShape(matrixStack, sliderX - 1, y + 1, sliderX + 1, y + height - 1, 0.4F, 0.4F, 0.4F, 1.0F);
+        drawColorShape(sliderX - 2, y, sliderX + 2, y + height, 0.2F, 0.2F, 0.2F, 1.0F);
+        drawColorShape(sliderX - 1, y + 1, sliderX + 1, y + height - 1, 0.4F, 0.4F, 0.4F, 1.0F);
         if(shouldShowData) {
             String text = configType.get().toString();
             if(configType instanceof Formatting<?>) {
                 text = ((Formatting<?>) configType).getFormatted();
             }
             int tw = font.getStringWidth(text);
-            font.drawString(matrixStack, text, x + (width - tw) / 2.0F, 1 + y + (height - font.FONT_HEIGHT) / 2.0F, 0xFFFFFF);
+            font.drawString(text, x + (width - tw) / 2.0F, 1 + y + (height - font.FONT_HEIGHT) / 2.0F, 0xFFFFFF);
         }
     }
 
