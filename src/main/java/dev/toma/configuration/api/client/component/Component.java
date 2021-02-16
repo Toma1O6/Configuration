@@ -1,14 +1,14 @@
 package dev.toma.configuration.api.client.component;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-@OnlyIn(Dist.CLIENT)
+@SideOnly(Side.CLIENT)
 public abstract class Component {
 
     public int x, y, width, height;
@@ -23,13 +23,13 @@ public abstract class Component {
     public void processClicked(double mouseX, double mouseY) {
     }
 
-    public void keyPressed(int keyCode, int scanCode, int modifiers) {
+    public void keyPressed(int keyCode) {
     }
 
-    public void charTyped(char character, int modifiers) {
+    public void charTyped(char character) {
     }
 
-    public void mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void mouseDragged(double mouseX, double mouseY, int button, long time) {
     }
 
     public void drawComponent(FontRenderer font, int mouseX, int mouseY, float partialTicks, boolean hovered) {
@@ -45,7 +45,7 @@ public abstract class Component {
     }
 
     public static void drawColorShape(int x1, int y1, int x2, int y2, float r, float g, float b, float a) {
-        GlStateManager.disableTexture();
+        GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
@@ -56,7 +56,7 @@ public abstract class Component {
         builder.pos(x1, y1, 0).color(r, g, b, a).endVertex();
         tessellator.draw();
         GlStateManager.disableBlend();
-        GlStateManager.enableTexture();
+        GlStateManager.enableTexture2D();
     }
 
     public static void drawTexturedShape(int x1, int y1, int x2, int y2) {

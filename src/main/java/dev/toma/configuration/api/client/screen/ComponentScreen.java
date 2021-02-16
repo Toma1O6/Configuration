@@ -1,19 +1,16 @@
 package dev.toma.configuration.api.client.screen;
 
 import com.google.common.collect.Queues;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.client.component.ConfigComponent;
 import dev.toma.configuration.api.client.component.TextFieldComponent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import dev.toma.configuration.api.type.AbstractConfigType;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.init.SoundEvents;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,23 +18,23 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@OnlyIn(Dist.CLIENT)
-public class ComponentScreen extends Screen implements IModID {
+public class ComponentScreen extends GuiScreen implements IModID {
 
+    final GuiScreen parentScreen;
     final String modID;
     protected List<Component> components = new ArrayList<>();
     public TextFieldComponent<?> selectedTextField;
     Queue<Consumer<ComponentScreen>> queue = Queues.newArrayDeque();
     protected int textColor;
 
-    public ComponentScreen(ITextComponent title, String modID, int textColor) {
-        super(title);
+    public ComponentScreen(GuiScreen parentScreen, String modID, int textColor) {
+        this.parentScreen = parentScreen;
         this.modID = modID;
         this.textColor = textColor;
     }
 
     public void renderBackground() {
-        renderDirtBackground(0);
+        this.drawDefaultBackground();
     }
 
     @Override
@@ -46,9 +43,8 @@ public class ComponentScreen extends Screen implements IModID {
     }
 
     @Override
-    public void init(Minecraft minecraft, int width, int height) {
+    public void initGui() {
         components.clear();
-        super.init(minecraft, width, height);
     }
 
     public void addComponent(Component component) {
@@ -70,11 +66,11 @@ public class ComponentScreen extends Screen implements IModID {
     protected void drawComments(ConfigComponent<?> configComponent, int mouseX, int mouseY) {
         AbstractConfigType<?> type = configComponent.getConfigElement();
         String[] desc = type.getComments();
-        renderTooltip(Arrays.stream(desc).collect(Collectors.toList()), mouseX, mouseY, font);
+        drawHoveringText(Arrays.stream(desc).collect(Collectors.toList()), mouseX, mouseY, fontRenderer);
     }
 
     @Override
-    public void onClose() {
+    public void onGuiClosed() {
         if(selectedTextField != null) {
             selectedTextField.onUnselect();
             selectedTextField = null;
@@ -82,19 +78,18 @@ public class ComponentScreen extends Screen implements IModID {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         boolean hoveredOnce = false;
         for (Component component : components) {
             boolean mouseOver = component.isMouseOver(mouseX, mouseY);
             boolean componentHovered = !hoveredOnce && mouseOver;
-            component.drawComponent(font, mouseX, mouseY, partialTicks, componentHovered);
+            component.drawComponent(fontRenderer, mouseX, mouseY, partialTicks, componentHovered);
             if(componentHovered) {
                 hoveredOnce = true;
             }
         }
     }
 
-    @Override
     public void tick() {
         Consumer<ComponentScreen> event;
         while ((event = queue.poll()) != null) {
@@ -103,14 +98,14 @@ public class ComponentScreen extends Screen implements IModID {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public void mouseClicked(int mouseX, int mouseY, int button) {
         if(selectedTextField != null && !selectedTextField.isMouseOver(mouseX, mouseY)) {
             selectedTextField.onUnselect();
             selectedTextField = null;
         }
         for (Component component : components) {
             if(component.isMouseOver(mouseX, mouseY) && component.hasClicked(mouseX, mouseY, button)) {
-                minecraft.getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 component.processClicked(mouseX, mouseY);
                 if(component instanceof TextFieldComponent) {
                     if(selectedTextField == component) {
@@ -120,36 +115,26 @@ public class ComponentScreen extends Screen implements IModID {
                 }
             }
         }
-        return false;
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if(selectedTextField != null) {
-            selectedTextField.keyPressed(keyCode, scanCode, modifiers);
-            return true;
+            selectedTextField.keyPressed(keyCode);
+            selectedTextField.charTyped(typedChar);
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        if(keyCode == 1) {
+            mc.displayGuiScreen(parentScreen);
+        }
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
-        if(selectedTextField != null) {
-            selectedTextField.charTyped(codePoint, modifiers);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void mouseClickMove(int mouseX, int mouseY, int button, long time) {
         for (Component component : components) {
             if(component.isMouseOver(mouseX, mouseY)) {
-                component.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-                return true;
+                component.mouseDragged(mouseX, mouseY, button, time);
             }
         }
-        return false;
     }
 
     public boolean isSelected(TextFieldComponent<?> component) {

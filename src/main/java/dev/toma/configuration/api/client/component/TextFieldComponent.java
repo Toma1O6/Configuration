@@ -77,7 +77,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     }
 
     @Override
-    public void keyPressed(int keyCode, int scanCode, int modifiers) {
+    public void keyPressed(int keyCode) {
         if(keyCode == 259) {
             if(!displayedText.isEmpty()) {
                 displayedText = displayedText.substring(0, displayedText.length() - 1);
@@ -91,14 +91,14 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     }
 
     @Override
-    public void charTyped(char character, int modifiers) {
+    public void charTyped(char character) {
         if(this.isValid(character)) {
             setErrorMessage();
             this.displayedText += character;
             if(characterRenderOffset > 0) {
                 ++characterRenderOffset;
             } else {
-                FontRenderer font = Minecraft.getInstance().fontRenderer;
+                FontRenderer font = Minecraft.getMinecraft().fontRenderer;
                 int textWidth = font.getStringWidth(displayedText);
                 if(textWidth > (width - 13)) {
                     ++characterRenderOffset;
@@ -132,7 +132,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     }
 
     int getWidth(String[] input) {
-        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        FontRenderer font = Minecraft.getMinecraft().fontRenderer;
         int width = 0;
         for (String s : input) {
             int i = font.getStringWidth(s);

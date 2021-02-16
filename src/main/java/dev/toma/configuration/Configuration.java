@@ -8,18 +8,16 @@ import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.api.util.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.FileTracker;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
+import dev.toma.configuration.internal.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.Type;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Configuration's main class <p>
@@ -35,29 +33,15 @@ import java.util.*;
  *
  * @author Toma
  */
-@Mod(Configuration.MODID)
+@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.2", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
 public class Configuration {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("configs");
     protected static final Map<String, ConfigPlugin> pluginMap = new HashMap<>();
     protected static final Map<String, ObjectType> configMap = new HashMap<>();
-
-    public Configuration() {
-        loadPlugins();
-        pluginMap.forEach((modid, plugin) -> {
-            ObjectType type = ConfigHandler.loadConfig(plugin);
-            if(type != null) {
-                configMap.put(modid, type);
-            }
-        });
-        FileTracker.INSTANCE.initialize();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
-    }
-
-    void setupClient(FMLClientSetupEvent event) {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientManager::setupPluginClient);
-    }
+    @SidedProxy(clientSide = "dev.toma.configuration.internal.proxy.ClientProxy", serverSide = "dev.toma.configuration.internal.proxy.ServerProxy")
+    public static CommonProxy proxy;
 
     /**
      * @param modID ID of very specific mod
@@ -79,28 +63,16 @@ public class Configuration {
         return pluginMap;
     }
 
-    void loadPlugins() {
-        List<ModFileScanData> scanDataList = ModList.get().getAllScanData();
-        Set<String> classes = new LinkedHashSet<>();
-        Type type = Type.getType(Config.class);
-        for (ModFileScanData data : scanDataList) {
-            Iterable<ModFileScanData.AnnotationData> annotationData = data.getAnnotations();
-            for (ModFileScanData.AnnotationData annotation : annotationData) {
-                if(Objects.equals(annotation.getAnnotationType(), type)) {
-                    classes.add(annotation.getMemberName());
-                }
+    @Mod.EventHandler
+    public static void preInit(FMLPreInitializationEvent event) {
+        proxy.preInit(event);
+        pluginMap.forEach((modid, plugin) -> {
+            ObjectType type = ConfigHandler.loadConfig(plugin);
+            if(type != null) {
+                configMap.put(modid, type);
             }
-        }
-        for (String classpath : classes) {
-            try {
-                Class<?> aClass = Class.forName(classpath);
-                Class<? extends ConfigPlugin> instance = aClass.asSubclass(ConfigPlugin.class);
-                ConfigPlugin plugin = instance.newInstance();
-                pluginMap.put(plugin.getModID(), plugin);
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
-                LOGGER.error("Failed to load {}", classpath, e);
-            }
-        }
+        });
+        FileTracker.INSTANCE.initialize();
     }
 
     @Config

@@ -2,8 +2,8 @@ package dev.toma.configuration.api.type;
 
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.Restriction;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.regex.Pattern;
 
@@ -22,7 +22,7 @@ public class ColorType extends StringType {
         return (int) color;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     @Override
     public ComponentFactory getComponentFactory() {
         return ComponentFactory.COLOR;

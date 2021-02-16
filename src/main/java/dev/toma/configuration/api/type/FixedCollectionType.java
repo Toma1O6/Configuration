@@ -7,8 +7,8 @@ import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.Nameable;
 import dev.toma.configuration.internal.Collectible;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
         this.values = array;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     @Override
     public ComponentFactory getComponentFactory() {
         return ComponentFactory.ARRAY;

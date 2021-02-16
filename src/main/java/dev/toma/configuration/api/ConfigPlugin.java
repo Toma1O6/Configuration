@@ -4,8 +4,8 @@ import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.DefaultConfigCreatorImpl;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Basic config element. Your main config class must
@@ -51,7 +51,7 @@ public interface ConfigPlugin extends IModID {
      *
      * @return your implementation
      */
-    @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     default ClientHandles getClientHandles() {
         return ClientHandles.DefaultClientHandles.DEFAULT_CLIENT_HANDLES;
     }

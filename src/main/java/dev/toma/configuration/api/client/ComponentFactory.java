@@ -3,15 +3,15 @@ package dev.toma.configuration.api.client;
 import dev.toma.configuration.api.client.component.*;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * This interface is responsible for creating {@link Component} instances in UI
  *
  * @author Toma
  */
-@OnlyIn(Dist.CLIENT)
+@SideOnly(Side.CLIENT)
 public interface ComponentFactory {
 
     ComponentFactory BOOLEAN = (screen, t, x, y, width, height) -> {

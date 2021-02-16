@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class FileTracker {
 
     public static final FileTracker INSTANCE = new FileTracker();
-    private final Logger logger = LogManager.getLogger("FileChecker");
+    private final Logger logger = LogManager.getLogger("FileTracker");
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final List<Entry> entryList = new ArrayList<>();
     private Queue<Update> scheduledUpdates;

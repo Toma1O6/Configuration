@@ -5,8 +5,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BooleanType extends AbstractConfigType<Boolean> {
 
@@ -14,7 +14,7 @@ public class BooleanType extends AbstractConfigType<Boolean> {
         super(name, entry, desc);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     @Override
     public ComponentFactory getComponentFactory() {
         return ComponentFactory.BOOLEAN;

@@ -5,8 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class CollectionType<T extends AbstractConfigType<?>> extends AbstractCon
         this(name, new ArrayList<>(), objectFactory, desc);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     @Override
     public ComponentFactory getComponentFactory() {
         return ComponentFactory.COLLECTION;

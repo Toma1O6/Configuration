@@ -1,7 +1,7 @@
 package dev.toma.configuration.api.client.component;
 
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
+import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.internal.Formatting;
 import dev.toma.configuration.internal.Ranged;
 import net.minecraft.client.gui.FontRenderer;
@@ -38,12 +38,12 @@ public class SliderComponent<T extends AbstractConfigType<? extends Number> & Ra
                 text = ((Formatting<?>) configType).getFormatted();
             }
             int tw = font.getStringWidth(text);
-            font.drawString(text, x + (width - tw) / 2.0F, 1 + y + (height - font.FONT_HEIGHT) / 2.0F, 0xFFFFFF);
+            font.drawString(text, (int)(x + (width - tw) / 2.0F), (int)(1 + y + (height - font.FONT_HEIGHT) / 2.0F), 0xFFFFFF);
         }
     }
 
     @Override
-    public void mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public void mouseDragged(double mouseX, double mouseY, int button, long time) {
         if(button == 0) {
             this.setSliderOnMouse(mouseX, mouseY);
         }

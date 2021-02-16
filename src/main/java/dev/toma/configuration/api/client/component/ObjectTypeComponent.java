@@ -4,10 +4,7 @@ import dev.toma.configuration.ClientManager;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.ObjectType;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ObjectTypeComponent extends ConfigComponent<ObjectType> {
 
     final ComponentScreen parentScreen;

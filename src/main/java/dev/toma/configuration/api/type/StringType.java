@@ -6,8 +6,8 @@ import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.Restriction;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ public class StringType extends AbstractConfigType<String> {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @SideOnly(Side.CLIENT)
     @Override
     public ComponentFactory getComponentFactory() {
         return ComponentFactory.STRING;

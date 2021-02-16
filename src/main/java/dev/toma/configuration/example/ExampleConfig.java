@@ -1,6 +1,7 @@
 package dev.toma.configuration.example;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.api.Config;
 import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.*;

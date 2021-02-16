@@ -21,7 +21,7 @@ public class AddCollectionElementComponent<T extends AbstractConfigType<?>> exte
     public void processClicked(double mouseX, double mouseY) {
         T element = configType.createElement();
         configType.add(element);
-        screen.scheduleUpdate(screen1 -> screen1.init(screen1.getMinecraft(), screen1.width, screen1.height));
+        screen.scheduleUpdate(ComponentScreen::initGui);
     }
 
     @Override

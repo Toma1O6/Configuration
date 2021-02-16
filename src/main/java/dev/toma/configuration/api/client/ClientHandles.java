@@ -6,7 +6,7 @@ import dev.toma.configuration.api.client.screen.ConfigScreen;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
 import dev.toma.configuration.api.type.ObjectType;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiScreen;
 
 /**
  * Interface for handling client stuff like UIs or text rendering.
@@ -26,7 +26,7 @@ public interface ClientHandles {
      * @return New screen instance
      * @see ConfigScreen for default implementation
      */
-    ComponentScreen createConfigScreen(Screen screen, ObjectType type, IModID iModID);
+    ComponentScreen createConfigScreen(GuiScreen screen, ObjectType type, IModID iModID);
 
     /**
      * Handles construction of new screen for collections.
@@ -38,7 +38,7 @@ public interface ClientHandles {
      * @return New screen instance
      * @see CollectionScreen for default implementation
      */
-    <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(Screen parentScreen, CollectionType<T> type, IModID iModID);
+    <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(GuiScreen parentScreen, CollectionType<T> type, IModID iModID);
 
     /**
      * Allows you to change color of config entry names
@@ -54,12 +54,12 @@ public interface ClientHandles {
         public static final DefaultClientHandles DEFAULT_CLIENT_HANDLES = new DefaultClientHandles();
 
         @Override
-        public ComponentScreen createConfigScreen(Screen screen, ObjectType type, IModID iModID) {
+        public ComponentScreen createConfigScreen(GuiScreen screen, ObjectType type, IModID iModID) {
             return new ConfigScreen(screen, type, iModID.getModID(), getTextColor());
         }
 
         @Override
-        public <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(Screen parentScreen, CollectionType<T> type, IModID iModID) {
+        public <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(GuiScreen parentScreen, CollectionType<T> type, IModID iModID) {
             return new CollectionScreen<>(parentScreen, type, iModID.getModID(), getTextColor());
         }
 

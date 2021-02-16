@@ -21,7 +21,7 @@ public class RemoveCollectionElementComponent extends Component {
     @Override
     public void processClicked(double mouseX, double mouseY) {
         type.remove(elementIndex);
-        screen.scheduleUpdate(screen1 -> screen1.init(screen1.getMinecraft(), screen1.width, screen1.height));
+        screen.scheduleUpdate(ComponentScreen::initGui);
     }
 
     @Override

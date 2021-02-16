@@ -1,72 +1,51 @@
-package dev.toma.configuration.client.screen;
+package dev.toma.configuration.api.client.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.ConfigPlugin;
-import dev.toma.configuration.api.client.BackgroundRenderer;
+import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.client.component.AddCollectionElementComponent;
+import dev.toma.configuration.api.client.component.Component;
+import dev.toma.configuration.api.client.component.RemoveCollectionElementComponent;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
-import dev.toma.configuration.client.ComponentFactory;
-import dev.toma.configuration.client.screen.component.AddCollectionElementComponent;
-import dev.toma.configuration.client.screen.component.Component;
-import dev.toma.configuration.client.screen.component.RemoveCollectionElementComponent;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.input.Mouse;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
-@OnlyIn(Dist.CLIENT)
 public class CollectionScreen<T extends AbstractConfigType<?>> extends ComponentScreen {
 
-    final Screen screen;
+    final String title;
     final CollectionType<T> type;
-    final BackgroundRenderer renderer;
     int displayCount;
     int scrollIndex;
 
-    public CollectionScreen(Screen parentScreen, CollectionType<T> type, String modid) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : "Unnamed collection"), modid);
-        this.screen = parentScreen;
+    public CollectionScreen(GuiScreen parentScreen, CollectionType<T> type, String modid, int textColor) {
+        super(parentScreen, modid, textColor);
+        this.title = type.getId() != null ? type.getId() : "Unnamed collection";
         this.type = type;
-        Optional<ConfigPlugin> optional = Configuration.getPlugin(modid);
-        if(optional.isPresent() && optional.get().getBackgroundRenderer() != null) {
-            this.renderer = optional.get().getBackgroundRenderer();
-        } else this.renderer = BackgroundRenderer.DirtBackground.INSTANCE;
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public void handleMouseInput() throws IOException {
+        int delta = Mouse.getEventDWheel();
         int newIndex = scrollIndex - (int) delta;
         int cfgElements = type.get().size();
         if(newIndex != scrollIndex && newIndex >= 0 && newIndex <= cfgElements - displayCount) {
             scrollIndex = newIndex;
-            init(minecraft, width, height);
-            return true;
+            initGui();
         }
-        return false;
+        super.handleMouseInput();
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
-        minecraft.displayGuiScreen(screen);
-    }
-
-    @Override
-    public int getTextColor() {
-        return renderer.getTextColor();
-    }
-
-    @Override
-    protected void init() {
+    public void initGui() {
+        super.initGui();
         displayCount = ((height - 40) / 25) - 1;
         List<T> list = type.get();
         if(scrollIndex > list.size() - displayCount) {
@@ -76,7 +55,7 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
         for (int i = scrollIndex; i < end; i++) {
             int offset = i - scrollIndex;
             AbstractConfigType<?> type = list.get(i);
-            ComponentFactory display = type.getDisplayFactory();
+            ComponentFactory display = type.getComponentFactory();
             display.addComponents(this, type, 30, 35 + offset * 25, width - 85, 20);
             addComponent(new RemoveCollectionElementComponent(this, this.type, i, width - 50, 35 + offset * 25, 20, 20));
         }
@@ -85,10 +64,10 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        this.renderHeader(font);
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHeader(fontRenderer);
         int count = type.get().size();
         if(count > displayCount) {
             this.renderScrollbar(count);
@@ -104,7 +83,7 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
         int left = width - 20;
         int right = width - 10;
         Component.drawColorShape(left, 35, right, 35 + height, 0.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.disableTexture();
+        GlStateManager.disableTexture2D();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
@@ -113,11 +92,11 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
         builder.pos(right, start, 0).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
         builder.pos(left, start, 0).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
         tessellator.draw();
-        GlStateManager.enableTexture();
+        GlStateManager.enableTexture2D();
     }
 
     void renderHeader(FontRenderer renderer) {
-        GlStateManager.disableTexture();
+        GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
         int headerHeight = 20;
         float headerAlpha = 0.4F;
@@ -130,9 +109,9 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
         builder.pos(0, 0, 0).color(0.0F, 0.0F, 0.0F, headerAlpha).endVertex();
         tessellator.draw();
         GlStateManager.disableBlend();
-        GlStateManager.enableTexture();
+        GlStateManager.enableTexture2D();
 
-        String headerText = TextFormatting.BOLD + title.getUnformattedComponentText();
+        String headerText = TextFormatting.BOLD + title;
         int headerTextWidth = renderer.getStringWidth(headerText);
         renderer.drawStringWithShadow(headerText, (width - headerTextWidth) / 2f, (headerHeight - renderer.FONT_HEIGHT) / 2f, 0xFFFFFF);
     }

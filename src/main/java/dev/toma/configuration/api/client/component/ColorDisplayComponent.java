@@ -25,7 +25,7 @@ public class ColorDisplayComponent extends ConfigComponent<ColorType> {
         float b = ( actualColor        & 255) / 255.0F;
         drawColorShape(x, y, x + width, y + height, 1.0F, 1.0F, 1.0F, 1.0F);
         if(a < 1.0F) {
-            Minecraft.getInstance().getTextureManager().bindTexture(COLOR_BACKGROUND);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(COLOR_BACKGROUND);
             drawTexturedShape(x + 1, y + 1, x + width - 1, y + height - 1);
         }
         drawColorShape(x + 1, y + 1, x + width - 1, y + height - 1, r, g, b, a);
