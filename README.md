@@ -12,10 +12,10 @@ For this setup please take look at [Developer Wiki](https://github.com/Toma1O6/C
 
 ## FAQ
 ### Which Minecraft versions will this mod cover?
-This mod will cover everything starting from `1.14.4` and newer.
+This mod will cover everything starting from `1.12.2` and newer.
 
-### Why won't this mod cover versions before `1.14.4`?
-Because `1.13` version had really short lifespan and `1.12.2` already has config UI. Anything older is not worth porting.
+### Why won't this mod cover versions before `1.12.2`?
+Because these versions are quite old and not used much anymore.
 
 ### Can I use this mod in my modpack / mod?
 Absolutely, that's the point of library mod. However keep in mind that you cannot build new versions from sources and distribute them without permission.
