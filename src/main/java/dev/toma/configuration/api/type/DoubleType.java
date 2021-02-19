@@ -39,6 +39,10 @@ public class DoubleType extends AbstractConfigType<Double> implements Formatting
         this.set(this.getMin() + diff * pct);
     }
 
+    public float getAsFloat() {
+        return get().floatValue();
+    }
+
     @Override
     public boolean isInRange(Double input) {
         return input >= min && input <= max;

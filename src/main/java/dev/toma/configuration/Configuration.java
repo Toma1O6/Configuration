@@ -11,6 +11,8 @@ import dev.toma.configuration.internal.FileTracker;
 import dev.toma.configuration.internal.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Configuration's main class <p>
@@ -33,7 +36,7 @@ import java.util.Optional;
  *
  * @author Toma
  */
-@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.2", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
+@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.2.2", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
 public class Configuration {
 
     public static final String MODID = "configuration";
@@ -64,8 +67,20 @@ public class Configuration {
     }
 
     @Mod.EventHandler
-    public static void preInit(FMLPreInitializationEvent event) {
-        proxy.preInit(event);
+    public static void construct(FMLConstructionEvent event) {
+        ASMDataTable table = event.getASMHarvestedData();
+        String annotation = Config.class.getCanonicalName();
+        Set<ASMDataTable.ASMData> dataSet = table.getAll(annotation);
+        for (ASMDataTable.ASMData data : dataSet) {
+            try {
+                Class<?> cls = Class.forName(data.getClassName());
+                Class<? extends ConfigPlugin> cfgClass = cls.asSubclass(ConfigPlugin.class);
+                ConfigPlugin instance = cfgClass.newInstance();
+                Configuration.getPluginMap().put(instance.getModID(), instance);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
+                Configuration.LOGGER.error("Failed to load {}", data.getClassName(), e);
+            }
+        }
         pluginMap.forEach((modid, plugin) -> {
             ObjectType type = ConfigHandler.loadConfig(plugin);
             if(type != null) {

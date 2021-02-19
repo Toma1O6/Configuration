@@ -33,8 +33,8 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
 
     @Override
     public void handleMouseInput() throws IOException {
-        int delta = Mouse.getEventDWheel();
-        int newIndex = scrollIndex - (int) delta;
+        int delta = Integer.signum(Mouse.getEventDWheel());
+        int newIndex = scrollIndex - delta;
         int cfgElements = type.get().size();
         if(newIndex != scrollIndex && newIndex >= 0 && newIndex <= cfgElements - displayCount) {
             scrollIndex = newIndex;
