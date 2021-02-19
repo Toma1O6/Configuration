@@ -57,6 +57,7 @@ public class ConfigScreen extends ComponentScreen {
 
     @Override
     public void initGui() {
+        super.initGui();
         displayCount = (height - 40) / 25;
         Map<String, AbstractConfigType<?>> map = type.get();
         List<AbstractConfigType<?>> list = new ArrayList<>(map.values());
