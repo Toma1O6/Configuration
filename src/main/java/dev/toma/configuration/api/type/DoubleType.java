@@ -53,6 +53,7 @@ public class DoubleType extends AbstractConfigType<Double> implements Formatting
         symbols.setDecimalSeparator('.');
         format.setDecimalFormatSymbols(symbols);
         this.format = format;
+        this.set(this.get());
         return this;
     }
 
