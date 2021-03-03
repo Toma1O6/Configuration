@@ -32,8 +32,7 @@ public class ColorDisplayComponent extends ConfigComponent<ColorType> {
         drawColorShape(matrixStack, x + 1, y + 1, x + width - 1, y + height - 1, r, g, b, a);
     }
 
-    @Override
-    public void onUpdate() {
+    public void refresh() {
         actualColor = configType.getColor();
     }
 }

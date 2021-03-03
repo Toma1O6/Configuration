@@ -21,7 +21,7 @@ public class IntType extends AbstractConfigType<Integer> implements Ranged<Integ
     private NumberDisplayType displayType = NumberDisplayType.TEXT_FIELD;
 
     public IntType(String name, int entry, String... desc) {
-        this(name, Integer.MIN_VALUE, Integer.MAX_VALUE, entry, desc);
+        this(name, entry, Integer.MIN_VALUE, Integer.MAX_VALUE, desc);
     }
 
     public IntType(String name, int entry, int min, int max, String... desc) {

@@ -2,11 +2,11 @@ package dev.toma.configuration.api.client.screen;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.client.component.ConfigComponent;
 import dev.toma.configuration.api.client.component.TextFieldComponent;
+import dev.toma.configuration.api.type.AbstractConfigType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.Screen;
@@ -53,8 +53,9 @@ public class ComponentScreen extends Screen implements IModID {
         super.init(minecraft, width, height);
     }
 
-    public void addComponent(Component component) {
+    public <C extends Component> C addComponent(C component) {
         components.add(component);
+        return component;
     }
 
     public int getTextColor() {
@@ -158,15 +159,7 @@ public class ComponentScreen extends Screen implements IModID {
         return component == selectedTextField;
     }
 
-    public void sendUpdate() {
-        for (Component component : components) {
-            if(component instanceof ConfigComponent<?>) {
-                ((ConfigComponent<?>) component).onUpdate();
-            }
-        }
-    }
-
-    public void scheduleUpdate(Consumer<ComponentScreen> componentScreenConsumer) {
-        queue.add(componentScreenConsumer);
+    public void scheduleUpdate(Consumer<ComponentScreen> consumer) {
+        queue.add(consumer);
     }
 }

@@ -1,8 +1,8 @@
 package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
+import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.internal.Formatting;
 import dev.toma.configuration.internal.Ranged;
 import net.minecraft.client.gui.FontRenderer;
@@ -59,7 +59,7 @@ public class SliderComponent<T extends AbstractConfigType<? extends Number> & Ra
         int diffX = (int) (mouseX - (this.x + 2));
         sliderPos = MathHelper.clamp((float) diffX / (this.width - 4), 0.0, 1.0);
         this.setter.accept(configType, sliderPos);
-        this.parentScreen.sendUpdate();
+        this.updateListeners();
     }
 
     public double getPosition() {
@@ -69,8 +69,7 @@ public class SliderComponent<T extends AbstractConfigType<? extends Number> & Ra
         return (at - min) / (max - min);
     }
 
-    @Override
-    public void onUpdate() {
+    public void updatePosition() {
         this.sliderPos = this.getPosition();
     }
 }

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extends ConfigComponent<T> {
 
     private final ComponentScreen parentScreen;
-    protected String displayedText;
+    public String displayedText;
     int characterRenderOffset;
     String[] errorMessage = new String[0];
     int errWidth;
@@ -96,6 +96,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
         if(this.isValid(character)) {
             setErrorMessage();
             this.displayedText += character;
+            valueChanged();
             if(characterRenderOffset > 0) {
                 ++characterRenderOffset;
             } else {
@@ -112,17 +113,20 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
         return 0xFFFFFF;
     }
 
-    public void onUnselect() {
-        if(this.validate()) {
-            this.updateValue(displayedText);
-            this.parentScreen.sendUpdate();
+    public void valueChanged() {
+        if(validate()) {
+            updateValue(displayedText);
+            updateListeners();
         }
         setErrorMessage();
     }
 
-    @Override
-    public void onUpdate() {
-        this.displayedText = configType.get().toString();
+    public void onUnselect() {
+        if(this.validate()) {
+            this.updateValue(displayedText);
+            this.updateListeners();
+        }
+        setErrorMessage();
     }
 
     void drawCursor(MatrixStack stack, boolean selected, String text, FontRenderer font) {

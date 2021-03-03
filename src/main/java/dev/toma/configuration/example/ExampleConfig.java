@@ -1,6 +1,7 @@
 package dev.toma.configuration.example;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.api.Config;
 import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.ConfigPlugin;
 import dev.toma.configuration.api.type.*;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * @author Toma
  */
-//@Config  This is just example config, won't be loaded
+@Config  //This is just example config, won't be loaded
 public class ExampleConfig implements ConfigPlugin {
 
     public static BooleanType exampleBoolean;
