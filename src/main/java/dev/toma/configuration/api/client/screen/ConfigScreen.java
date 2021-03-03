@@ -1,6 +1,7 @@
 package dev.toma.configuration.api.client.screen;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;

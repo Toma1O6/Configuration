@@ -1,10 +1,12 @@
 package dev.toma.configuration.api.client.screen;
 
 import com.google.common.collect.Queues;
+import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.client.component.ConfigComponent;
 import dev.toma.configuration.api.client.component.TextFieldComponent;
+import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
@@ -25,16 +27,12 @@ public class ComponentScreen extends GuiScreen implements IModID {
     protected List<Component> components = new ArrayList<>();
     public TextFieldComponent<?> selectedTextField;
     Queue<Consumer<ComponentScreen>> queue = Queues.newArrayDeque();
-    protected int textColor;
+    protected final ClientHandles handles;
 
-    public ComponentScreen(GuiScreen parentScreen, String modID, int textColor) {
+    public ComponentScreen(GuiScreen parentScreen, String modID, ClientHandles handles) {
         this.parentScreen = parentScreen;
         this.modID = modID;
-        this.textColor = textColor;
-    }
-
-    public void renderBackground() {
-        this.drawDefaultBackground();
+        this.handles = handles;
     }
 
     @Override
@@ -47,12 +45,13 @@ public class ComponentScreen extends GuiScreen implements IModID {
         components.clear();
     }
 
-    public void addComponent(Component component) {
+    public <C extends Component> C addComponent(C component) {
         components.add(component);
+        return component;
     }
 
     public int getTextColor() {
-        return textColor;
+        return handles.getTextColor();
     }
 
     public void renderHoveredInfo(int mouseX, int mouseY) {
@@ -78,7 +77,22 @@ public class ComponentScreen extends GuiScreen implements IModID {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.handles.drawConfigBackground(this, minecraft);
+        this.renderScreen(mouseX, mouseY, partialTicks);
+        this.drawComponents(mouseX, mouseY, partialTicks);
+        this.renderScreenPost(mouseX, mouseY, partialTicks);
+    }
+
+    public void renderScreen(int mouseX, int mouseY, float partialTicks) {
+
+    }
+
+    public void renderScreenPost(int mouseX, int mouseY, float partialTicks) {
+
+    }
+
+    public final void drawComponents(int mouseX, int mouseY, float partialTicks) {
         boolean hoveredOnce = false;
         for (Component component : components) {
             boolean mouseOver = component.isMouseOver(mouseX, mouseY);
@@ -141,15 +155,7 @@ public class ComponentScreen extends GuiScreen implements IModID {
         return component == selectedTextField;
     }
 
-    public void sendUpdate() {
-        for (Component component : components) {
-            if(component instanceof ConfigComponent<?>) {
-                ((ConfigComponent<?>) component).onUpdate();
-            }
-        }
-    }
-
-    public void scheduleUpdate(Consumer<ComponentScreen> componentScreenConsumer) {
-        queue.add(componentScreenConsumer);
+    public void scheduleUpdate(Consumer<ComponentScreen> consumer) {
+        queue.add(consumer);
     }
 }

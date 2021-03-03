@@ -6,6 +6,7 @@ import dev.toma.configuration.api.client.screen.ConfigScreen;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
 import dev.toma.configuration.api.type.ObjectType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
 /**
@@ -41,6 +42,14 @@ public interface ClientHandles {
     <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(GuiScreen parentScreen, CollectionType<T> type, IModID iModID);
 
     /**
+     * Handles background rendering. You can easily override this and
+     * render your own background
+     * @param screen Screen being rendered
+     * @param mc Minecraft instance
+     */
+    void drawConfigBackground(ComponentScreen screen, Minecraft mc);
+
+    /**
      * Allows you to change color of config entry names
      * when using lighter background textures to maintain
      * text visibility
@@ -55,17 +64,22 @@ public interface ClientHandles {
 
         @Override
         public ComponentScreen createConfigScreen(GuiScreen screen, ObjectType type, IModID iModID) {
-            return new ConfigScreen(screen, type, iModID.getModID(), getTextColor());
+            return new ConfigScreen(screen, type, iModID.getModID(), this);
         }
 
         @Override
         public <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(GuiScreen parentScreen, CollectionType<T> type, IModID iModID) {
-            return new CollectionScreen<>(parentScreen, type, iModID.getModID(), getTextColor());
+            return new CollectionScreen<>(parentScreen, type, iModID.getModID(), this);
         }
 
         @Override
         public int getTextColor() {
             return 0x999999;
+        }
+
+        @Override
+        public void drawConfigBackground(ComponentScreen screen, Minecraft mc) {
+            screen.renderDirtBackground(0);
         }
     }
 }

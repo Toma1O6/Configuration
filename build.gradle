@@ -11,9 +11,9 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-version = "${mc_version}-${configuration_version}"
+version = "${configuration_version}"
 group = 'dev.toma.configuration' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'configuration'
+archivesBaseName = "configuration-${mc_version}"
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
