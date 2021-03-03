@@ -82,25 +82,25 @@ public class ComponentScreen extends Screen implements IModID {
     @Override
     public final void render(int mouseX, int mouseY, float partialTicks) {
         this.handles.drawConfigBackground(this, minecraft);
-        this.renderScreen(matrixStack, mouseX, mouseY, partialTicks);
-        this.drawComponents(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderScreenPost(matrixStack, mouseX, mouseY, partialTicks);
+        this.renderScreen(mouseX, mouseY, partialTicks);
+        this.drawComponents(mouseX, mouseY, partialTicks);
+        this.renderScreenPost(mouseX, mouseY, partialTicks);
     }
 
-    public void renderScreen(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-
-    }
-
-    public void renderScreenPost(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderScreen(int mouseX, int mouseY, float partialTicks) {
 
     }
 
-    public final void drawComponents(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderScreenPost(int mouseX, int mouseY, float partialTicks) {
+
+    }
+
+    public final void drawComponents(int mouseX, int mouseY, float partialTicks) {
         boolean hoveredOnce = false;
         for (Component component : components) {
             boolean mouseOver = component.isMouseOver(mouseX, mouseY);
             boolean componentHovered = !hoveredOnce && mouseOver;
-            component.drawComponent(stack, font, mouseX, mouseY, partialTicks, componentHovered);
+            component.drawComponent(font, mouseX, mouseY, partialTicks, componentHovered);
             if(componentHovered) {
                 hoveredOnce = true;
             }

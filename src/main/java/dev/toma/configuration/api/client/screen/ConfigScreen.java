@@ -77,7 +77,7 @@ public class ConfigScreen extends ComponentScreen {
     }
 
     @Override
-    public void renderScreenPost(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderScreenPost(int mouseX, int mouseY, float partialTicks) {
         this.renderHeader(font);
         int count = type.get().size();
         if(count > displayCount) {
