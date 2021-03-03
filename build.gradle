@@ -13,9 +13,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "${mc_version}-${configuration_version}"
+version = "${configuration_version}"
 group = 'dev.toma.configuration' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'configuration'
+archivesBaseName = "configuration-${mc_version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -95,7 +95,7 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.15.2-31.2.48'
-
+    testImplementation('junit:junit:4.13')
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
@@ -144,6 +144,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+test {
+    useJUnit()
+    maxHeapSize = '1G'
 }
 
 // Example configuration to allow publishing using the maven-publish task
