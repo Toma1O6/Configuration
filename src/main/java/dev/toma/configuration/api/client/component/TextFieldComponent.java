@@ -82,6 +82,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
         if(keyCode == 259) {
             if(!displayedText.isEmpty()) {
                 displayedText = displayedText.substring(0, displayedText.length() - 1);
+                valueChanged();
                 if(characterRenderOffset > 0)
                     --characterRenderOffset;
             }
