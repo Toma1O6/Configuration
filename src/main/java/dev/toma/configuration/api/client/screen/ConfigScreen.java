@@ -2,6 +2,7 @@ package dev.toma.configuration.api.client.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;
@@ -32,8 +33,8 @@ public class ConfigScreen extends ComponentScreen {
     int scrollIndex;
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    public ConfigScreen(Screen screen, ObjectType type, String modid, int textColor) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName()), modid, textColor);
+    public ConfigScreen(Screen screen, ObjectType type, String modid, ClientHandles handles) {
+        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName()), modid, handles);
         this.screen = screen;
         this.type = type;
     }
@@ -75,9 +76,7 @@ public class ConfigScreen extends ComponentScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
+    public void renderScreenPost(int mouseX, int mouseY, float partialTicks) {
         this.renderHeader(font);
         int count = type.get().size();
         if(count > displayCount) {

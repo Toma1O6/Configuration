@@ -103,7 +103,7 @@ public class Configuration {
         }
     }
 
-    @Config
+    //@Config
     public static class InternalConfig implements ConfigPlugin {
 
         public static IntType fileCheckTimer;
