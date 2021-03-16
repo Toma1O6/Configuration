@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author Toma
  */
-@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.2.3", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
+@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.3", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
 public class Configuration {
 
     public static final String MODID = "configuration";
@@ -88,27 +88,5 @@ public class Configuration {
             }
         });
         FileTracker.INSTANCE.initialize();
-    }
-
-    //@Config
-    public static class InternalConfig implements ConfigPlugin {
-
-        public static IntType fileCheckTimer;
-
-        @Override
-        public String getModID() {
-            return MODID;
-        }
-
-        @Override
-        public void buildConfigStructure(ConfigCreator builder) {
-            fileCheckTimer = builder.createInt(
-                    "File Check Timer",
-                    5,
-                    0,
-                    60,
-                    "Set timer for checking config file changes", "Unit: seconds", "Set to 0 to disable file checks"
-            ).setDisplay(NumberDisplayType.TEXT_FIELD_SLIDER);
-        }
     }
 }

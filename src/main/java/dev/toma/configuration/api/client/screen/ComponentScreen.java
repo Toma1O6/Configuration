@@ -7,7 +7,6 @@ import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.client.component.ConfigComponent;
 import dev.toma.configuration.api.client.component.TextFieldComponent;
 import dev.toma.configuration.api.type.AbstractConfigType;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.init.SoundEvents;
@@ -78,7 +77,7 @@ public class ComponentScreen extends GuiScreen implements IModID {
 
     @Override
     public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.handles.drawConfigBackground(this, minecraft);
+        this.handles.drawConfigBackground(this, mc);
         this.renderScreen(mouseX, mouseY, partialTicks);
         this.drawComponents(mouseX, mouseY, partialTicks);
         this.renderScreenPost(mouseX, mouseY, partialTicks);
@@ -134,8 +133,9 @@ public class ComponentScreen extends GuiScreen implements IModID {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if(selectedTextField != null) {
-            selectedTextField.charTyped(typedChar);
-            selectedTextField.keyPressed(keyCode);
+            if(!selectedTextField.keyPressed(keyCode)) {
+                selectedTextField.charTyped(typedChar);
+            }
         }
         if(keyCode == 1) {
             mc.displayGuiScreen(parentScreen);

@@ -1,4 +1,4 @@
-package dev.toma.configuration.internal;
+package dev.toma.configuration.api;
 
 import com.google.common.base.Preconditions;
 import dev.toma.configuration.api.ConfigCreator;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class DefaultConfigCreatorImpl implements ConfigCreator {
 
-    private ObjectType config;
+    protected ObjectType config;
 
     @Override
     public void assignTo(ObjectType type) {

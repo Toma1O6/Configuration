@@ -26,6 +26,15 @@ minecraft {
     mappings = "snapshot_20171003"
 }
 
+dependencies {
+    testImplementation('junit:junit:4.13')
+}
+
+test {
+    useJUnit()
+    maxHeapSize = '1G'
+}
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
 

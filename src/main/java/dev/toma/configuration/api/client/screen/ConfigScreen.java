@@ -30,8 +30,8 @@ public class ConfigScreen extends ComponentScreen {
     int displayCount;
     int scrollIndex;
 
-    public ConfigScreen(GuiScreen screen, ObjectType type, String modid, int textColor) {
-        super(screen, modid, textColor);
+    public ConfigScreen(GuiScreen screen, ObjectType type, String modid, ClientHandles handles) {
+        super(screen, modid, handles);
         this.title = type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName();
         this.type = type;
     }
@@ -73,9 +73,7 @@ public class ConfigScreen extends ComponentScreen {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    public void renderScreenPost(int mouseX, int mouseY, float partialTicks) {
         this.renderHeader(fontRenderer);
         int count = type.get().size();
         if(count > displayCount) {

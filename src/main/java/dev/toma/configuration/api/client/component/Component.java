@@ -23,7 +23,8 @@ public abstract class Component {
     public void processClicked(double mouseX, double mouseY) {
     }
 
-    public void keyPressed(int keyCode) {
+    public boolean keyPressed(int keyCode) {
+        return false;
     }
 
     public void charTyped(char character) {

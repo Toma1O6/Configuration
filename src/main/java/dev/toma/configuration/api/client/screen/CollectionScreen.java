@@ -1,6 +1,5 @@
 package dev.toma.configuration.api.client.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.client.component.AddCollectionElementComponent;
@@ -27,9 +26,9 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
     int displayCount;
     int scrollIndex;
 
-    public CollectionScreen(Screen parentScreen, CollectionType<T> type, String modid, ClientHandles handles) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : "Unnamed collection"), modid, handles);
-        this.screen = parentScreen;
+    public CollectionScreen(GuiScreen parentScreen, CollectionType<T> type, String modid, ClientHandles handles) {
+        super(parentScreen, modid, handles);
+        this.title = type.getId();
         this.type = type;
     }
 
@@ -67,10 +66,6 @@ public class CollectionScreen<T extends AbstractConfigType<?>> extends Component
 
     @Override
     public void renderScreenPost(int mouseX, int mouseY, float partialTicks) {
-        this.renderHeader(font);
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHeader(fontRenderer);
         int count = type.get().size();
         if(count > displayCount) {

@@ -79,7 +79,7 @@ public interface ClientHandles {
 
         @Override
         public void drawConfigBackground(ComponentScreen screen, Minecraft mc) {
-            screen.renderDirtBackground(0);
+            screen.drawDefaultBackground();
         }
     }
 }

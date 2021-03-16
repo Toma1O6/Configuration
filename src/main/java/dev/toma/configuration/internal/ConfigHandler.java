@@ -4,6 +4,7 @@ import com.google.gson.*;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.ConfigPlugin;
+import dev.toma.configuration.api.DefaultConfigCreatorImpl;
 import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.ObjectType;
 

@@ -77,7 +77,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     }
 
     @Override
-    public void keyPressed(int keyCode) {
+    public boolean keyPressed(int keyCode) {
         if(keyCode == 14) {
             if(!displayedText.isEmpty()) {
                 displayedText = displayedText.substring(0, displayedText.length() - 1);
@@ -85,10 +85,13 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
                 if(characterRenderOffset > 0)
                     --characterRenderOffset;
             }
+            return true;
         } else if(keyCode == 1) {
             onUnselect();
             parentScreen.selectedTextField = null;
+            return true;
         }
+        return false;
     }
 
     @Override

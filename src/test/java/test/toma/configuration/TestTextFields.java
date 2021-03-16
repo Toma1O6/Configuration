@@ -1,7 +1,7 @@
 package test.toma.configuration;
 
 import org.junit.Test;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.input.Keyboard;
 
 import java.util.regex.Pattern;
 
@@ -75,15 +75,15 @@ public class TestTextFields {
         assertEquals("1", field.text);
         clearCharacter(field);
         assertTrue(field.text.isEmpty());
-        pressKey(field, '9', GLFW.GLFW_KEY_KP_9);
+        pressKey(field, '9', Keyboard.KEY_NUMPAD9);
         assertTrue(field.validate());
         assertEquals("9", field.text);
-        pressKey(field, 'a', GLFW.GLFW_KEY_A);
+        pressKey(field, 'a', Keyboard.KEY_A);
         assertEquals("9", field.text);
     }
 
     static void clearCharacter(TextField<?> field) {
-        pressKey(field, '\b', GLFW.GLFW_KEY_BACKSPACE);
+        pressKey(field, '\b', Keyboard.KEY_BACK);
     }
 
     static void pressKey(TextField<?> field, char typedChar, int keycode) {
@@ -110,7 +110,7 @@ public class TestTextFields {
         }
 
         public boolean keyPressed(int keycode) {
-            if(keycode == GLFW.GLFW_KEY_BACKSPACE) {
+            if(keycode == Keyboard.KEY_BACK) {
                 if(!text.isEmpty()) {
                     text = text.substring(0, text.length() - 1);
                 }

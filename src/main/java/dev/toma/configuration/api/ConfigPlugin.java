@@ -3,7 +3,6 @@ package dev.toma.configuration.api;
 import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.type.ObjectType;
-import dev.toma.configuration.internal.DefaultConfigCreatorImpl;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
