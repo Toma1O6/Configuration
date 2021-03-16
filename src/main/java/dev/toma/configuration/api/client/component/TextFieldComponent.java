@@ -7,6 +7,8 @@ import dev.toma.configuration.api.type.IntType;
 import dev.toma.configuration.api.type.StringType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.ChatAllowedCharacters;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
@@ -77,38 +79,35 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
     }
 
     @Override
-    public boolean keyPressed(int keyCode) {
-        if(keyCode == 14) {
-            if(!displayedText.isEmpty()) {
-                displayedText = displayedText.substring(0, displayedText.length() - 1);
-                valueChanged();
-                if(characterRenderOffset > 0)
-                    --characterRenderOffset;
-            }
-            return true;
-        } else if(keyCode == 1) {
-            onUnselect();
-            parentScreen.selectedTextField = null;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void charTyped(char character) {
-        if(this.isValid(character)) {
-            setErrorMessage();
-            this.displayedText += character;
-            valueChanged();
-            if(characterRenderOffset > 0) {
-                ++characterRenderOffset;
-            } else {
-                FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-                int textWidth = font.getStringWidth(displayedText);
-                if(textWidth > (width - 13)) {
-                    ++characterRenderOffset;
+    public void keyTyped(int keycode, char character) {
+        switch (keycode) {
+            case Keyboard.KEY_ESCAPE:
+                onUnselect();
+                parentScreen.selectedTextField = null;
+                break;
+            case Keyboard.KEY_BACK:
+                if(!displayedText.isEmpty()) {
+                    displayedText = displayedText.substring(0, displayedText.length() - 1);
+                    valueChanged();
+                    if(characterRenderOffset > 0)
+                        --characterRenderOffset;
                 }
-            }
+                break;
+            default:
+                if(ChatAllowedCharacters.isAllowedCharacter(character) && isValid(character)) {
+                    setErrorMessage();
+                    this.displayedText += character;
+                    valueChanged();
+                    if(characterRenderOffset > 0)
+                        ++characterRenderOffset;
+                    else {
+                        FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+                        int textWidth = font.getStringWidth(displayedText);
+                        if(textWidth > (width - 13))
+                            ++characterRenderOffset;
+                    }
+                }
+                break;
         }
     }
 

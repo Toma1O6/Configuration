@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author Toma
  */
-@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.3", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
+@Mod(modid = Configuration.MODID, name = "Configuration", version = "1.0.3.1", acceptedMinecraftVersions = "1.12.2", updateJSON = "https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json")
 public class Configuration {
 
     public static final String MODID = "configuration";

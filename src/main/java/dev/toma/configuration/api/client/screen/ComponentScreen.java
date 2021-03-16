@@ -133,9 +133,7 @@ public class ComponentScreen extends GuiScreen implements IModID {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if(selectedTextField != null) {
-            if(!selectedTextField.keyPressed(keyCode)) {
-                selectedTextField.charTyped(typedChar);
-            }
+            selectedTextField.keyTyped(keyCode, typedChar);
         }
         if(keyCode == 1) {
             mc.displayGuiScreen(parentScreen);
