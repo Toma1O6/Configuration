@@ -1,5 +1,6 @@
 package dev.toma.configuration.api.client;
 
+import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.component.*;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.*;
@@ -148,5 +149,5 @@ public interface ComponentFactory {
         field.addListener(ct -> color.refresh());
     };
 
-    void addComponents(ComponentScreen screen, AbstractConfigType<?> type, int x, int y, int width, int height);
+    void addComponents(ComponentScreen screen, IConfigType<?> type, int x, int y, int width, int height);
 }

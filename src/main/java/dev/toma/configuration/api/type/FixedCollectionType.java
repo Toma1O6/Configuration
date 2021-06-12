@@ -3,9 +3,10 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.Nameable;
-import dev.toma.configuration.internal.Collectible;
+import dev.toma.configuration.api.ICollectible;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<T> implements Collectible<T> {
+public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<T> implements ICollectible<T> {
 
     final T[] values;
 
@@ -66,6 +67,6 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
 
     @Override
     public int getSortIndex() {
-        return 5;
+        return ConfigSortIndexes.ARRAY;
     }
 }

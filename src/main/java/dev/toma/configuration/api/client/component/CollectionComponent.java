@@ -3,11 +3,11 @@ package dev.toma.configuration.api.client.component;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.ClientManager;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
+import dev.toma.configuration.api.IConfigType;
 import net.minecraft.client.gui.FontRenderer;
 
-public class CollectionComponent<T extends AbstractConfigType<?>> extends ConfigComponent<CollectionType<T>> {
+public class CollectionComponent<T extends IConfigType<?>> extends ConfigComponent<CollectionType<T>> {
 
     final ComponentScreen parentScreen;
 
