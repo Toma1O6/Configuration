@@ -4,9 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.ConfigSortIndexes;
-import dev.toma.configuration.api.ICollectible;
 import dev.toma.configuration.api.IConfigType;
-import dev.toma.configuration.api.TypeKey;
+import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,13 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType<List<T>> implements ICollectible<T> {
+public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType<List<T>> {
 
-    private boolean lockedSize;
-    private final Supplier<T> factory;
+    final Supplier<T> factory;
 
     public CollectionType(String name, List<T> entry, Supplier<T> objectFactory, String... desc) {
-        super(TypeKey.COLLECTION, name, entry, desc);
+        super(name, entry, desc);
         this.factory = objectFactory;
     }
 
@@ -29,9 +27,10 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
         this(name, new ArrayList<>(), objectFactory, desc);
     }
 
-    public CollectionType<T> lockSize() {
-        this.lockedSize = true;
-        return this;
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public ComponentFactory getComponentFactory() {
+        return ComponentFactory.COLLECTION;
     }
 
     public void add(T t) {
@@ -44,15 +43,6 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
 
     public void remove(int index) {
         this.get().remove(index);
-    }
-
-    public boolean hasLockedSize() {
-        return lockedSize;
-    }
-
-    @Override
-    public T[] collect() {
-        return get().toArray((T[]) new Object[0]);
     }
 
     @Override
@@ -84,5 +74,10 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
 
     public T createElement() {
         return factory.get();
+    }
+
+    @Override
+    public int getSortIndex() {
+        return ConfigSortIndexes.COLLECTION;
     }
 }

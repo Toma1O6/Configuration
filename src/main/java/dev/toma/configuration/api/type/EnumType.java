@@ -1,15 +1,16 @@
 package dev.toma.configuration.api.type;
 
-import dev.toma.configuration.api.TypeKey;
+import dev.toma.configuration.api.ConfigSortIndexes;
+import dev.toma.configuration.api.util.Nameable;
 
-public class EnumType<T extends Enum<T>> extends ArrayType<T> {
+public class EnumType<T extends Enum<T> & Nameable> extends FixedCollectionType<T> {
 
     public EnumType(String name, T value, String... desc) {
-        super(TypeKey.ENUM, name, value, value.getDeclaringClass().getEnumConstants(), desc);
+        super(name, value, value.getDeclaringClass().getEnumConstants(), desc);
     }
 
     @Override
-    protected String getDefaultElementString(T t) {
-        return t.name();
+    public int getSortIndex() {
+        return ConfigSortIndexes.ENUM;
     }
 }

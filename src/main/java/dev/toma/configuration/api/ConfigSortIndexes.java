@@ -1,10 +1,5 @@
 package dev.toma.configuration.api;
 
-/**
- * Collection of common sorting indexes used by default types.
- * There is significant gap between all values since you may
- * want to put some custom types in between default types.
- */
 public final class ConfigSortIndexes {
 
     public static final int BOOLEAN = 0;

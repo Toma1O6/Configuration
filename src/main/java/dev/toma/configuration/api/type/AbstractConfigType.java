@@ -5,23 +5,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.IConfigType;
-import dev.toma.configuration.api.TypeKey;
-import dev.toma.configuration.util.IListener;
-import dev.toma.configuration.util.Listeners;
+import dev.toma.configuration.api.client.ComponentFactory;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
     private final String name;
-    protected TypeKey typeKey;
     protected String[] desc;
     private T t;
-    private final IListener<T> valueChanged = Listeners.multipleElementListener();
 
-    public AbstractConfigType(TypeKey typeKey, String entryName, T t, String... desc) {
-        this.typeKey = typeKey;
+    public AbstractConfigType(String entryName, T t, String... desc) {
         this.name = entryName;
         this.t = Objects.requireNonNull(t, "Null value is not allowed!");
         this.desc = desc;
@@ -30,6 +26,12 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
     @Override
     public void generateComments() {
         this.desc = this.createDescription(desc);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public ComponentFactory getComponentFactory() {
+        return null;
     }
 
     protected String[] createDescription(String... strings) {
@@ -43,11 +45,7 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
     @Override
     public void set(T t) {
-        T old = this.t;
         this.t = t;
-        if (!old.equals(this.t)) {
-            valueChanged.invoke(this.t);
-        }
     }
 
     @Override
@@ -87,21 +85,6 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
     @Override
     public int getSortIndex() {
-        return getType().getSortIndex();
-    }
-
-    @Override
-    public TypeKey getType() {
-        return typeKey;
-    }
-
-    @Override
-    public void addListener(Consumer<T> listener) {
-        valueChanged.listen(listener);
-    }
-
-    @Override
-    public void removeListener(Consumer<T> listener) {
-        valueChanged.stopListening(listener);
+        return 0;
     }
 }

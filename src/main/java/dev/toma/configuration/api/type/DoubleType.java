@@ -3,12 +3,15 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import dev.toma.configuration.api.IBounded;
-import dev.toma.configuration.api.IFormatted;
-import dev.toma.configuration.api.NumberDisplayType;
-import dev.toma.configuration.api.TypeKey;
+import dev.toma.configuration.api.ConfigSortIndexes;
+import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.util.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
+import dev.toma.configuration.api.IFormatted;
+import dev.toma.configuration.api.IBounded;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -16,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DoubleType extends AbstractConfigType<Double> implements IFormatted, IBounded<Double> {
+public class DoubleType extends AbstractConfigType<Double> implements IFormatted<Double>, IBounded<Double> {
 
     private DecimalFormat format;
     private final double min, max;
@@ -27,7 +30,7 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     }
 
     public DoubleType(String name, double entry, double min, double max, String... desc) {
-        super(TypeKey.DOUBLE, name, MathHelper.clamp(entry, min, max), desc);
+        super(name, MathHelper.clamp(entry, min, max), desc);
         this.min = min;
         this.max = max;
     }
@@ -50,18 +53,22 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
         return this;
     }
 
-    public float floatValue() {
-        return get().floatValue();
-    }
-
     public DoubleType setDisplay(NumberDisplayType type) {
         this.displayType = type;
         return this;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public ComponentFactory getComponentFactory() {
+        return ComponentFactory.DECIMAL;
+    }
+
     @Override
     public void set(Double aDouble) {
-        super.set(MathHelper.clamp(aDouble, min, max));
+        double d = MathHelper.clamp(aDouble, min, max);
+        String f = formatNumber(d);
+        super.set(Double.parseDouble(f));
     }
 
     @Override
@@ -78,16 +85,16 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     }
 
     @Override
-    public String formatConfigValue() {
-        return format(this.get());
+    public String getFormatted() {
+        return formatNumber(this.get());
     }
 
     @Override
-    public String format(Object value) {
+    public String formatNumber(Double num) {
         if(format != null) {
-            return format.format(value);
+            return format.format(num);
         }
-        return value.toString();
+        return num.toString();
     }
 
     @Override
@@ -98,11 +105,11 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
         String right = "...";
         boolean rangeFlag = false;
         if(min > -Double.MAX_VALUE) {
-            left = this.format(min);
+            left = this.formatNumber(min);
             rangeFlag = true;
         }
         if(max < Double.MAX_VALUE) {
-            right = this.format(max);
+            right = this.formatNumber(max);
             rangeFlag = true;
         }
         if(rangeFlag) {
@@ -123,5 +130,10 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
 
     public NumberDisplayType getDisplayType() {
         return displayType;
+    }
+
+    @Override
+    public int getSortIndex() {
+        return ConfigSortIndexes.DOUBLE;
     }
 }
