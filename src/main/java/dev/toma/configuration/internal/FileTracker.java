@@ -2,8 +2,7 @@ package dev.toma.configuration.internal;
 
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigPlugin;
-import dev.toma.configuration.api.ModConfig;
-import dev.toma.configuration.api.client.IModID;
+import dev.toma.configuration.api.type.ObjectType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,17 +20,18 @@ public class FileTracker {
     private final List<Entry> entryList = new ArrayList<>();
     private Queue<Update> scheduledUpdates;
 
-    public synchronized void initialize(Collection<ModConfig> configs) {
-        scheduledUpdates = new ArrayDeque<>(configs.size());
+    public synchronized void initialize() {
+        Map<String, IConfigPlugin> pluginMap = Configuration.getPluginMap();
+        scheduledUpdates = new ArrayDeque<>(pluginMap.size());
         File dir = new File(".", "config");
         if(!dir.exists()) {
-            dir.mkdirs();
+            throw new IllegalStateException("Config directory doesn't exist. This shouldn't be possible");
         }
         if(!dir.isDirectory()) {
             throw new IllegalStateException("Config file must be a directory!");
         }
-        for (ModConfig config : configs) {
-            IConfigPlugin plugin = config.getPlugin();
+        for (Map.Entry<String, IConfigPlugin> entry : Configuration.getPluginMap().entrySet()) {
+            IConfigPlugin plugin = entry.getValue();
             File configFile = new File(dir, plugin.getConfigFileName() + ".json");
             if(!configFile.exists()) {
                 logger.error("Couldn't locate config file {}, excluding {} from FileChecker", configFile.getAbsolutePath(), plugin.getModID());
@@ -45,9 +45,8 @@ public class FileTracker {
         }
     }
 
-    public synchronized void scheduleConfigUpdate(IModID iModID, UpdateAction action) {
+    public synchronized void scheduleConfigUpdate(String modID, UpdateAction action) {
         Entry entry = null;
-        String modID = iModID.getModID();
         for (Entry e : entryList) {
             if(e.plugin.getModID().equals(modID)) {
                 entry = e;
@@ -78,27 +77,31 @@ public class FileTracker {
             long lastModified = entry.modified;
             long fileModified = configFile.lastModified();
             if(lastModified != fileModified) {
-                scheduleConfigUpdate(entry.plugin, UpdateAction.LOAD_WRITE);
+                scheduleConfigUpdate(entry.plugin.getModID(), UpdateAction.LOAD_WRITE);
             }
         }
         Update update;
         while ((update = scheduledUpdates.poll()) != null) {
-            Optional<ModConfig> optional = Configuration.getConfig(update.modid);
-            if (optional.isPresent()) {
-                ModConfig config = optional.get();
-                IConfigPlugin plugin = config.getPlugin();
-                try {
-                    switch (update.action) {
-                        case LOAD_WRITE:
-                            ConfigHandler.loadData(config, new File(dir, update.entry.filePath));
-                            ConfigHandler.write(config, update.entry);
-                            break;
-                        case WRITE:
-                            ConfigHandler.write(config, update.entry);
-                            break;
+            Optional<IConfigPlugin> optional = Configuration.getPlugin(update.modid);
+            if(optional.isPresent()) {
+                IConfigPlugin plugin = optional.get();
+                Optional<ObjectType> typeOptional = Configuration.getConfig(update.modid);
+                if(typeOptional.isPresent()) {
+                    ObjectType type = typeOptional.get();
+                    try {
+                        switch (update.action) {
+                            case LOAD_WRITE:
+                                ConfigHandler.loadData(plugin, type, new File(dir, update.entry.filePath));
+                                ConfigHandler.write(plugin, type, update.entry);
+                                break;
+                            case WRITE:
+                                ConfigHandler.write(plugin, type, update.entry);
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        logger.error("Error updating config from {} plugin", update.modid);
                     }
-                } catch (Exception e) {
-                    logger.error("Error updating config from {} plugin", update.modid);
                 }
             }
         }

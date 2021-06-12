@@ -72,7 +72,7 @@ public class ConfigWriter implements IConfigWriter {
 
     @Override
     public ColorType writeColorRGB(String name, String color, String... desc) {
-        return writeColor(name, color, Restrictions.colorRestriction(3), desc).setSolidRender();
+        return writeColor(name, color, Restrictions.colorRestriction(3), desc);
     }
 
     @Override

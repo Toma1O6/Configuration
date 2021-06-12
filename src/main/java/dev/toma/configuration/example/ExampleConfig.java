@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * @author Toma
  */
-@Config  //This is just example config, won't be loaded
+//@Config  This is just example config, won't be loaded
 public class ExampleConfig implements IConfigPlugin {
 
     public static BooleanType exampleBoolean;

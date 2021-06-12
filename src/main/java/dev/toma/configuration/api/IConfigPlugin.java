@@ -1,6 +1,6 @@
 package dev.toma.configuration.api;
 
-import dev.toma.configuration.api.client.IClientSettings;
+import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.IModID;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,10 +30,13 @@ public interface IConfigPlugin extends IModID {
     }
 
     /**
-     * You can change all client related stuff in this method.
-     * Unsafe for server, check which side you're on!
-     * @param settings Settings API
+     * Background renderer is responsible for rendering UI background.
+     * Default is dirt background as seen in vanilla menus
+     *
+     * @return your implementation
      */
     @OnlyIn(Dist.CLIENT)
-    default void setupClient(IClientSettings settings) {}
+    default ClientHandles getClientHandles() {
+        return ClientHandles.DefaultClientHandles.DEFAULT_CLIENT_HANDLES;
+    }
 }
