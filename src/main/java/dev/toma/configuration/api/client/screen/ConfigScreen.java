@@ -7,7 +7,7 @@ import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;
-import dev.toma.configuration.api.type.AbstractConfigType;
+import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.FileTracker;
 import net.minecraft.client.gui.FontRenderer;
@@ -66,13 +66,13 @@ public class ConfigScreen extends ComponentScreen {
     @Override
     protected void init() {
         displayCount = (height - 40) / 25;
-        Map<String, AbstractConfigType<?>> map = type.get();
-        List<AbstractConfigType<?>> list = new ArrayList<>(map.values());
-        list.sort(Comparator.comparingInt(AbstractConfigType::getSortIndex));
+        Map<String, IConfigType<?>> map = type.get();
+        List<IConfigType<?>> list = new ArrayList<>(map.values());
+        list.sort(Comparator.comparingInt(IConfigType::getSortIndex));
         int end = Math.min(scrollIndex + displayCount, list.size());
         for (int i = scrollIndex; i < end; i++) {
             int offset = i - scrollIndex;
-            AbstractConfigType<?> type = list.get(i);
+            IConfigType<?> type = list.get(i);
             ComponentFactory factory = type.getComponentFactory();
             factory.addComponents(this, type, 30, 35 + offset * 25, width - 60, 20);
         }

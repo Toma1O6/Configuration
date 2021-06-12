@@ -3,8 +3,8 @@ package dev.toma.configuration.api.client;
 import dev.toma.configuration.api.client.screen.CollectionScreen;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.client.screen.ConfigScreen;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
+import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.type.ObjectType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -39,7 +39,7 @@ public interface ClientHandles {
      * @return New screen instance
      * @see CollectionScreen for default implementation
      */
-    <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(Screen parentScreen, CollectionType<T> type, IModID iModID);
+    <T extends IConfigType<?>> ComponentScreen createCollectionScreen(Screen parentScreen, CollectionType<T> type, IModID iModID);
 
     /**
      * Handles background rendering. You can easily override this and
@@ -68,7 +68,7 @@ public interface ClientHandles {
         }
 
         @Override
-        public <T extends AbstractConfigType<?>> ComponentScreen createCollectionScreen(Screen parentScreen, CollectionType<T> type, IModID iModID) {
+        public <T extends IConfigType<?>> ComponentScreen createCollectionScreen(Screen parentScreen, CollectionType<T> type, IModID iModID) {
             return new CollectionScreen<>(parentScreen, type, iModID.getModID(), this);
         }
 

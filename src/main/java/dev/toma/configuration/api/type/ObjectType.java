@@ -3,6 +3,8 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.toma.configuration.api.ConfigCreator;
+import dev.toma.configuration.api.ConfigSortIndexes;
+import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.ComponentFactory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -10,13 +12,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ObjectType extends AbstractConfigType<Map<String, AbstractConfigType<?>>> {
+public abstract class ObjectType extends AbstractConfigType<Map<String, IConfigType<?>>> {
 
     public ObjectType(String name, String... desc) {
         this(name, new HashMap<>(), desc);
     }
 
-    public ObjectType(String name, Map<String, AbstractConfigType<?>> dataTree, String... desc) {
+    public ObjectType(String name, Map<String, IConfigType<?>> dataTree, String... desc) {
         super(name, dataTree, desc);
     }
 
@@ -29,13 +31,13 @@ public abstract class ObjectType extends AbstractConfigType<Map<String, Abstract
     public abstract void buildStructure(ConfigCreator configCreator);
 
     @Override
-    public Map<String, AbstractConfigType<?>> load(JsonElement element) {
+    public Map<String, IConfigType<?>> load(JsonElement element) {
         if(element.isJsonObject()) {
             JsonObject object = element.getAsJsonObject();
-            Map<String, AbstractConfigType<?>> data = this.get();
-            for (Map.Entry<String, AbstractConfigType<?>> entry : data.entrySet()) {
+            Map<String, IConfigType<?>> data = this.get();
+            for (Map.Entry<String, IConfigType<?>> entry : data.entrySet()) {
                 String key = entry.getKey();
-                AbstractConfigType<?> type = entry.getValue();
+                IConfigType<?> type = entry.getValue();
                 if(object.has(key)) {
                     type.loadData(object.getAsJsonObject(key));
                 }
@@ -48,8 +50,8 @@ public abstract class ObjectType extends AbstractConfigType<Map<String, Abstract
     @Override
     public JsonElement save(boolean isUpdate) {
         JsonObject object = new JsonObject();
-        Map<String, AbstractConfigType<?>> map = this.get();
-        for (AbstractConfigType<?> type : map.values()) {
+        Map<String, IConfigType<?>> map = this.get();
+        for (IConfigType<?> type : map.values()) {
             if(!isUpdate)
                 type.generateComments();
             type.saveData(object, isUpdate);
@@ -59,6 +61,6 @@ public abstract class ObjectType extends AbstractConfigType<Map<String, Abstract
 
     @Override
     public int getSortIndex() {
-        return 7;
+        return ConfigSortIndexes.OBJECT;
     }
 }

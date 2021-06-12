@@ -3,6 +3,8 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import dev.toma.configuration.api.ConfigSortIndexes;
+import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class CollectionType<T extends AbstractConfigType<?>> extends AbstractConfigType<List<T>> {
+public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType<List<T>> {
 
     final Supplier<T> factory;
 
@@ -76,6 +78,6 @@ public class CollectionType<T extends AbstractConfigType<?>> extends AbstractCon
 
     @Override
     public int getSortIndex() {
-        return 6;
+        return ConfigSortIndexes.COLLECTION;
     }
 }

@@ -7,8 +7,8 @@ import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.client.component.AddCollectionElementComponent;
 import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.client.component.RemoveCollectionElementComponent;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
+import dev.toma.configuration.api.IConfigType;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -24,7 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class CollectionScreen<T extends AbstractConfigType<?>> extends ComponentScreen {
+public class CollectionScreen<T extends IConfigType<?>> extends ComponentScreen {
 
     final Screen screen;
     final CollectionType<T> type;

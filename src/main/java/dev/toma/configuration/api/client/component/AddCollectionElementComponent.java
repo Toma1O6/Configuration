@@ -2,12 +2,12 @@ package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
-import dev.toma.configuration.api.type.AbstractConfigType;
 import dev.toma.configuration.api.type.CollectionType;
+import dev.toma.configuration.api.IConfigType;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
 
-public class AddCollectionElementComponent<T extends AbstractConfigType<?>> extends Component {
+public class AddCollectionElementComponent<T extends IConfigType<?>> extends Component {
 
     final ComponentScreen screen;
     final CollectionType<T> configType;

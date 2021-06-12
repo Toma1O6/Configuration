@@ -3,6 +3,7 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.Restriction;
 import dev.toma.configuration.internal.ConfigHandler;
@@ -77,6 +78,6 @@ public class StringType extends AbstractConfigType<String> {
 
     @Override
     public int getSortIndex() {
-        return 3;
+        return ConfigSortIndexes.STRING;
     }
 }

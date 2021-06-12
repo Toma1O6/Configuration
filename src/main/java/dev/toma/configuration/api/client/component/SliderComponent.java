@@ -2,15 +2,15 @@ package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
-import dev.toma.configuration.api.type.AbstractConfigType;
-import dev.toma.configuration.internal.Formatting;
-import dev.toma.configuration.internal.Ranged;
+import dev.toma.configuration.api.IConfigType;
+import dev.toma.configuration.api.IFormatted;
+import dev.toma.configuration.api.IBounded;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.function.BiConsumer;
 
-public class SliderComponent<T extends AbstractConfigType<? extends Number> & Ranged<?>> extends ConfigComponent<T> {
+public class SliderComponent<T extends IConfigType<? extends Number> & IBounded<?>> extends ConfigComponent<T> {
 
     final ComponentScreen parentScreen;
     final boolean shouldShowData;
@@ -35,8 +35,8 @@ public class SliderComponent<T extends AbstractConfigType<? extends Number> & Ra
         drawColorShape(matrixStack, sliderX - 1, y + 1, sliderX + 1, y + height - 1, 0.4F, 0.4F, 0.4F, 1.0F);
         if(shouldShowData) {
             String text = configType.get().toString();
-            if(configType instanceof Formatting<?>) {
-                text = ((Formatting<?>) configType).getFormatted();
+            if(configType instanceof IFormatted<?>) {
+                text = ((IFormatted<?>) configType).getFormatted();
             }
             int tw = font.getStringWidth(text);
             font.drawString(matrixStack, text, x + (width - tw) / 2.0F, 1 + y + (height - font.FONT_HEIGHT) / 2.0F, 0xFFFFFF);

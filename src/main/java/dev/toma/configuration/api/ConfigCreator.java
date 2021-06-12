@@ -21,6 +21,7 @@ import java.util.regex.PatternSyntaxException;
  *
  * @author Toma
  */
+@Deprecated
 public interface ConfigCreator {
 
     /**

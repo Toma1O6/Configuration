@@ -3,6 +3,7 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,5 +32,10 @@ public class BooleanType extends AbstractConfigType<Boolean> {
             throw new JsonParseException("Invalid config entry: " + ConfigHandler.GSON_OUT.toJson(element));
         }
         return element.getAsBoolean();
+    }
+
+    @Override
+    public int getSortIndex() {
+        return ConfigSortIndexes.BOOLEAN;
     }
 }
