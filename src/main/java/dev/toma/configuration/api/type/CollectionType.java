@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.ConfigSortIndexes;
+import dev.toma.configuration.api.ICollectible;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType<List<T>> {
+public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType<List<T>> implements ICollectible<T> {
 
     final Supplier<T> factory;
 
@@ -43,6 +44,11 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
 
     public void remove(int index) {
         this.get().remove(index);
+    }
+
+    @Override
+    public T[] collect() {
+        return get().toArray((T[]) new Object[0]);
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.client.ComponentFactory;
-import dev.toma.configuration.api.util.NumberDisplayType;
+import dev.toma.configuration.api.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.api.IFormatted;
 import dev.toma.configuration.api.IBounded;

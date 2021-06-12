@@ -2,9 +2,9 @@ package dev.toma.configuration.api.type;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.toma.configuration.api.ConfigCreator;
 import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.IConfigType;
+import dev.toma.configuration.api.IObjectSpec;
 import dev.toma.configuration.api.client.ComponentFactory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -12,14 +12,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ObjectType extends AbstractConfigType<Map<String, IConfigType<?>>> {
+public class ObjectType extends AbstractConfigType<Map<String, IConfigType<?>>> {
 
-    public ObjectType(String name, String... desc) {
-        this(name, new HashMap<>(), desc);
-    }
-
-    public ObjectType(String name, Map<String, IConfigType<?>> dataTree, String... desc) {
-        super(name, dataTree, desc);
+    public ObjectType(IObjectSpec spec) {
+        super(spec.getObjectID(), new HashMap<>(), spec.getObjectDescription());
+        spec.getWriter().setWritingObject(this);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -27,8 +24,6 @@ public abstract class ObjectType extends AbstractConfigType<Map<String, IConfigT
     public ComponentFactory getComponentFactory() {
         return ComponentFactory.OBJECT;
     }
-
-    public abstract void buildStructure(ConfigCreator configCreator);
 
     @Override
     public Map<String, IConfigType<?>> load(JsonElement element) {
