@@ -1,11 +1,11 @@
 package dev.toma.configuration.api.client.component;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.toma.configuration.api.type.AbstractConfigType;
+import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.DoubleType;
+import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.type.IntType;
 import dev.toma.configuration.api.type.StringType;
-import dev.toma.configuration.api.client.screen.ComponentScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extends ConfigComponent<T> {
+public abstract class TextFieldComponent<T extends IConfigType<?>> extends ConfigComponent<T> {
 
     private final ComponentScreen parentScreen;
     public String displayedText;
@@ -161,7 +161,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             if(matcher.matches()) {
                 try {
                     int value = Integer.parseInt(entry);
-                    if(configType.isInRange(value)) {
+                    if(configType.isWithinBounds(value)) {
                         setErrorMessage();
                         return true;
                     } else {
@@ -210,7 +210,7 @@ public abstract class TextFieldComponent<T extends AbstractConfigType<?>> extend
             if(matcher.matches()) {
                 try {
                     double value = Double.parseDouble(entry);
-                    if(configType.isInRange(value)) {
+                    if(configType.isWithinBounds(value)) {
                         setErrorMessage();
                         return true;
                     } else {

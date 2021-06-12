@@ -1,5 +1,6 @@
 package dev.toma.configuration.api.type;
 
+import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.util.Nameable;
 
 public class EnumType<T extends Enum<T> & Nameable> extends FixedCollectionType<T> {
@@ -10,6 +11,6 @@ public class EnumType<T extends Enum<T> & Nameable> extends FixedCollectionType<
 
     @Override
     public int getSortIndex() {
-        return 4;
+        return ConfigSortIndexes.ENUM;
     }
 }

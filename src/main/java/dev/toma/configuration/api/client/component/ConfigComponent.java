@@ -1,6 +1,6 @@
 package dev.toma.configuration.api.client.component;
 
-import dev.toma.configuration.api.type.AbstractConfigType;
+import dev.toma.configuration.api.IConfigType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public abstract class ConfigComponent<T extends AbstractConfigType<?>> extends Component {
+public abstract class ConfigComponent<T extends IConfigType<?>> extends Component {
 
     protected final T configType;
     private final List<IComponentListener<T>> listeners = new ArrayList<>();

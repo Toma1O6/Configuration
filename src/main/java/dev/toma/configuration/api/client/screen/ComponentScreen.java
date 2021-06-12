@@ -7,7 +7,7 @@ import dev.toma.configuration.api.client.IModID;
 import dev.toma.configuration.api.client.component.Component;
 import dev.toma.configuration.api.client.component.ConfigComponent;
 import dev.toma.configuration.api.client.component.TextFieldComponent;
-import dev.toma.configuration.api.type.AbstractConfigType;
+import dev.toma.configuration.api.IConfigType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.Screen;
@@ -68,7 +68,7 @@ public class ComponentScreen extends Screen implements IModID {
     }
 
     protected void drawComments(MatrixStack stack, ConfigComponent<?> configComponent, int mouseX, int mouseY) {
-        AbstractConfigType<?> type = configComponent.getConfigElement();
+        IConfigType<?> type = configComponent.getConfigElement();
         String[] desc = type.getComments();
         renderWrappedToolTip(stack, Arrays.stream(desc).map(StringTextComponent::new).collect(Collectors.toList()), mouseX, mouseY, font);
     }

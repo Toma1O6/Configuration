@@ -3,11 +3,12 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
-import dev.toma.configuration.internal.Formatting;
-import dev.toma.configuration.internal.Ranged;
+import dev.toma.configuration.api.IFormatted;
+import dev.toma.configuration.api.IBounded;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DoubleType extends AbstractConfigType<Double> implements Formatting<Double>, Ranged<Double> {
+public class DoubleType extends AbstractConfigType<Double> implements IFormatted<Double>, IBounded<Double> {
 
     private DecimalFormat format;
     private final double min, max;
@@ -40,7 +41,7 @@ public class DoubleType extends AbstractConfigType<Double> implements Formatting
     }
 
     @Override
-    public boolean isInRange(Double input) {
+    public boolean isWithinBounds(Double input) {
         return input >= min && input <= max;
     }
 
@@ -133,6 +134,6 @@ public class DoubleType extends AbstractConfigType<Double> implements Formatting
 
     @Override
     public int getSortIndex() {
-        return 2;
+        return ConfigSortIndexes.DOUBLE;
     }
 }

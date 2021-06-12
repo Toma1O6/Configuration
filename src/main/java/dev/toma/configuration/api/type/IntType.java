@@ -3,10 +3,11 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.api.util.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
-import dev.toma.configuration.internal.Ranged;
+import dev.toma.configuration.api.IBounded;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class IntType extends AbstractConfigType<Integer> implements Ranged<Integer> {
+public class IntType extends AbstractConfigType<Integer> implements IBounded<Integer> {
 
     private final int min, max;
     private NumberDisplayType displayType = NumberDisplayType.TEXT_FIELD;
@@ -42,7 +43,7 @@ public class IntType extends AbstractConfigType<Integer> implements Ranged<Integ
     }
 
     @Override
-    public boolean isInRange(Integer input) {
+    public boolean isWithinBounds(Integer input) {
         return input >= min && input <= max;
     }
 
@@ -106,6 +107,6 @@ public class IntType extends AbstractConfigType<Integer> implements Ranged<Integ
 
     @Override
     public int getSortIndex() {
-        return 1;
+        return ConfigSortIndexes.INT;
     }
 }
