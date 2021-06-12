@@ -257,9 +257,9 @@ public abstract class TextFieldComponent<T extends IConfigType<?>> extends Confi
         @Override
         public boolean validate() {
             if(configType.hasRestriction()) {
-                boolean valid = configType.getRestriction().isStringValid(displayedText);
+                boolean valid = configType.getRestriction().isInputValid(displayedText);
                 if(!valid) {
-                    setErrorMessage(configType.getRestriction().getUserFeedback());
+                    setErrorMessage(configType.getRestriction().getUserErrorMessage());
                 } else setErrorMessage();
                 return valid;
             }

@@ -126,7 +126,7 @@ public interface ComponentFactory {
         }
     };
     ComponentFactory ARRAY = (screen, t, x, y, width, height) -> {
-        FixedCollectionType<?> type = (FixedCollectionType<?>) t;
+        ArrayType<?> type = (ArrayType<?>) t;
         String key = type.getId();
         if(key.isEmpty()) {
             screen.addComponent(new ArrayComponent<>(type, x, y, width, height));

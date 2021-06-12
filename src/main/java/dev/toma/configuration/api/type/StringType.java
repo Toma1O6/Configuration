@@ -4,8 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.ConfigSortIndexes;
+import dev.toma.configuration.api.IRestriction;
+import dev.toma.configuration.api.Restrictions;
 import dev.toma.configuration.api.client.ComponentFactory;
-import dev.toma.configuration.api.util.Restriction;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,17 +18,15 @@ import java.util.regex.PatternSyntaxException;
 
 public class StringType extends AbstractConfigType<String> {
 
-    private Restriction restriction;
+    private final IRestriction<String> restriction;
 
     public StringType(String name, String value, String... desc) {
         this(name, value, null, desc);
     }
 
-    public StringType(String name, String value, Restriction restriction, String... desc) throws PatternSyntaxException {
+    public StringType(String name, String value, IRestriction<String> restriction, String... desc) throws PatternSyntaxException {
         super(name, value, desc);
-        if(restriction != null) {
-            this.restriction = restriction;
-        }
+        this.restriction = restriction != null ? restriction : Restrictions.allow();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -38,11 +37,9 @@ public class StringType extends AbstractConfigType<String> {
 
     @Override
     public void set(String s) {
-        if(restriction != null && restriction.isStringValid(s)) {
-            if(restriction.isStringValid(s)) {
-                super.set(s);
-            }
-        } else super.set(s);
+        if(restriction.isInputValid(s)) {
+            super.set(s);
+        }
     }
 
     @Override
@@ -62,9 +59,7 @@ public class StringType extends AbstractConfigType<String> {
     protected String[] createDescription(String... strings) {
         List<String> comments = new ArrayList<>();
         comments.addAll(Arrays.asList(strings));
-        if(restriction != null && restriction.shouldAddPatternIntoDesc()) {
-            comments.add("Allowed pattern: " + restriction.getPattern().pattern());
-        }
+        restriction.addDescription(comments);
         return comments.toArray(new String[0]);
     }
 
@@ -72,7 +67,7 @@ public class StringType extends AbstractConfigType<String> {
         return restriction != null;
     }
 
-    public Restriction getRestriction() {
+    public IRestriction<String> getRestriction() {
         return restriction;
     }
 

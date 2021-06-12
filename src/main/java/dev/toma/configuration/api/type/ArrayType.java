@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.ConfigSortIndexes;
-import dev.toma.configuration.api.client.ComponentFactory;
-import dev.toma.configuration.api.util.Nameable;
 import dev.toma.configuration.api.ICollectible;
+import dev.toma.configuration.api.INameable;
+import dev.toma.configuration.api.client.ComponentFactory;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,13 +15,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<T> implements ICollectible<T> {
+public class ArrayType<T> extends AbstractConfigType<T> implements ICollectible<T> {
 
     final T[] values;
+    final boolean isNameable;
 
-    public FixedCollectionType(String name, T value, T[] array, String... desc) {
+    public ArrayType(String name, T value, T[] array, String... desc) {
         super(name, value, desc);
         this.values = array;
+        isNameable = value instanceof INameable;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -36,7 +38,7 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
         comments.addAll(Arrays.asList(strings));
         comments.add("Allowed values:");
         for (T t : values) {
-            comments.add("# " + t.getUnformattedName());
+            comments.add("# " + getElementKey(t));
         }
         return comments.toArray(new String[0]);
     }
@@ -48,16 +50,28 @@ public class FixedCollectionType<T extends Nameable> extends AbstractConfigType<
         }
         String name = element.getAsString();
         for (T en : values) {
-            if(en.getUnformattedName().equalsIgnoreCase(name)) {
+            if(getElementKey(en).equalsIgnoreCase(name)) {
                 return en;
             }
         }
         return values[0];
     }
 
+    public String getElementKey(T t) {
+        return isNameable ? ((INameable) t).getUnformattedName() : getDefaultElementString(t);
+    }
+
+    public String getElementDisplayName(T t) {
+        return isNameable ? ((INameable) t).getFormattedName() : getDefaultElementString(t);
+    }
+
+    protected String getDefaultElementString(T t) {
+        return t.toString();
+    }
+
     @Override
     public JsonElement save(boolean isUpdate) {
-        return new JsonPrimitive(this.get().getUnformattedName());
+        return new JsonPrimitive(getElementKey(get()));
     }
 
     @Override
