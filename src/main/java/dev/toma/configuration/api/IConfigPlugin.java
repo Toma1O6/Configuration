@@ -2,8 +2,6 @@ package dev.toma.configuration.api;
 
 import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.IModID;
-import dev.toma.configuration.api.type.ObjectType;
-import dev.toma.configuration.internal.DefaultConfigCreatorImpl;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -13,16 +11,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  *
  * @author Toma
  */
-public interface ConfigPlugin extends IModID {
+public interface IConfigPlugin extends IModID {
 
     /**
-     * Construct your config structure here
-     * Every element you add using the {@link ConfigCreator}
-     * will be automatically added into your config
+     * Create your config structure here.
+     * You must use the supplied {@link IConfigWriter} to construct your config objects
      *
-     * @param builder The config builder
+     * @param writer The config writer
      */
-    void buildConfigStructure(ConfigCreator builder);
+    void buildConfig(IConfigWriter writer);
 
     /**
      * You can change your config's file name
@@ -30,19 +27,6 @@ public interface ConfigPlugin extends IModID {
      */
     default String getConfigFileName() {
         return this.getModID();
-    }
-
-    /**
-     * This allows you to create your own implementations of
-     * {@link ConfigCreator} if you feel like you need one
-     *
-     * @param configObject Object to be constructed
-     * @return Instance of {@link ConfigCreator}
-     */
-    default ConfigCreator builder(ObjectType configObject) {
-        DefaultConfigCreatorImpl configCreator = new DefaultConfigCreatorImpl();
-        configCreator.assignTo(configObject);
-        return configCreator;
     }
 
     /**

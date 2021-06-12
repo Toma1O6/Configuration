@@ -1,11 +1,8 @@
 package dev.toma.configuration;
 
 import dev.toma.configuration.api.Config;
-import dev.toma.configuration.api.ConfigCreator;
-import dev.toma.configuration.api.ConfigPlugin;
-import dev.toma.configuration.api.type.IntType;
+import dev.toma.configuration.api.IConfigPlugin;
 import dev.toma.configuration.api.type.ObjectType;
-import dev.toma.configuration.api.util.NumberDisplayType;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.FileTracker;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,7 +24,7 @@ import java.util.*;
  * How to create your own config with this API:
  * 1) Create your main config file
  * 2) Annotate your class with {@link Config}
- * 3) Implement {@link ConfigPlugin} interface and it's required methods
+ * 3) Implement {@link IConfigPlugin} interface and it's required methods
  * 4) Well done, you have created your config file
  * <p>
  * This class also provides few methods you might like: <p>
@@ -40,7 +37,7 @@ public class Configuration {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("configs");
-    protected static final Map<String, ConfigPlugin> pluginMap = new HashMap<>();
+    protected static final Map<String, IConfigPlugin> pluginMap = new HashMap<>();
     protected static final Map<String, ObjectType> configMap = new HashMap<>();
 
     public Configuration() {
@@ -61,9 +58,9 @@ public class Configuration {
 
     /**
      * @param modID ID of very specific mod
-     * @return {@link Optional} object possibly containing {@link ConfigPlugin} for specified modID
+     * @return {@link Optional} object possibly containing {@link IConfigPlugin} for specified modID
      */
-    public synchronized static Optional<ConfigPlugin> getPlugin(String modID) {
+    public synchronized static Optional<IConfigPlugin> getPlugin(String modID) {
         return Optional.ofNullable(pluginMap.get(modID));
     }
 
@@ -75,7 +72,7 @@ public class Configuration {
         return Optional.ofNullable(configMap.get(modID));
     }
 
-    public static Map<String, ConfigPlugin> getPluginMap() {
+    public static Map<String, IConfigPlugin> getPluginMap() {
         return pluginMap;
     }
 
@@ -94,34 +91,12 @@ public class Configuration {
         for (String classpath : classes) {
             try {
                 Class<?> aClass = Class.forName(classpath);
-                Class<? extends ConfigPlugin> instance = aClass.asSubclass(ConfigPlugin.class);
-                ConfigPlugin plugin = instance.newInstance();
+                Class<? extends IConfigPlugin> instance = aClass.asSubclass(IConfigPlugin.class);
+                IConfigPlugin plugin = instance.newInstance();
                 pluginMap.put(plugin.getModID(), plugin);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
                 LOGGER.error("Failed to load {}", classpath, e);
             }
-        }
-    }
-
-    //@Config
-    public static class InternalConfig implements ConfigPlugin {
-
-        public static IntType fileCheckTimer;
-
-        @Override
-        public String getModID() {
-            return MODID;
-        }
-
-        @Override
-        public void buildConfigStructure(ConfigCreator builder) {
-            fileCheckTimer = builder.createInt(
-                    "File Check Timer",
-                    5,
-                    0,
-                    60,
-                    "Set timer for checking config file changes", "Unit: seconds", "Set to 0 to disable file checks"
-            ).setDisplay(NumberDisplayType.TEXT_FIELD_SLIDER);
         }
     }
 }

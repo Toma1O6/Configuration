@@ -2,14 +2,13 @@ package dev.toma.configuration.internal;
 
 import com.google.gson.*;
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.ConfigCreator;
-import dev.toma.configuration.api.ConfigPlugin;
-import dev.toma.configuration.api.type.AbstractConfigType;
+import dev.toma.configuration.api.IConfigPlugin;
+import dev.toma.configuration.api.IConfigType;
+import dev.toma.configuration.api.IConfigWriter;
 import dev.toma.configuration.api.type.ObjectType;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigHandler {
@@ -17,14 +16,14 @@ public class ConfigHandler {
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
     public static final Gson GSON_OUT = new GsonBuilder().create();
 
-    public static ObjectType loadConfig(ConfigPlugin plugin) {
+    public static ObjectType loadConfig(IConfigPlugin plugin) {
         File configDir = new File(".", "config");
         if (!configDir.exists() || !configDir.isDirectory()) {
             Configuration.LOGGER.fatal("Couldn't locate config directory at {}", configDir.getAbsolutePath());
             return null;
         }
         File jsonFile = new File(configDir, plugin.getConfigFileName() + ".json");
-        ObjectType configObject = new BaseObjectType();
+        ObjectType configObject = new ObjectType(new ObjectSpec(plugin.getModID(), new ConfigWriter()));
         if (!jsonFile.exists()) {
             createDefaultConfigFile(jsonFile, plugin, configObject);
         } else {
@@ -45,28 +44,29 @@ public class ConfigHandler {
         return configObject;
     }
 
-    public static void createDefaultConfigFile(File file, ConfigPlugin plugin, ObjectType type) {
+    public static void createDefaultConfigFile(File file, IConfigPlugin plugin, ObjectType type) {
         try {
             file.createNewFile();
-            ConfigCreator creator = plugin.builder(type);
-            plugin.buildConfigStructure(creator);
+            IConfigWriter writer = new ConfigWriter();
+            writer.setWritingObject(type);
+            plugin.buildConfig(writer);
         } catch (Exception exception) {
             Configuration.LOGGER.error("Error loading file: {} from {}. Reason: {}", file.getAbsolutePath(), plugin.getModID(), exception.toString());
         }
     }
 
-    public static void loadData(ConfigPlugin plugin, ObjectType type, File jsonFile) throws JsonParseException, FileNotFoundException {
+    public static void loadData(IConfigPlugin plugin, ObjectType type, File jsonFile) throws JsonParseException, FileNotFoundException {
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8));;
         if(!element.isJsonObject()) {
             throw new JsonParseException("Found corrupted config file for " + plugin.getModID() + " plugin");
         }
         JsonObject savedData = element.getAsJsonObject();
-        ConfigCreator creator = new DefaultConfigCreatorImpl();
-        creator.assignTo(type);
-        plugin.buildConfigStructure(creator);
-        Map<String, AbstractConfigType<?>> map = type.get();
-        for (Map.Entry<String, AbstractConfigType<?>> entry : map.entrySet()) {
+        IConfigWriter writer = new ConfigWriter();
+        writer.setWritingObject(type);
+        plugin.buildConfig(writer);
+        Map<String, IConfigType<?>> map = type.get();
+        for (Map.Entry<String, IConfigType<?>> entry : map.entrySet()) {
             if (savedData.has(entry.getKey())) {
                 entry.getValue().loadData(savedData.getAsJsonObject(entry.getKey()));
             }
@@ -77,8 +77,8 @@ public class ConfigHandler {
         try {
             Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             JsonObject object = new JsonObject();
-            for (Map.Entry<String, AbstractConfigType<?>> entry : type.get().entrySet()) {
-                AbstractConfigType<?> configType = entry.getValue();
+            for (Map.Entry<String, IConfigType<?>> entry : type.get().entrySet()) {
+                IConfigType<?> configType = entry.getValue();
                 if(!isUpdate)
                     configType.generateComments();
                 configType.saveData(object, isUpdate);
@@ -90,7 +90,7 @@ public class ConfigHandler {
         }
     }
 
-    public synchronized static void write(ConfigPlugin plugin, ObjectType type, FileTracker.Entry entry) {
+    public synchronized static void write(IConfigPlugin plugin, ObjectType type, FileTracker.Entry entry) {
         File configDir = new File(".", "config");
         if (!configDir.exists() || !configDir.isDirectory()) {
             Configuration.LOGGER.fatal("Couldn't locate config directory at {}", configDir.getAbsolutePath());
@@ -102,16 +102,5 @@ public class ConfigHandler {
         }
         writeData(type, jsonFile, true);
         entry.modified = jsonFile.lastModified();
-    }
-
-    static class BaseObjectType extends ObjectType {
-
-        BaseObjectType() {
-            super(null, new HashMap<>());
-        }
-
-        @Override
-        public void buildStructure(ConfigCreator configCreator) {
-        }
     }
 }

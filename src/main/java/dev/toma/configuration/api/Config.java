@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Use this to mark your main config class.
- * Class annotated with this must also implement {@link ConfigPlugin}
+ * Class annotated with this must also implement {@link IConfigPlugin}
  *
  * @author Toma
  */

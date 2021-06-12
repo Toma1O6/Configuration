@@ -1,4 +1,4 @@
-package dev.toma.configuration.api.util;
+package dev.toma.configuration.api;
 
 /**
  * Enum of options for displaying number elements in UI

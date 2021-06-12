@@ -1,13 +1,8 @@
 package dev.toma.configuration.example;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.Config;
-import dev.toma.configuration.api.ConfigCreator;
-import dev.toma.configuration.api.ConfigPlugin;
+import dev.toma.configuration.api.*;
 import dev.toma.configuration.api.type.*;
-import dev.toma.configuration.api.util.Nameable;
-import dev.toma.configuration.api.util.NumberDisplayType;
-import dev.toma.configuration.api.util.Restriction;
 
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
@@ -15,8 +10,8 @@ import java.util.regex.Pattern;
 /**
  * @author Toma
  */
-@Config  //This is just example config, won't be loaded
-public class ExampleConfig implements ConfigPlugin {
+//@Config  This is just example config, won't be loaded
+public class ExampleConfig implements IConfigPlugin {
 
     public static BooleanType exampleBoolean;
     public static IntType exampleInteger;
@@ -33,18 +28,18 @@ public class ExampleConfig implements ConfigPlugin {
     public static ColorType argb;
 
     @Override
-    public void buildConfigStructure(ConfigCreator builder) {
-        exampleBoolean = builder.createBoolean("Boolean", false, "This is an example of boolean data type");
-        exampleInteger = builder.createInt("Integer", 1234, "This is an example of integer data type");
-        exampleIntegerRanged = builder.createInt("Ranged Integer", 10, 0, 20, "Example of integer with value range from 0 to 20").setDisplay(NumberDisplayType.TEXT_FIELD_SLIDER);
-        exampleDecimal = builder.createDouble("Decimal", 12.43, "Example of decimal data type");
-        exampleDecimalRanged = builder.createDouble("Ranged Decimal", 43.21, 27.5, 55.0, "Example of decimal with value range from 27.5 to 55.0").setDisplay(NumberDisplayType.SLIDER);
-        exampleDecimalFormatted = builder.createDouble("Formatted Decimal", 43.123456, "Example of formatted decimal to two decimal spaces").setFormatting(new DecimalFormat("#.##"));
-        exampleString = builder.createString("String", "This is string value", "Example of string data type");
-        exampleStringPattern = builder.createString("Pattern String", "namespace:path", Restriction.newRestriction(Pattern.compile("([a-z0-9]+[_.-]?)+:([a-z0-9]+[/._-]?)+"), "Non a-z_.- character is not allowed", "Must be separated by :"), "Example of resource location pattern");
-        exampleEnum = builder.createEnum("Enum", ExampleEnum.ENTRY_2, "Example of enum data type");
-        exampleObject = builder.createObject(new ExampleObject("Example Object", 12, "This is an object which contains multiple entries"), this);
-        exampleCollection = builder.createFillList("List", () -> new StringType("", "null", Restriction.newRestriction(Pattern.compile("[a-zA-z\\s]*"), "Only A-Z character are allowed")), listType -> {
+    public void buildConfig(IConfigWriter writer) {
+        exampleBoolean = writer.writeBoolean("Boolean", false, "This is an example of boolean data type");
+        exampleInteger = writer.writeInt("Integer", 1234, "This is an example of integer data type");
+        exampleIntegerRanged = writer.writeBoundedInt("Ranged Integer", 10, 0, 20, "Example of integer with value range from 0 to 20").setDisplay(NumberDisplayType.TEXT_FIELD_SLIDER);
+        exampleDecimal = writer.writeDouble("Decimal", 12.43, "Example of decimal data type");
+        exampleDecimalRanged = writer.writeBoundedDouble("Ranged Decimal", 43.21, 27.5, 55.0, "Example of decimal with value range from 27.5 to 55.0").setDisplay(NumberDisplayType.SLIDER);
+        exampleDecimalFormatted = writer.writeDouble("Formatted Decimal", 43.123456, "Example of formatted decimal to two decimal spaces").setFormatting(new DecimalFormat("#.##"));
+        exampleString = writer.writeString("String", "This is string value", "Example of string data type");
+        exampleStringPattern = writer.writeRestrictedString("Pattern String", "namespace:path", Restrictions.restrictStringByPattern(Pattern.compile("([a-z0-9]+[_.-]?)+:([a-z0-9]+[/._-]?)+"), true, "Non a-z_.- character is not allowed", "Must be separated by :"), "Example of resource location pattern");
+        exampleEnum = writer.writeEnum("Enum", ExampleEnum.ENTRY_2, "Example of enum data type");
+        exampleObject = writer.writeObject(spec -> new ExampleObject(spec, 12), "Example object", "Example of storing object / subcategory");
+        exampleCollection = writer.writeApplyList("List", () -> new StringType("", "null", Restrictions.restrictStringByPattern(Pattern.compile("[a-zA-z\\s]*"), true, "Only A-Z character are allowed")), listType -> {
             listType.add(new StringType("", "a"));
             listType.add(new StringType("", "b"));
             listType.add(new StringType("", "c"));
@@ -56,8 +51,8 @@ public class ExampleConfig implements ConfigPlugin {
             listType.add(new StringType("", "i"));
             listType.add(new StringType("", "j"));
         }, "This is an example of element list");
-        rgb = builder.createColorRGB("RGB", "#00FF00", "Color in RGB format");
-        argb = builder.createColorARGB("ARGB", "#56FFFF00", "Color in ARGB format");
+        rgb = writer.writeColorRGB("RGB", "#00FF00", "Color in RGB format");
+        argb = writer.writeColorARGB("ARGB", "#56FFFF00", "Color in ARGB format");
     }
 
     @Override
@@ -65,7 +60,7 @@ public class ExampleConfig implements ConfigPlugin {
         return Configuration.MODID;
     }
 
-    public enum ExampleEnum implements Nameable {
+    public enum ExampleEnum implements INameable {
         ENTRY_0,
         ENTRY_1,
         ENTRY_2;
@@ -85,16 +80,11 @@ public class ExampleConfig implements ConfigPlugin {
 
         public IntType containedInteger;
 
-        private final int initialValue;
+        public ExampleObject(IObjectSpec spec, int value) {
+            super(spec);
 
-        public ExampleObject(String objectName, int integerValue, String... comments) {
-            super(objectName, comments);
-            initialValue = integerValue;
-        }
-
-        @Override
-        public void buildStructure(ConfigCreator configCreator) {
-            containedInteger = configCreator.createInt("Integer In Object", initialValue, 0, 45, "This is a ranged integer inside object");
+            IConfigWriter writer = spec.getWriter();
+            containedInteger = writer.writeInt("contained int", value, "This is integer inside another object");
         }
     }
 }

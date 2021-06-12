@@ -1,7 +1,7 @@
 package dev.toma.configuration.internal;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.api.ConfigPlugin;
+import dev.toma.configuration.api.IConfigPlugin;
 import dev.toma.configuration.api.type.ObjectType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -20,10 +19,9 @@ public class FileTracker {
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final List<Entry> entryList = new ArrayList<>();
     private Queue<Update> scheduledUpdates;
-    private Future<?> task;
 
     public synchronized void initialize() {
-        Map<String, ConfigPlugin> pluginMap = Configuration.getPluginMap();
+        Map<String, IConfigPlugin> pluginMap = Configuration.getPluginMap();
         scheduledUpdates = new ArrayDeque<>(pluginMap.size());
         File dir = new File(".", "config");
         if(!dir.exists()) {
@@ -32,8 +30,8 @@ public class FileTracker {
         if(!dir.isDirectory()) {
             throw new IllegalStateException("Config file must be a directory!");
         }
-        for (Map.Entry<String, ConfigPlugin> entry : Configuration.getPluginMap().entrySet()) {
-            ConfigPlugin plugin = entry.getValue();
+        for (Map.Entry<String, IConfigPlugin> entry : Configuration.getPluginMap().entrySet()) {
+            IConfigPlugin plugin = entry.getValue();
             File configFile = new File(dir, plugin.getConfigFileName() + ".json");
             if(!configFile.exists()) {
                 logger.error("Couldn't locate config file {}, excluding {} from FileChecker", configFile.getAbsolutePath(), plugin.getModID());
@@ -42,9 +40,8 @@ public class FileTracker {
             entryList.add(new Entry(plugin, configFile.getName(), configFile.lastModified()));
             logger.info("Added {} plugin into FileTracker", plugin.getModID());
         }
-        int secs = 10;//Configuration.InternalConfig.fileCheckTimer.get();
-        if(!entryList.isEmpty() && secs > 0) {
-            this.task = this.executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(dir), 10L, secs, TimeUnit.SECONDS);
+        if(!entryList.isEmpty()) {
+            executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(dir), 10L, 4, TimeUnit.SECONDS);
         }
     }
 
@@ -85,9 +82,9 @@ public class FileTracker {
         }
         Update update;
         while ((update = scheduledUpdates.poll()) != null) {
-            Optional<ConfigPlugin> optional = Configuration.getPlugin(update.modid);
+            Optional<IConfigPlugin> optional = Configuration.getPlugin(update.modid);
             if(optional.isPresent()) {
-                ConfigPlugin plugin = optional.get();
+                IConfigPlugin plugin = optional.get();
                 Optional<ObjectType> typeOptional = Configuration.getConfig(update.modid);
                 if(typeOptional.isPresent()) {
                     ObjectType type = typeOptional.get();
@@ -112,11 +109,11 @@ public class FileTracker {
 
     static class Entry {
 
-        final ConfigPlugin plugin;
+        final IConfigPlugin plugin;
         final String filePath;
         long modified;
 
-        public Entry(ConfigPlugin plugin, String filePath, long modified) {
+        public Entry(IConfigPlugin plugin, String filePath, long modified) {
             this.plugin = plugin;
             this.filePath = filePath;
             this.modified = modified;
