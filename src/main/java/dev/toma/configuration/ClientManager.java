@@ -1,6 +1,7 @@
 package dev.toma.configuration;
 
 import dev.toma.configuration.api.IConfigPlugin;
+import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.client.ClientHandles;
 import dev.toma.configuration.api.client.screen.ComponentScreen;
 import dev.toma.configuration.api.type.CollectionType;
@@ -18,33 +19,27 @@ public class ClientManager {
 
     public static void displayObjectScreen(ComponentScreen parentScreen, ObjectType type) {
         Minecraft mc = Minecraft.getInstance();
-        Optional<IConfigPlugin> optional = Configuration.getPlugin(parentScreen.getModID());
-        optional.ifPresent(plugin -> {
-            ClientHandles handles = plugin.getClientHandles();
+        Optional<ModConfig> optional = Configuration.getConfig(parentScreen.getModID());
+        optional.ifPresent(config -> {
+            ClientHandles handles = config.getPlugin().getClientHandles();
             mc.displayGuiScreen(handles.createConfigScreen(parentScreen, type, parentScreen));
         });
     }
 
     public static <T extends IConfigType<?>> void displayCollectionScreen(ComponentScreen parentScreen, CollectionType<T> type) {
         Minecraft mc = Minecraft.getInstance();
-        Optional<IConfigPlugin> optional = Configuration.getPlugin(parentScreen.getModID());
-        optional.ifPresent(plugin -> {
-            ClientHandles handles = plugin.getClientHandles();
+        Optional<ModConfig> optional = Configuration.getConfig(parentScreen.getModID());
+        optional.ifPresent(config -> {
+            ClientHandles handles = config.getPlugin().getClientHandles();
             mc.displayGuiScreen(handles.createCollectionScreen(parentScreen, type, parentScreen));
         });
     }
 
-    public static boolean setupPluginClient() {
-        for (Map.Entry<String, ObjectType> entry : Configuration.configMap.entrySet()) {
-            String modid = entry.getKey();
-            ObjectType type = entry.getValue();
-            Optional<IConfigPlugin> optional = Configuration.getPlugin(modid);
-            optional.ifPresent(plugin -> {
-                ClientHandles handles = plugin.getClientHandles();
-                Optional<? extends ModContainer> container = ModList.get().getModContainerById(modid);
-                container.ifPresent(mc -> mc.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (minecraft, screen) -> handles.createConfigScreen(screen, type, plugin)));
-            });
-        }
-        return true;
+    public static void enableConfigButton(ModConfig config) {
+        IConfigPlugin plugin = config.getPlugin();
+        ClientHandles handles = plugin.getClientHandles();
+        ModList list = ModList.get();
+        Optional<? extends ModContainer> optionalModContainer = list.getModContainerById(plugin.getModID());
+        optionalModContainer.ifPresent(container -> container.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc, screen) -> handles.createConfigScreen(screen, config, plugin)));
     }
 }

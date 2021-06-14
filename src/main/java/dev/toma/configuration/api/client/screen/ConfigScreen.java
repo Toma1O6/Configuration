@@ -37,7 +37,7 @@ public class ConfigScreen extends ComponentScreen {
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public ConfigScreen(Screen screen, ObjectType type, String modid, ClientHandles handles) {
-        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getPlugin(modid).get().getConfigFileName()), modid, handles);
+        super(new StringTextComponent(type.getId() != null ? type.getId() : Configuration.getConfig(modid).get().getPlugin().getConfigFileName()), modid, handles);
         this.screen = screen;
         this.type = type;
     }
