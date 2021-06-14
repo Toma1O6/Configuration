@@ -1,7 +1,6 @@
 package dev.toma.configuration.api;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Restriction is used to restrict user input which is not valid for
