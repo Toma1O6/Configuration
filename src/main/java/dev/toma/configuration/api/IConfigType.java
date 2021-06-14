@@ -103,8 +103,8 @@ public interface IConfigType<T> {
     void saveData(JsonElement element, boolean isUpdate);
 
     /**
-     * Set your custom index based on "where" this component should appear in UI. <br/>
-     * You can see default sort indexes in {@link ConfigSortIndexes} file.
+     * Set your custom index based on "where" this component should appear in UI.
+     * <p> You can see default sort indexes in {@link ConfigSortIndexes} file.
      * @return Sort index of this type
      */
     int getSortIndex();

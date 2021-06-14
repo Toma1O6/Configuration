@@ -2,6 +2,7 @@ package dev.toma.configuration;
 
 import dev.toma.configuration.api.Config;
 import dev.toma.configuration.api.IConfigPlugin;
+import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.internal.FileTracker;
@@ -27,8 +28,8 @@ import java.util.*;
  * 3) Implement {@link IConfigPlugin} interface and it's required methods
  * 4) Well done, you have created your config file
  * <p>
- * This class also provides few methods you might like: <p>
- * {@link Configuration#getPlugin(String)} <p> {@link Configuration#getConfig(String)}
+ * This class also provides special method you might like: <p>
+ * {@link Configuration#getConfig(String)}
  *
  * @author Toma
  */
@@ -37,46 +38,45 @@ public class Configuration {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("configs");
-    protected static final Map<String, IConfigPlugin> pluginMap = new HashMap<>();
-    protected static final Map<String, ObjectType> configMap = new HashMap<>();
+    private static final Map<String, ModConfig> configMap = new HashMap<>();
 
     public Configuration() {
-        loadPlugins();
-        pluginMap.forEach((modid, plugin) -> {
-            ObjectType type = ConfigHandler.loadConfig(plugin);
-            if(type != null) {
-                configMap.put(modid, type);
-            }
-        });
-        FileTracker.INSTANCE.initialize();
+        init();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
     }
 
     void setupClient(FMLClientSetupEvent event) {
-        DistExecutor.safeCallWhenOn(Dist.CLIENT, () -> ClientManager::setupPluginClient);
-    }
-
-    /**
-     * @param modID ID of very specific mod
-     * @return {@link Optional} object possibly containing {@link IConfigPlugin} for specified modID
-     */
-    public synchronized static Optional<IConfigPlugin> getPlugin(String modID) {
-        return Optional.ofNullable(pluginMap.get(modID));
+        synchronized (configMap) {
+            for (ModConfig config : configMap.values()) {
+                DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> ClientManager.enableConfigButton(config));
+            }
+        }
     }
 
     /**
      * @param modID ID of very specific mod
      * @return {@link Optional} object possibly containing {@link ObjectType} for specified modID
      */
-    public synchronized static Optional<ObjectType> getConfig(String modID) {
-        return Optional.ofNullable(configMap.get(modID));
+    public static Optional<ModConfig> getConfig(String modID) {
+        synchronized (configMap) {
+            return Optional.ofNullable(configMap.get(modID));
+        }
     }
 
-    public static Map<String, IConfigPlugin> getPluginMap() {
-        return pluginMap;
+    private synchronized void init() {
+        List<IConfigPlugin> loadedPlugins = new ArrayList<>();
+        loadPlugins(loadedPlugins);
+
+        for (IConfigPlugin plugin : loadedPlugins) {
+            ModConfig config = ConfigHandler.loadModConfig(plugin);
+            if (config != null) {
+                configMap.put(plugin.getModID(), config);
+            }
+        }
+        FileTracker.INSTANCE.initialize(configMap.values());
     }
 
-    void loadPlugins() {
+    private void loadPlugins(List<IConfigPlugin> pluginList) {
         List<ModFileScanData> scanDataList = ModList.get().getAllScanData();
         Set<String> classes = new LinkedHashSet<>();
         Type type = Type.getType(Config.class);
@@ -93,7 +93,7 @@ public class Configuration {
                 Class<?> aClass = Class.forName(classpath);
                 Class<? extends IConfigPlugin> instance = aClass.asSubclass(IConfigPlugin.class);
                 IConfigPlugin plugin = instance.newInstance();
-                pluginMap.put(plugin.getModID(), plugin);
+                pluginList.add(plugin);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
                 LOGGER.error("Failed to load {}", classpath, e);
             }

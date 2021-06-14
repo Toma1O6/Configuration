@@ -73,8 +73,8 @@ public interface IConfigWriter {
     <T extends IConfigType<?>> CollectionType<T> writeApplyList(String name, Supplier<T> elementFactory, Consumer<List<T>> action, String... description);
 
     /**
-     * Write array into config structure. </br>
-     * Implement {@link INameable} on array type to have better control over display names.
+     * Write array into config structure.
+     * <p> Implement {@link INameable} on array type to have better control over display names.
      * If you don't want to implement that interface on your type, you must atleast override toString method
      * otherwise this element won't work correctly.
      *
@@ -88,8 +88,8 @@ public interface IConfigWriter {
     <T extends IConfigType<?>> ArrayType<T> writeArray(String name, T selectedValue, T[] values, String... description);
 
     /**
-     * Write array into config structure. </br>
-     * Implement {@link INameable} on array type to have better control over display names.
+     * Write array into config structure.
+     * <p> Implement {@link INameable} on array type to have better control over display names.
      * If you don't want to implement that interface on your type, you must atleast override toString method
      * otherwise this element won't work correctly.
      *
@@ -103,8 +103,8 @@ public interface IConfigWriter {
     <T extends IConfigType<?>> ArrayType<T> writeArray(String name, int selectedIndex, T[] values, String... description);
 
     /**
-     * Write enum into config structure. </br>
-     * You can implement {@link INameable} interface which will allow nicer display names in UI
+     * Write enum into config structure.
+     * <p> You can implement {@link INameable} interface which will allow nicer display names in UI
      *
      * @param name ID of this enum
      * @param selectedValue Default value
