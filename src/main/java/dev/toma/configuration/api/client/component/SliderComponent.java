@@ -36,7 +36,7 @@ public class SliderComponent<T extends IConfigType<? extends Number> & IBounded<
         if(shouldShowData) {
             String text = configType.get().toString();
             if(configType instanceof IFormatted<?>) {
-                text = ((IFormatted<?>) configType).getFormatted();
+                text = ((IFormatted<?>) configType).formatConfigValue();
             }
             int tw = font.getStringWidth(text);
             font.drawString(matrixStack, text, x + (width - tw) / 2.0F, 1 + y + (height - font.FONT_HEIGHT) / 2.0F, 0xFFFFFF);

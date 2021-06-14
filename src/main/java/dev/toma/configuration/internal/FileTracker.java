@@ -2,7 +2,7 @@ package dev.toma.configuration.internal;
 
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigPlugin;
-import dev.toma.configuration.api.type.ObjectType;
+import dev.toma.configuration.api.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,18 +20,17 @@ public class FileTracker {
     private final List<Entry> entryList = new ArrayList<>();
     private Queue<Update> scheduledUpdates;
 
-    public synchronized void initialize() {
-        Map<String, IConfigPlugin> pluginMap = Configuration.getPluginMap();
-        scheduledUpdates = new ArrayDeque<>(pluginMap.size());
+    public synchronized void initialize(Collection<ModConfig> configs) {
+        scheduledUpdates = new ArrayDeque<>(configs.size());
         File dir = new File(".", "config");
         if(!dir.exists()) {
-            throw new IllegalStateException("Config directory doesn't exist. This shouldn't be possible");
+            dir.mkdirs();
         }
         if(!dir.isDirectory()) {
             throw new IllegalStateException("Config file must be a directory!");
         }
-        for (Map.Entry<String, IConfigPlugin> entry : Configuration.getPluginMap().entrySet()) {
-            IConfigPlugin plugin = entry.getValue();
+        for (ModConfig config : configs) {
+            IConfigPlugin plugin = config.getPlugin();
             File configFile = new File(dir, plugin.getConfigFileName() + ".json");
             if(!configFile.exists()) {
                 logger.error("Couldn't locate config file {}, excluding {} from FileChecker", configFile.getAbsolutePath(), plugin.getModID());
@@ -82,26 +81,22 @@ public class FileTracker {
         }
         Update update;
         while ((update = scheduledUpdates.poll()) != null) {
-            Optional<IConfigPlugin> optional = Configuration.getPlugin(update.modid);
-            if(optional.isPresent()) {
-                IConfigPlugin plugin = optional.get();
-                Optional<ObjectType> typeOptional = Configuration.getConfig(update.modid);
-                if(typeOptional.isPresent()) {
-                    ObjectType type = typeOptional.get();
-                    try {
-                        switch (update.action) {
-                            case LOAD_WRITE:
-                                ConfigHandler.loadData(plugin, type, new File(dir, update.entry.filePath));
-                                ConfigHandler.write(plugin, type, update.entry);
-                                break;
-                            case WRITE:
-                                ConfigHandler.write(plugin, type, update.entry);
-                                break;
-                        }
-
-                    } catch (Exception e) {
-                        logger.error("Error updating config from {} plugin", update.modid);
+            Optional<ModConfig> optional = Configuration.getConfig(update.modid);
+            if (optional.isPresent()) {
+                ModConfig config = optional.get();
+                IConfigPlugin plugin = config.getPlugin();
+                try {
+                    switch (update.action) {
+                        case LOAD_WRITE:
+                            ConfigHandler.loadData(config, new File(dir, update.entry.filePath));
+                            ConfigHandler.write(config, update.entry);
+                            break;
+                        case WRITE:
+                            ConfigHandler.write(config, update.entry);
+                            break;
                     }
+                } catch (Exception e) {
+                    logger.error("Error updating config from {} plugin", update.modid);
                 }
             }
         }

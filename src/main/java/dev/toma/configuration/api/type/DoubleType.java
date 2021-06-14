@@ -4,11 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.ConfigSortIndexes;
-import dev.toma.configuration.api.client.ComponentFactory;
-import dev.toma.configuration.api.NumberDisplayType;
-import dev.toma.configuration.internal.ConfigHandler;
-import dev.toma.configuration.api.IFormatted;
 import dev.toma.configuration.api.IBounded;
+import dev.toma.configuration.api.IFormatted;
+import dev.toma.configuration.api.NumberDisplayType;
+import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -67,7 +67,7 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     @Override
     public void set(Double aDouble) {
         double d = MathHelper.clamp(aDouble, min, max);
-        String f = formatNumber(d);
+        String f = format(d);
         super.set(Double.parseDouble(f));
     }
 
@@ -85,12 +85,12 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     }
 
     @Override
-    public String getFormatted() {
-        return formatNumber(this.get());
+    public String formatConfigValue() {
+        return format(this.get());
     }
 
     @Override
-    public String formatNumber(Double num) {
+    public String format(Double num) {
         if(format != null) {
             return format.format(num);
         }
@@ -105,11 +105,11 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
         String right = "...";
         boolean rangeFlag = false;
         if(min > -Double.MAX_VALUE) {
-            left = this.formatNumber(min);
+            left = this.format(min);
             rangeFlag = true;
         }
         if(max < Double.MAX_VALUE) {
-            right = this.formatNumber(max);
+            right = this.format(max);
             rangeFlag = true;
         }
         if(rangeFlag) {
