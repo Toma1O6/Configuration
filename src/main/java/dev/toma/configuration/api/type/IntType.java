@@ -3,14 +3,11 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import dev.toma.configuration.api.ConfigSortIndexes;
-import dev.toma.configuration.api.client.ComponentFactory;
-import dev.toma.configuration.api.NumberDisplayType;
-import dev.toma.configuration.internal.ConfigHandler;
 import dev.toma.configuration.api.IBounded;
+import dev.toma.configuration.api.NumberDisplayType;
+import dev.toma.configuration.api.TypeKey;
+import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +23,7 @@ public class IntType extends AbstractConfigType<Integer> implements IBounded<Int
     }
 
     public IntType(String name, int entry, int min, int max, String... desc) {
-        super(name, MathHelper.clamp(entry, min, max), desc);
+        super(TypeKey.INT, name, MathHelper.clamp(entry, min, max), desc);
         this.min = min;
         this.max = max;
     }
@@ -34,12 +31,6 @@ public class IntType extends AbstractConfigType<Integer> implements IBounded<Int
     public void setFromSlider(double pct) {
         int diff = this.getMax() - this.getMin();
         set(this.getMin() + (int) (diff * pct));
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public ComponentFactory getComponentFactory() {
-        return ComponentFactory.INTEGER;
     }
 
     @Override
@@ -103,10 +94,5 @@ public class IntType extends AbstractConfigType<Integer> implements IBounded<Int
     @Override
     public Integer getMax() {
         return max;
-    }
-
-    @Override
-    public int getSortIndex() {
-        return ConfigSortIndexes.INT;
     }
 }

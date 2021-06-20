@@ -15,7 +15,7 @@ public class ByteType extends AbstractConfigType<Byte> implements IBounded<Byte>
     private NumberDisplayType displayType = NumberDisplayType.TEXT_FIELD;
 
     public ByteType(String name, byte value, byte min, byte max, String... description) {
-        super(name, value, description);
+        super(null, name, value, description);
         this.min = min;
         this.max = max;
     }
