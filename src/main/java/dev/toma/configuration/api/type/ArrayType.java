@@ -6,10 +6,8 @@ import com.google.gson.JsonPrimitive;
 import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.ICollectible;
 import dev.toma.configuration.api.INameable;
-import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.TypeKey;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,16 +18,14 @@ public class ArrayType<T> extends AbstractConfigType<T> implements ICollectible<
     final T[] values;
     final boolean isNameable;
 
-    public ArrayType(String name, T value, T[] array, String... desc) {
-        super(name, value, desc);
+    public ArrayType(TypeKey typeKey, String name, T value, T[] array, String... desc) {
+        super(typeKey, name, value, desc);
         this.values = array;
         isNameable = value instanceof INameable;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public ComponentFactory getComponentFactory() {
-        return ComponentFactory.ARRAY;
+    public ArrayType(String name, T value, T[] array, String... desc) {
+        this(TypeKey.ARRAY, name, value, array, desc);
     }
 
     @Override
@@ -77,10 +73,5 @@ public class ArrayType<T> extends AbstractConfigType<T> implements ICollectible<
     @Override
     public T[] collect() {
         return values;
-    }
-
-    @Override
-    public int getSortIndex() {
-        return ConfigSortIndexes.ARRAY;
     }
 }
