@@ -3,15 +3,12 @@ package dev.toma.configuration.api.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.IBounded;
 import dev.toma.configuration.api.IFormatted;
 import dev.toma.configuration.api.NumberDisplayType;
-import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.TypeKey;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -30,7 +27,7 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     }
 
     public DoubleType(String name, double entry, double min, double max, String... desc) {
-        super(name, MathHelper.clamp(entry, min, max), desc);
+        super(TypeKey.DOUBLE, name, MathHelper.clamp(entry, min, max), desc);
         this.min = min;
         this.max = max;
     }
@@ -56,12 +53,6 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     public DoubleType setDisplay(NumberDisplayType type) {
         this.displayType = type;
         return this;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public ComponentFactory getComponentFactory() {
-        return ComponentFactory.DECIMAL;
     }
 
     @Override
@@ -130,10 +121,5 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
 
     public NumberDisplayType getDisplayType() {
         return displayType;
-    }
-
-    @Override
-    public int getSortIndex() {
-        return ConfigSortIndexes.DOUBLE;
     }
 }

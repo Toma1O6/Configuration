@@ -16,17 +16,16 @@ import java.util.Objects;
 public class WidgetManager implements IWidgetManager {
 
     public static final IWidgetPlacer NO_PLACEMENT = WidgetPlacers::noPlacement;
-    public static final IWidgetStyle<?> NO_STYLE = widget -> {};
     private final Map<TypeKey, IWidgetPlacer> widgetControlMap;
     private final Map<WidgetType<?>, IWidgetRenderer<?>> rendererMap;
-    private final Map<WidgetType<?>, IStyleContainer<?>> styleContainerMap;
+    private final Map<WidgetType<?>, IWidgetStyle<?>> styleMap;
 
     public WidgetManager() {
         widgetControlMap = new HashMap<>();
         initPlacers();
         rendererMap = new HashMap<>();
         initRenderers();
-        styleContainerMap = new HashMap<>();
+        styleMap = new HashMap<>();
     }
 
     @Override
@@ -59,18 +58,13 @@ public class WidgetManager implements IWidgetManager {
     }
 
     @Override
-    public <W extends Widget> void setStyle(WidgetType<W> type, IWidgetStyle<W> style, String key) {
-        IStyleContainer<W> container = (IStyleContainer<W>) styleContainerMap.computeIfAbsent(type, k -> new StyleContainer<>());
-        container.registerStyle(key, style);
+    public <W extends Widget> void setStyle(WidgetType<W> type, IWidgetStyle<W> style) {
+        styleMap.put(Objects.requireNonNull(type), style);
     }
 
     @Override
-    public <W extends Widget> IWidgetStyle<W> getStyle(WidgetType<W> type, String key) {
-        IStyleContainer<W> container = (IStyleContainer<W>) styleContainerMap.get(type);
-        if (container == null)
-            return noStyle();
-        IWidgetStyle<W> style = container.getStyle(key);
-        return style != null ? style : noStyle();
+    public <W extends Widget> IWidgetStyle<W> getStyle(WidgetType<W> type) {
+        return (IWidgetStyle<W>) styleMap.get(type);
     }
 
     private void initPlacers() {
@@ -91,15 +85,5 @@ public class WidgetManager implements IWidgetManager {
         setRenderer(WidgetType.ARRAY_BUTTON, WidgetRenderers::renderArrayButton);
         setRenderer(WidgetType.COLLECTION_BUTTON, WidgetRenderers::renderCollectionButton);
         setRenderer(WidgetType.OBJECT_BUTTON, WidgetRenderers::renderObjectButton);
-        setRenderer(WidgetType.STRING_TEXT_FIELD, WidgetRenderers::renderTextField);
-        setRenderer(WidgetType.INTEGER_TEXT_FIELD, WidgetRenderers::renderTextField);
-        setRenderer(WidgetType.DOUBLE_TEXT_FIELD, WidgetRenderers::renderTextField);
-        setRenderer(WidgetType.INT_SLIDER, WidgetRenderers::renderSlider);
-        setRenderer(WidgetType.DOUBLE_SLIDER, WidgetRenderers::renderSlider);
-        setRenderer(WidgetType.COLOR_DISPLAY, WidgetRenderers::renderColorDisplay);
-    }
-
-    private static <W extends Widget> IWidgetStyle<W> noStyle() {
-        return (IWidgetStyle<W>) NO_STYLE;
     }
 }

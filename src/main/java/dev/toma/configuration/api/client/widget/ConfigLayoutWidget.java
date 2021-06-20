@@ -3,7 +3,6 @@ package dev.toma.configuration.api.client.widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.IClientSettings;
-import dev.toma.configuration.api.client.IWidgetManager;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
@@ -22,8 +21,6 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
     final Layout layout;
     final List<ITextComponent> description;
     final IClientSettings settings;
-    int mouseOverTime;
-    boolean hovered;
 
     public ConfigLayoutWidget(T type, int x, int y, int width, int height, WidgetScreen<?> screen) {
         super(null, type, x, y, width, height);
@@ -33,12 +30,8 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
         this.description = Arrays.stream(type.getComments()).map(StringTextComponent::new).collect(Collectors.toList());
     }
 
-    public void renderWidget(Consumer<Widget> render, MatrixStack stack, Minecraft mc, int mouseX, int mouseY) {
+    public void renderLayout(Consumer<Widget> render) {
         layout.drawElements(render);
-        hovered = isMouseOver(mouseX, mouseY);
-        if (mouseOverTime >= 20) {
-            showDescription(stack, mc, mouseX, mouseY);
-        }
     }
 
     public void columnInit() {
@@ -59,16 +52,11 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
     @Override
     public void tick() {
         layout.forEach(ITickable::tick);
-        mouseOverTime = hovered ? mouseOverTime + 1 : 0;
     }
 
     @Override
     public void save() {
         layout.forEach(Widget::save);
-    }
-
-    public List<IColumn> getColumns() {
-        return layout.getColumns();
     }
 
     @Override
@@ -104,16 +92,14 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
     private boolean invokeOnWidget(WidgetScreen.BooleanFunction<Widget> action) {
         boolean b = false;
         for (Widget widget : layout) {
-            if (widget.visibilityState.isEnabled() && action.apply(widget)) {
+            if (action.apply(widget))
                 b = true;
-                mouseOverTime = 0;
-            }
         }
         return b;
     }
 
     private void showDescription(MatrixStack matrixStack, Minecraft mc, int mouseX, int mouseY) {
-        parent.renderWrappedToolTip(matrixStack, description, mouseX, mouseY, mc.font);
+        parent.renderWrappedToolTip(matrixStack, description, mouseX, mouseY, mc.fontRenderer);
     }
 
     class Layout implements Iterable<Widget> {
@@ -124,10 +110,6 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
         Layout() {
             this.columns = new ArrayList<>();
             this.widgets = new ArrayList<>();
-        }
-
-        public List<IColumn> getColumns() {
-            return columns;
         }
 
         @Override
@@ -144,7 +126,6 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
         }
 
         void init() {
-            widgets.forEach(Widget::save);
             widgets.clear();
             int layoutWidth = ConfigLayoutWidget.this.width;
             int relativeWidthPool = layoutWidth;
@@ -170,7 +151,6 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
                     diff = layoutWidth - (usedWidth + widgetWidth);
                 }
                 Widget widget = column.init(ConfigLayoutWidget.this.getConfigType(), ConfigLayoutWidget.this.settings, left + usedWidth + colMargin + diff, top, widgetWidth - colMargin, height);
-                widget.assignParent(parent);
                 usedWidth += widgetWidth;
                 widgets.add(widget);
             }

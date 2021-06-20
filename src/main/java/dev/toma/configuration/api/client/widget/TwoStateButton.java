@@ -20,7 +20,7 @@ public class TwoStateButton extends ConfigWidget<IConfigType<Boolean>> {
         try {
             return new TwoStateButton(widgetType, (IConfigType<Boolean>) type, x, y, width, height);
         } catch (ClassCastException cce) {
-            throw new ReportedException(CrashReport.forThrowable(cce, "Two state button is applicable only for boolean config types"));
+            throw new ReportedException(CrashReport.makeCrashReport(cce, "Two state button is applicable only for boolean config types"));
         }
     }
 

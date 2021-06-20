@@ -1,16 +1,13 @@
 package dev.toma.configuration.api.client.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.HorizontalAlignment;
-import dev.toma.configuration.api.client.ScreenOpenContext;
 import dev.toma.configuration.api.client.VerticalAlignment;
-import dev.toma.configuration.api.client.screen.WidgetScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -82,10 +79,7 @@ public abstract class Widget implements ITickable {
     }
 
     public void playPressSound() {
-        Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-    }
-
-    public void assignParent(WidgetScreen<?> screen) {
+        Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     public WidgetType<?> getWidgetType() {
@@ -133,33 +127,33 @@ public abstract class Widget implements ITickable {
     }
 
     public static void drawColorShape(MatrixStack stack, int x1, int y1, int x2, int y2, float r, float g, float b, float a) {
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        Matrix4f matrix4f = stack.last().pose();
-        BufferBuilder builder = Tessellator.getInstance().getBuilder();
+        GlStateManager.disableTexture();
+        GlStateManager.enableBlend();
+        Matrix4f matrix4f = stack.getLast().getMatrix();
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        builder.vertex(matrix4f, x1, y2, 0).color(r, g, b, a).endVertex();
-        builder.vertex(matrix4f, x2, y2, 0).color(r, g, b, a).endVertex();
-        builder.vertex(matrix4f, x2, y1, 0).color(r, g, b, a).endVertex();
-        builder.vertex(matrix4f, x1, y1, 0).color(r, g, b, a).endVertex();
-        builder.end();
-        WorldVertexBufferUploader.end(builder);
-        RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
+        builder.pos(matrix4f, x1, y2, 0).color(r, g, b, a).endVertex();
+        builder.pos(matrix4f, x2, y2, 0).color(r, g, b, a).endVertex();
+        builder.pos(matrix4f, x2, y1, 0).color(r, g, b, a).endVertex();
+        builder.pos(matrix4f, x1, y1, 0).color(r, g, b, a).endVertex();
+        builder.finishDrawing();
+        WorldVertexBufferUploader.draw(builder);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture();
     }
 
     public static void drawTexturedShape(MatrixStack stack, int x1, int y1, int x2, int y2) {
-        RenderSystem.enableBlend();
-        Matrix4f matrix4f = stack.last().pose();
-        BufferBuilder builder = Tessellator.getInstance().getBuilder();
+        GlStateManager.enableBlend();
+        Matrix4f matrix4f = stack.getLast().getMatrix();
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        builder.vertex(matrix4f, x1, y2, 0).uv(0, 1).endVertex();
-        builder.vertex(matrix4f, x2, y2, 0).uv(1, 1).endVertex();
-        builder.vertex(matrix4f, x2, y1, 0).uv(1, 0).endVertex();
-        builder.vertex(matrix4f, x1, y1, 0).uv(0, 0).endVertex();
-        builder.end();
-        WorldVertexBufferUploader.end(builder);
-        RenderSystem.disableBlend();
+        builder.pos(matrix4f, x1, y2, 0).tex(0, 1).endVertex();
+        builder.pos(matrix4f, x2, y2, 0).tex(1, 1).endVertex();
+        builder.pos(matrix4f, x2, y1, 0).tex(1, 0).endVertex();
+        builder.pos(matrix4f, x1, y1, 0).tex(0, 0).endVertex();
+        builder.finishDrawing();
+        WorldVertexBufferUploader.draw(builder);
+        GlStateManager.disableBlend();
     }
 
     public static void drawCenteredString(String text, MatrixStack stack, FontRenderer renderer, int x, int y, int width, int height, int color) {
@@ -167,8 +161,8 @@ public abstract class Widget implements ITickable {
     }
 
     public static void drawAlignedString(String text, MatrixStack stack, FontRenderer renderer, int x, int y, int width, int height, int color, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-        float left = horizontalAlignment.getHorizontalPos(x, width, renderer.width(text));
-        float top = verticalAlignment.getVerticalPos(y, height, renderer.lineHeight);
-        renderer.drawShadow(stack, text, left, top, color);
+        float left = horizontalAlignment.getHorizontalPos(x, width, renderer.getStringWidth(text));
+        float top = verticalAlignment.getVerticalPos(y, height, renderer.FONT_HEIGHT);
+        renderer.drawString(stack, text, left, top, color);
     }
 }

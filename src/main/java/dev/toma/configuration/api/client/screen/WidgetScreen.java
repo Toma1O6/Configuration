@@ -19,7 +19,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     protected final Screen parentScreen;
     protected final T type;
     protected int headerHeight = 30;
-    protected int footerHeight = 40;
+    protected int footerHeight = 30;
     private final WidgetList widgets;
     private final ScreenOpenContext context;
     protected final Callback<Integer> scrollIndexCallback;
@@ -38,28 +38,17 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
         scrollIndexCallback = widgets::scrollIndexChanged;
     }
 
-    /**
-     * Use this method to create "static" widgets, i.e. back to menu buttons etc.
-     * Basically all buttons, which will be always shown on the screen regardless of
-     * current scroll offset.
-     * @param list Widget container containing all widgets for this screen
-     */
     protected abstract void initWidgets(WidgetList list);
 
-    /**
-     * Used to extract all config types from specified config type container
-     * @param t Type container
-     * @return Collection of all config types which are contained in this config container
-     */
     protected abstract Collection<IConfigType<?>> getCollection(T t);
 
     @Override
-    public void onClose() {
-        minecraft.setScreen(parentScreen);
+    public void closeScreen() {
+        minecraft.displayGuiScreen(parentScreen);
     }
 
     @Override
-    public void removed() {
+    public void onClose() {
         widgets.forEach(Widget::save);
         if (!(parentScreen instanceof IConfigurationScreen)) {
             FileTracker.INSTANCE.scheduleConfigUpdate(context, FileTracker.UpdateAction.WRITE);
@@ -70,7 +59,6 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         backgroundRenderer.drawBackground(minecraft, matrixStack, mouseX, mouseY, partialTicks, this);
         renderHeaderAndFooter(matrixStack, mouseX, mouseY, partialTicks, backgroundRenderer);
-        backgroundRenderer.drawScrollbar(minecraft, matrixStack, scrollIndex, displayCount, widgets.configElementCount(), width, headerHeight, height - footerHeight - headerHeight);
         widgets.render(matrixStack, minecraft, mouseX, mouseY, partialTicks, scrollIndex);
     }
 
@@ -124,7 +112,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     private boolean invokeOnWidget(BooleanFunction<Widget> action) {
         boolean b = false;
         for (Widget widget : widgets) {
-            if (widget.visibilityState.isEnabled() && action.apply(widget))
+            if (action.apply(widget))
                 b = true;
         }
         return b;
@@ -135,9 +123,6 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
         return context.getModConfig();
     }
 
-    /**
-     * @return Opening context containing ModConfig
-     */
     public ScreenOpenContext getOpeningContext() {
         return context;
     }
@@ -146,7 +131,6 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     protected final void init() {
         this.displayCount = editDisplayAmount(height - headerHeight - footerHeight - 10) / 25;
         widgets.setDisplayAmount(displayCount);
-        setScrollIndex(0);
         setWidgetPanelSize(widgets);
         widgets.init(this::initWidgets, () -> getCollection(type));
     }
@@ -163,10 +147,6 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     public void layoutPost(ConfigLayoutWidget<?> layout) {
     }
 
-    public WidgetList getWidgets() {
-        return widgets;
-    }
-
     protected int editDisplayAmount(int displayCount) {
         return displayCount;
     }
@@ -177,12 +157,12 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     }
 
     protected void renderHeaderAndFooter(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, IBackgroundRenderer renderer) {
-        matrixStack.pushPose(); // render header and footer above background
+        matrixStack.push(); // render header and footer above background
         matrixStack.translate(0, 0, 1);
         renderer.drawHeaderBackground(minecraft, matrixStack, 0, 0, width, headerHeight, mouseX, mouseY, partialTicks, this);
         renderer.drawFooterBackground(minecraft, matrixStack, 0, height - footerHeight, width, footerHeight, mouseX, mouseY, partialTicks, this);
         Widget.drawCenteredString(type.getId().toUpperCase(), matrixStack, font, 0, 0, width, headerHeight, renderer.getTitleColor());
-        matrixStack.popPose();
+        matrixStack.pop();
     }
 
     public interface BooleanFunction<T> {

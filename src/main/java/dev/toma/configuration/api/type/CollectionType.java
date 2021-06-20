@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.ConfigSortIndexes;
 import dev.toma.configuration.api.ICollectible;
 import dev.toma.configuration.api.IConfigType;
-import dev.toma.configuration.api.client.ComponentFactory;
+import dev.toma.configuration.api.TypeKey;
 import dev.toma.configuration.internal.ConfigHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,18 +20,12 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
     final Supplier<T> factory;
 
     public CollectionType(String name, List<T> entry, Supplier<T> objectFactory, String... desc) {
-        super(name, entry, desc);
+        super(TypeKey.COLLECTION, name, entry, desc);
         this.factory = objectFactory;
     }
 
     public CollectionType(String name, Supplier<T> objectFactory, String... desc) {
         this(name, new ArrayList<>(), objectFactory, desc);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public ComponentFactory getComponentFactory() {
-        return ComponentFactory.COLLECTION;
     }
 
     public void add(T t) {
@@ -80,10 +74,5 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
 
     public T createElement() {
         return factory.get();
-    }
-
-    @Override
-    public int getSortIndex() {
-        return ConfigSortIndexes.COLLECTION;
     }
 }

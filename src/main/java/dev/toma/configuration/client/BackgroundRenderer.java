@@ -27,13 +27,8 @@ public class BackgroundRenderer implements IBackgroundRenderer {
     }
 
     @Override
-    public void drawScrollbar(Minecraft mc, MatrixStack stack, int index, int displayAmount, int totalCount, int width, int y, int height) {
-        if (totalCount <= displayAmount) return;
-        double step = 1.0 / totalCount * height;
-        int scrollbarY = (int) (index * step);
-        int scrollbarHeight = (int) Math.ceil(displayAmount * step);
-        Widget.drawColorShape(stack, width - 3, y, width, y + height, 0xFF << 24);
-        Widget.drawColorShape(stack, width - 3, y + scrollbarY, width, y + scrollbarY + scrollbarHeight, 0xFFFFFFFF);
+    public void drawScrollbar(Minecraft mc, MatrixStack stack, int index, int displayAmount, int totalCount) {
+
     }
 
     @Override

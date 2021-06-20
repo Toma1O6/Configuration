@@ -3,7 +3,6 @@ package dev.toma.configuration.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import dev.toma.configuration.api.client.ComponentFactory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -14,6 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * @author Toma
  */
 public interface IConfigType<T> {
+
+    TypeKey getType();
 
     /**
      * Get ID of this config type.
@@ -106,13 +107,8 @@ public interface IConfigType<T> {
      * Set your custom index based on "where" this component should appear in UI.
      * <p> You can see default sort indexes in {@link ConfigSortIndexes} file.
      * @return Sort index of this type
+     * @deprecated Will be removed in future version. Use {@link TypeKey#getSortIndex()} instead
      */
+    @Deprecated
     int getSortIndex();
-
-    /**
-     * Component factory creates all necessary widgets for this type.
-     * @return Component factory used by this type.
-     */
-    @OnlyIn(Dist.CLIENT)
-    ComponentFactory getComponentFactory();
 }
