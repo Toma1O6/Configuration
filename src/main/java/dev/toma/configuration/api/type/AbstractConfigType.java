@@ -5,19 +5,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.IConfigType;
-import dev.toma.configuration.api.client.ComponentFactory;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import dev.toma.configuration.api.TypeKey;
 
 import java.util.Objects;
 
 public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
     private final String name;
+    protected TypeKey typeKey;
     protected String[] desc;
     private T t;
 
-    public AbstractConfigType(String entryName, T t, String... desc) {
+    public AbstractConfigType(TypeKey typeKey, String entryName, T t, String... desc) {
+        this.typeKey = typeKey;
         this.name = entryName;
         this.t = Objects.requireNonNull(t, "Null value is not allowed!");
         this.desc = desc;
@@ -26,12 +26,6 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
     @Override
     public void generateComments() {
         this.desc = this.createDescription(desc);
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public ComponentFactory getComponentFactory() {
-        return null;
     }
 
     protected String[] createDescription(String... strings) {
@@ -85,6 +79,11 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
     @Override
     public int getSortIndex() {
-        return 0;
+        return getType().getSortIndex();
+    }
+
+    @Override
+    public TypeKey getType() {
+        return typeKey;
     }
 }

@@ -3,6 +3,7 @@ package dev.toma.configuration.internal;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigPlugin;
 import dev.toma.configuration.api.ModConfig;
+import dev.toma.configuration.api.client.IModID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,8 +45,9 @@ public class FileTracker {
         }
     }
 
-    public synchronized void scheduleConfigUpdate(String modID, UpdateAction action) {
+    public synchronized void scheduleConfigUpdate(IModID iModID, UpdateAction action) {
         Entry entry = null;
+        String modID = iModID.getModID();
         for (Entry e : entryList) {
             if(e.plugin.getModID().equals(modID)) {
                 entry = e;
@@ -76,7 +78,7 @@ public class FileTracker {
             long lastModified = entry.modified;
             long fileModified = configFile.lastModified();
             if(lastModified != fileModified) {
-                scheduleConfigUpdate(entry.plugin.getModID(), UpdateAction.LOAD_WRITE);
+                scheduleConfigUpdate(entry.plugin, UpdateAction.LOAD_WRITE);
             }
         }
         Update update;

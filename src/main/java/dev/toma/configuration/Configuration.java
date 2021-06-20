@@ -38,6 +38,7 @@ public class Configuration {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("configs");
+    private static final IDistHandler distHandler = DistExecutor.safeRunForDist(() -> DistHandlerClient::new, () -> DistHandlerServer::new);
     private static final Map<String, ModConfig> configMap = new HashMap<>();
 
     public Configuration() {
@@ -48,7 +49,7 @@ public class Configuration {
     void setupClient(FMLClientSetupEvent event) {
         synchronized (configMap) {
             for (ModConfig config : configMap.values()) {
-                DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> ClientManager.enableConfigButton(config));
+                distHandler.runConfigSetup(config);
             }
         }
     }
@@ -61,6 +62,10 @@ public class Configuration {
         synchronized (configMap) {
             return Optional.ofNullable(configMap.get(modID));
         }
+    }
+
+    public static IDistHandler distHandler() {
+        return distHandler;
     }
 
     private synchronized void init() {
