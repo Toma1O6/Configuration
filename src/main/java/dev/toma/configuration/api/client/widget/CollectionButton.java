@@ -24,7 +24,7 @@ public class CollectionButton<T extends IConfigType<?>> extends ConfigWidget<Col
         try {
             return new CollectionButton<>(widgetType, (CollectionType<T>) type, x, y, width, height);
         } catch (ClassCastException cce) {
-            throw new ReportedException(CrashReport.makeCrashReport(cce, "Collection button is applicable only for collection config types"));
+            throw new ReportedException(CrashReport.forThrowable(cce, "Collection button is applicable only for collection config types"));
         }
     }
 }
