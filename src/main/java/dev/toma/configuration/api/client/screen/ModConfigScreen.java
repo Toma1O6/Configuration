@@ -32,6 +32,6 @@ public class ModConfigScreen extends WidgetScreen<ObjectType> {
     }
 
     private void backToMenu_Clicked(double mouseX, double mouseY, int button) {
-        minecraft.displayGuiScreen(parentScreen);
+        minecraft.setScreen(parentScreen);
     }
 }

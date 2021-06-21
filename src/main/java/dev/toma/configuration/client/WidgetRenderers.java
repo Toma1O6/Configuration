@@ -11,16 +11,16 @@ import net.minecraft.util.text.ITextComponent;
 public final class WidgetRenderers {
 
     public static void renderLabel(LabelWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        FontRenderer renderer = mc.fontRenderer;
+        FontRenderer renderer = mc.font;
         ITextComponent component = widget.content;
         String text = component.getString();
-        float left = widget.horizontalAlignment.getHorizontalPos(widget.getX(), widget.getWidth(), renderer.getStringWidth(text));
-        float top = widget.verticalAlignment.getVerticalPos(widget.getY(), widget.getHeight(), renderer.FONT_HEIGHT);
-        renderer.drawStringWithShadow(stack, text, left, top, widget.foreground);
+        float left = widget.horizontalAlignment.getHorizontalPos(widget.getX(), widget.getWidth(), renderer.width(text));
+        float top = widget.verticalAlignment.getVerticalPos(widget.getY(), widget.getHeight(), renderer.lineHeight);
+        renderer.drawShadow(stack, text, left, top, widget.foreground);
     }
 
     public static void renderButton(ButtonWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        FontRenderer renderer = mc.fontRenderer;
+        FontRenderer renderer = mc.font;
         int x1 = widget.getX();
         int y1 = widget.getY();
         int x2 = x1 + widget.getWidth();
@@ -34,7 +34,7 @@ public final class WidgetRenderers {
     }
 
     public static void renderBinaryButton(TwoStateButton widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        FontRenderer renderer = mc.fontRenderer;
+        FontRenderer renderer = mc.font;
         String value = widget.getContent();
         int x1 = widget.getX();
         int y1 = widget.getY();
@@ -46,15 +46,15 @@ public final class WidgetRenderers {
     }
 
     public static void renderArrayButton(ArrayButtonWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        renderDefaultButton(mc.fontRenderer, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.border, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
+        renderDefaultButton(mc.font, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.border, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
     }
 
     public static void renderCollectionButton(CollectionButton<?> widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        renderDefaultButton(mc.fontRenderer, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.borderColor, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
+        renderDefaultButton(mc.font, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.borderColor, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
     }
 
     public static void renderObjectButton(ObjectTypeWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        renderDefaultButton(mc.fontRenderer, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.border, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
+        renderDefaultButton(mc.font, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.border, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
     }
 
     private static void renderDefaultButton(FontRenderer renderer, MatrixStack stack, boolean hovered, int x, int y, int width, int height, int border, int background, int foreground, HorizontalAlignment hAlignment, VerticalAlignment vAlignment, String text) {

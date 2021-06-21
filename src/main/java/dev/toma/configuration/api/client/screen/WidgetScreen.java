@@ -43,12 +43,12 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     protected abstract Collection<IConfigType<?>> getCollection(T t);
 
     @Override
-    public void closeScreen() {
-        minecraft.displayGuiScreen(parentScreen);
+    public void onClose() {
+        minecraft.setScreen(parentScreen);
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         widgets.forEach(Widget::save);
         if (!(parentScreen instanceof IConfigurationScreen)) {
             FileTracker.INSTANCE.scheduleConfigUpdate(context, FileTracker.UpdateAction.WRITE);
@@ -157,12 +157,12 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     }
 
     protected void renderHeaderAndFooter(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, IBackgroundRenderer renderer) {
-        matrixStack.push(); // render header and footer above background
+        matrixStack.pushPose(); // render header and footer above background
         matrixStack.translate(0, 0, 1);
         renderer.drawHeaderBackground(minecraft, matrixStack, 0, 0, width, headerHeight, mouseX, mouseY, partialTicks, this);
         renderer.drawFooterBackground(minecraft, matrixStack, 0, height - footerHeight, width, footerHeight, mouseX, mouseY, partialTicks, this);
         Widget.drawCenteredString(type.getId().toUpperCase(), matrixStack, font, 0, 0, width, headerHeight, renderer.getTitleColor());
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public interface BooleanFunction<T> {

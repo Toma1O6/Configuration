@@ -56,12 +56,12 @@ public class WidgetList implements Iterable<Widget> {
 
     public void render(MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float partialTicks, int index) {
         IWidgetManager manager = parent.getConfiguration().settings().getWidgetManager();
-        stack.push();
+        stack.pushPose();
         stack.translate(0, 0, 1);
         for (Widget control : controls) {
             renderWidget(manager, control, stack, mc, mouseX, mouseY, partialTicks);
         }
-        stack.pop();
+        stack.popPose();
         for (int i = index; i < Math.min(configElements.size(), index + displayAmount); i++) {
             configElements.get(i).renderLayout(widget -> renderWidget(manager, widget, stack, mc, mouseX, mouseY, partialTicks));
         }
