@@ -24,7 +24,7 @@ public class ObjectTypeWidget extends ConfigWidget<ObjectType> {
         try {
             return new ObjectTypeWidget(widgetType, (ObjectType) type, x, y, width, height);
         } catch (ClassCastException cce) {
-            throw new ReportedException(CrashReport.makeCrashReport(cce, "Object button is applicable only for object config types"));
+            throw new ReportedException(CrashReport.forThrowable(cce, "Object button is applicable only for object config types"));
         }
     }
 }

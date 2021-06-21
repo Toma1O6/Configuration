@@ -99,7 +99,7 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
     }
 
     private void showDescription(MatrixStack matrixStack, Minecraft mc, int mouseX, int mouseY) {
-        parent.renderWrappedToolTip(matrixStack, description, mouseX, mouseY, mc.fontRenderer);
+        parent.renderWrappedToolTip(matrixStack, description, mouseX, mouseY, mc.font);
     }
 
     class Layout implements Iterable<Widget> {

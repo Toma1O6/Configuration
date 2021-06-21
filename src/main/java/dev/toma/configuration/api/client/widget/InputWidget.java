@@ -35,9 +35,24 @@ public class InputWidget extends ConfigWidget<IConfigType<?>> {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (visibilityState.isDisabled()) {
             return false;
+        } else {
+            if (Screen.isSelectAll(keyCode)) {
+
+            } else if (Screen.isCopy(keyCode)) {
+
+            } else if (Screen.isPaste(keyCode)) {
+
+            } else if (Screen.isCut(keyCode)) {
+
+            }
         }
 
         return false;
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        return super.charTyped(codePoint, modifiers);
     }
 
     @Override
@@ -45,8 +60,12 @@ public class InputWidget extends ConfigWidget<IConfigType<?>> {
         ++cursorTick;
     }
 
-    public void insertText(String text) {
-
+    public void insertText(String insertionEntry) {
+        String s1 = text.substring(0, cursorIndex);
+        String s2 = text.substring(cursorIndex);
+        text = s1 + insertionEntry + s2;
+        setCursorPosition(cursorIndex + insertionEntry.length());
+        setSelectionIndex(cursorIndex);
     }
 
     public int getSelectionStart(FontRenderer renderer) {
@@ -61,7 +80,7 @@ public class InputWidget extends ConfigWidget<IConfigType<?>> {
         if (i == 0)
             return getX(padding);
         if (i == text.length() - 1)
-            return getX(padding + renderer.getStringWidth(text));
+            return getX(padding + renderer.width(text));
         return getSubstringPosition(renderer, i);
     }
 
@@ -71,7 +90,7 @@ public class InputWidget extends ConfigWidget<IConfigType<?>> {
 
     private int getSubstringPosition(FontRenderer renderer, int endIndex) {
         String sub = text.substring(0, endIndex);
-        int width = renderer.getStringWidth(text);
+        int width = renderer.width(text);
         return getX(padding + width);
     }
 

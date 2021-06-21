@@ -24,7 +24,7 @@ public class ArrayButtonWidget extends ConfigWidget<ArrayType<?>> {
         try {
             return new ArrayButtonWidget(widgetType, (ArrayType<?>) type, x, y, width, height);
         } catch (ClassCastException cce) {
-            throw new ReportedException(CrashReport.makeCrashReport(cce, "Array button is applicable only for array config types"));
+            throw new ReportedException(CrashReport.forThrowable(cce, "Array button is applicable only for array config types"));
         }
     }
 }
