@@ -29,7 +29,7 @@ public final class WidgetPlacers {
                 break;
             case TEXT_FIELD_SLIDER:
                 layout.addColumn(IColumn.relative(0.3, WidgetType.LABEL));
-                layout.addColumn(IColumn.relative(0.3, WidgetType.INT_SLIDER));
+                layout.addColumn(IColumn.relative(0.3, WidgetType.INT_SLIDER).setStyle("hideValue"));
                 layout.addColumn(IColumn.relative(0.4, WidgetType.INTEGER_TEXT_FIELD).setMargin(2));
                 break;
         }
@@ -48,7 +48,7 @@ public final class WidgetPlacers {
                 break;
             case TEXT_FIELD_SLIDER:
                 layout.addColumn(IColumn.relative(0.3, WidgetType.LABEL));
-                layout.addColumn(IColumn.relative(0.3, WidgetType.DOUBLE_SLIDER));
+                layout.addColumn(IColumn.relative(0.3, WidgetType.DOUBLE_SLIDER).setStyle("hideValue"));
                 layout.addColumn(IColumn.relative(0.4, WidgetType.DOUBLE_TEXT_FIELD).setMargin(2));
                 break;
         }

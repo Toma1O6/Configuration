@@ -38,8 +38,19 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
         scrollIndexCallback = widgets::scrollIndexChanged;
     }
 
+    /**
+     * Use this method to create "static" widgets, i.e. back to menu buttons etc.
+     * Basically all buttons, which will be always shown on the screen regardless of
+     * current scroll offset.
+     * @param list Widget container containing all widgets for this screen
+     */
     protected abstract void initWidgets(WidgetList list);
 
+    /**
+     * Used to extract all config types from specified config type container
+     * @param t Type container
+     * @return Collection of all config types which are contained in this config container
+     */
     protected abstract Collection<IConfigType<?>> getCollection(T t);
 
     @Override
@@ -59,6 +70,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         backgroundRenderer.drawBackground(minecraft, matrixStack, mouseX, mouseY, partialTicks, this);
         renderHeaderAndFooter(matrixStack, mouseX, mouseY, partialTicks, backgroundRenderer);
+        backgroundRenderer.drawScrollbar(minecraft, matrixStack, scrollIndex, displayCount, widgets.configElementCount(), width, headerHeight, height - footerHeight - headerHeight);
         widgets.render(matrixStack, minecraft, mouseX, mouseY, partialTicks, scrollIndex);
     }
 
@@ -123,6 +135,9 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
         return context.getModConfig();
     }
 
+    /**
+     * @return Opening context containing ModConfig
+     */
     public ScreenOpenContext getOpeningContext() {
         return context;
     }
