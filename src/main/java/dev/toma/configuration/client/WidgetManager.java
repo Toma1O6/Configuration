@@ -1,7 +1,6 @@
 package dev.toma.configuration.client;
 
 import dev.toma.configuration.api.TypeKey;
-import dev.toma.configuration.api.client.IStyleContainer;
 import dev.toma.configuration.api.client.IWidgetManager;
 import dev.toma.configuration.api.client.IWidgetPlacer;
 import dev.toma.configuration.api.client.IWidgetRenderer;

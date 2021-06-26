@@ -44,8 +44,8 @@ public class TestWidgetManager {
     @Test
     public void testStyleOutput() {
         IWidgetStyle<LabelWidget> labelStyle = widget -> {};
-        manager.setStyle(WidgetType.LABEL, labelStyle);
-        Assert.assertEquals(labelStyle, manager.getStyle(WidgetType.LABEL));
+        manager.setStyle(WidgetType.LABEL, labelStyle, null);
+        Assert.assertEquals(labelStyle, manager.getStyle(WidgetType.LABEL, null));
     }
 
     private <V> void testPlace(IConfigType<V> type, ConfigLayoutWidget<? extends IConfigType<V>> layout) {}
