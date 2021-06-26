@@ -21,7 +21,7 @@ public class ModConfigScreen extends WidgetScreen<ObjectType> {
 
     @Override
     protected void initWidgets(WidgetList list) {
-        ButtonWidget backToMenu = list.addControlWidget(WidgetType.BUTTON, 10, height - 25, width - 20, 20);
+        ButtonWidget backToMenu = list.addControlWidget(WidgetType.BUTTON, 10, height - 30, width - 20, 20);
         backToMenu.clicked = this::backToMenu_Clicked;
         backToMenu.text = new StringTextComponent("Back");
     }

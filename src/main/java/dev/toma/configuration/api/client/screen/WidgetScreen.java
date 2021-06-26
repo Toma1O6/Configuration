@@ -19,7 +19,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     protected final Screen parentScreen;
     protected final T type;
     protected int headerHeight = 30;
-    protected int footerHeight = 30;
+    protected int footerHeight = 40;
     private final WidgetList widgets;
     private final ScreenOpenContext context;
     protected final Callback<Integer> scrollIndexCallback;
@@ -112,7 +112,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     private boolean invokeOnWidget(BooleanFunction<Widget> action) {
         boolean b = false;
         for (Widget widget : widgets) {
-            if (action.apply(widget))
+            if (widget.visibilityState.isEnabled() && action.apply(widget))
                 b = true;
         }
         return b;
@@ -131,6 +131,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     protected final void init() {
         this.displayCount = editDisplayAmount(height - headerHeight - footerHeight - 10) / 25;
         widgets.setDisplayAmount(displayCount);
+        setScrollIndex(0);
         setWidgetPanelSize(widgets);
         widgets.init(this::initWidgets, () -> getCollection(type));
     }
@@ -145,6 +146,10 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
      * @param layout Layout widget
      */
     public void layoutPost(ConfigLayoutWidget<?> layout) {
+    }
+
+    public WidgetList getWidgets() {
+        return widgets;
     }
 
     protected int editDisplayAmount(int displayCount) {

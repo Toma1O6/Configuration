@@ -17,7 +17,8 @@ import java.util.function.Supplier;
 
 public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType<List<T>> implements ICollectible<T> {
 
-    final Supplier<T> factory;
+    private boolean lockedSize;
+    private final Supplier<T> factory;
 
     public CollectionType(String name, List<T> entry, Supplier<T> objectFactory, String... desc) {
         super(TypeKey.COLLECTION, name, entry, desc);
@@ -26,6 +27,11 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
 
     public CollectionType(String name, Supplier<T> objectFactory, String... desc) {
         this(name, new ArrayList<>(), objectFactory, desc);
+    }
+
+    public CollectionType<T> lockSize() {
+        this.lockedSize = true;
+        return this;
     }
 
     public void add(T t) {
@@ -38,6 +44,10 @@ public class CollectionType<T extends IConfigType<?>> extends AbstractConfigType
 
     public void remove(int index) {
         this.get().remove(index);
+    }
+
+    public boolean hasLockedSize() {
+        return lockedSize;
     }
 
     @Override
