@@ -50,6 +50,10 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
         return this;
     }
 
+    public float floatValue() {
+        return get().floatValue();
+    }
+
     public DoubleType setDisplay(NumberDisplayType type) {
         this.displayType = type;
         return this;

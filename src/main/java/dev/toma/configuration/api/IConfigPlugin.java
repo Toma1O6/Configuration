@@ -29,6 +29,11 @@ public interface IConfigPlugin extends IModID {
         return this.getModID();
     }
 
+    /**
+     * You can change all client related stuff in this method.
+     * Unsafe for server, check which side you're on!
+     * @param settings Settings API
+     */
     @OnlyIn(Dist.CLIENT)
     default void setupClient(IClientSettings settings) {}
 }
