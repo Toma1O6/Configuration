@@ -3,8 +3,8 @@ package dev.toma.configuration.api;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.util.function.Consumer;
 
 /**
  * Skeleton for all config types.
@@ -14,6 +14,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 public interface IConfigType<T> {
 
+    /**
+     * Gets parent type key associated with this config type
+     * @return Typekey instance
+     */
     TypeKey getType();
 
     /**
@@ -102,6 +106,18 @@ public interface IConfigType<T> {
      *                 Acts as control for description generation
      */
     void saveData(JsonElement element, boolean isUpdate);
+
+    /**
+     * Add listener which is invoked every time config value changes
+     * @param listener The listener
+     */
+    void addListener(Consumer<T> listener);
+
+    /**
+     * Remove existing listener
+     * @param listener Listener reference
+     */
+    void removeListener(Consumer<T> listener);
 
     /**
      * Set your custom index based on "where" this component should appear in UI.

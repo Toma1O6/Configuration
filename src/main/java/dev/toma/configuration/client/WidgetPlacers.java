@@ -7,7 +7,6 @@ import dev.toma.configuration.api.client.widget.WidgetType;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
 
-@SuppressWarnings("unchecked")
 public final class WidgetPlacers {
 
     public static <V> void noPlacement(IConfigType<V> type, ConfigLayoutWidget<? extends IConfigType<V>> layout) {}
@@ -22,12 +21,16 @@ public final class WidgetPlacers {
         switch (type.getDisplayType()) {
             case TEXT_FIELD:
                 layout.addColumn(IColumn.relative(0.45, WidgetType.LABEL));
+                layout.addColumn(IColumn.relative(0.55, WidgetType.INTEGER_TEXT_FIELD).setMargin(5));
                 break;
             case SLIDER:
                 layout.addColumn(IColumn.relative(0.45, WidgetType.LABEL));
+                layout.addColumn(IColumn.relative(0.55, WidgetType.INT_SLIDER).setMargin(5));
                 break;
             case TEXT_FIELD_SLIDER:
                 layout.addColumn(IColumn.relative(0.3, WidgetType.LABEL));
+                layout.addColumn(IColumn.relative(0.3, WidgetType.INT_SLIDER));
+                layout.addColumn(IColumn.relative(0.4, WidgetType.INTEGER_TEXT_FIELD).setMargin(2));
                 break;
         }
     }
@@ -37,22 +40,29 @@ public final class WidgetPlacers {
         switch (type.getDisplayType()) {
             case TEXT_FIELD:
                 layout.addColumn(IColumn.relative(0.45, WidgetType.LABEL));
+                layout.addColumn(IColumn.relative(0.55, WidgetType.DOUBLE_TEXT_FIELD).setMargin(5));
                 break;
             case SLIDER:
                 layout.addColumn(IColumn.relative(0.45, WidgetType.LABEL));
+                layout.addColumn(IColumn.relative(0.55, WidgetType.DOUBLE_SLIDER).setMargin(5));
                 break;
             case TEXT_FIELD_SLIDER:
                 layout.addColumn(IColumn.relative(0.3, WidgetType.LABEL));
+                layout.addColumn(IColumn.relative(0.3, WidgetType.DOUBLE_SLIDER));
+                layout.addColumn(IColumn.relative(0.4, WidgetType.DOUBLE_TEXT_FIELD).setMargin(2));
                 break;
         }
     }
 
     public static void stringPlacement(IConfigType<?> t, ConfigLayoutWidget<? extends IConfigType<?>> layout) {
         layout.addColumn(IColumn.relative(0.45, WidgetType.LABEL));
+        layout.addColumn(IColumn.relative(0.55, WidgetType.STRING_TEXT_FIELD).setMargin(5));
     }
 
     public static void colorPlacement(IConfigType<?> t, ConfigLayoutWidget<? extends IConfigType<?>> layout) {
         layout.addColumn(IColumn.relative(0.45, WidgetType.LABEL));
+        layout.addColumn(IColumn.absolute(20, WidgetType.COLOR_DISPLAY));
+        layout.addColumn(IColumn.relative(0.55, WidgetType.STRING_TEXT_FIELD).setMargin(2));
     }
 
     public static void arrayPlacement(IConfigType<?> t, ConfigLayoutWidget<? extends IConfigType<?>> layout) {

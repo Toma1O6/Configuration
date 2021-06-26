@@ -6,8 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.TypeKey;
+import dev.toma.configuration.util.IListener;
+import dev.toma.configuration.util.Listeners;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
@@ -15,6 +18,7 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
     protected TypeKey typeKey;
     protected String[] desc;
     private T t;
+    private final IListener<T> valueChanged = Listeners.multipleElementListener();
 
     public AbstractConfigType(TypeKey typeKey, String entryName, T t, String... desc) {
         this.typeKey = typeKey;
@@ -39,7 +43,11 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
 
     @Override
     public void set(T t) {
+        T old = this.t;
         this.t = t;
+        if (!old.equals(this.t)) {
+            valueChanged.invoke(this.t);
+        }
     }
 
     @Override
@@ -85,5 +93,15 @@ public abstract class AbstractConfigType<T> implements IConfigType<T> {
     @Override
     public TypeKey getType() {
         return typeKey;
+    }
+
+    @Override
+    public void addListener(Consumer<T> listener) {
+        valueChanged.listen(listener);
+    }
+
+    @Override
+    public void removeListener(Consumer<T> listener) {
+        valueChanged.stopListening(listener);
     }
 }

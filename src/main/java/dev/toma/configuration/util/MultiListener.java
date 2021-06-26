@@ -1,12 +1,12 @@
 package dev.toma.configuration.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class MultiListener<E> implements IListener<E> {
 
-    private final List<Consumer<E>> subscribers = new ArrayList<>();
+    private final Set<Consumer<E>> subscribers = new HashSet<>();
 
     @Override
     public void invoke(E arg) {
