@@ -34,16 +34,18 @@ public interface IColumn {
     /**
      * Sets margin
      * @param px Pixel offset (different for each Gui scale)
+     * @return This column
      */
     IColumn setMargin(int px);
 
     /**
      * Set widget style which will be used in this column
      * @param styleID String key of style, which should be registered using {@link dev.toma.configuration.api.client.IWidgetManager#setStyle(WidgetType, IWidgetStyle, String)}
+     * @return This column
      */
     IColumn setStyle(String styleID);
 
-    /**
+    /*
      * Called internally by widget containers, you shouldn't need to worry about this method at all
      */
     Widget init(IConfigType<?> configType, IClientSettings settings, int x, int y, int width, int height);
@@ -65,7 +67,7 @@ public interface IColumn {
 
     /**
      * Creates column with size relative to container size
-     * @param displayPart Value of how much space from container size will this column take. Range [0.0 -> 1.0].
+     * @param displayPart Value of how much space from container size will this column take. Range [0.0 - 1.0].
      *                    Total sum of relative column sizes should always be equal to 1!
      * @param type Widget type for this column
      * @return Column with size relative to container size
