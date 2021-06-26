@@ -2,9 +2,8 @@ package dev.toma.configuration.api;
 
 /**
  * Interface which allows formatting on decimal config types
- * @param <T> Formatting type
  */
-public interface IFormatted<T> {
+public interface IFormatted {
 
     /**
      * Get formatted string for display in UI
@@ -14,8 +13,8 @@ public interface IFormatted<T> {
 
     /**
      * Formats input number
-     * @param t Object which will be formatted
+     * @param value Object which will be formatted
      * @return Formatted string
      */
-    String format(T t);
+    String format(Object value);
 }

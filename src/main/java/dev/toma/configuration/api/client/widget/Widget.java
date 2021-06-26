@@ -4,10 +4,13 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.HorizontalAlignment;
+import dev.toma.configuration.api.client.ScreenOpenContext;
 import dev.toma.configuration.api.client.VerticalAlignment;
+import dev.toma.configuration.api.client.screen.WidgetScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
@@ -80,6 +83,9 @@ public abstract class Widget implements ITickable {
 
     public void playPressSound() {
         Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+    }
+
+    public void assignParent(WidgetScreen<?> screen) {
     }
 
     public WidgetType<?> getWidgetType() {
@@ -163,6 +169,6 @@ public abstract class Widget implements ITickable {
     public static void drawAlignedString(String text, MatrixStack stack, FontRenderer renderer, int x, int y, int width, int height, int color, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
         float left = horizontalAlignment.getHorizontalPos(x, width, renderer.width(text));
         float top = verticalAlignment.getVerticalPos(y, height, renderer.lineHeight);
-        renderer.draw(stack, text, left, top, color);
+        renderer.drawShadow(stack, text, left, top, color);
     }
 }

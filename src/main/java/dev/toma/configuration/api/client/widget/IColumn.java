@@ -15,7 +15,11 @@ public interface IColumn {
 
     IColumn setMargin(int px);
 
+    IColumn setStyle(String styleID);
+
     Widget init(IConfigType<?> configType, IClientSettings settings, int x, int y, int width, int height);
+
+    WidgetType<?> getType();
 
     static IColumn absolute(int px, @Nullable WidgetType<?> type) {
         return new Absolute(px, type);
@@ -28,6 +32,7 @@ public interface IColumn {
     abstract class AbstractColumn implements IColumn {
 
         private int margin;
+        private String styleID;
         private final WidgetType<?> type;
 
         public AbstractColumn(WidgetType<?> type) {
@@ -46,11 +51,22 @@ public interface IColumn {
         }
 
         @Override
+        public IColumn setStyle(String styleID) {
+            this.styleID = styleID;
+            return this;
+        }
+
+        @Override
         public Widget init(IConfigType<?> configType, IClientSettings settings, int x, int y, int width, int height) {
             if (type == null) {
                 return null;
             }
-            return type.instantiateWidget(configType, settings, x + margin, y, width - margin, height);
+            return type.instantiateWidget(configType, settings, x + margin, y, width - margin, height, styleID);
+        }
+
+        @Override
+        public WidgetType<?> getType() {
+            return type;
         }
     }
 
@@ -78,7 +94,7 @@ public interface IColumn {
 
     class Relative extends AbstractColumn {
 
-        final double part;
+        double part;
 
         protected Relative(double part, WidgetType<?> type) {
             super(type);
@@ -95,6 +111,14 @@ public interface IColumn {
         @Override
         public int getColumnWidth(int totalWidth) {
             return (int) (totalWidth * part);
+        }
+
+        public double getPart() {
+            return part;
+        }
+
+        public void addPart(double part) {
+            this.part += part;
         }
     }
 }
