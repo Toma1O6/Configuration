@@ -15,7 +15,7 @@ public interface IWidgetManager {
 
     <W extends Widget> IWidgetRenderer<W> getRenderer(WidgetType<W> type);
 
-    <W extends Widget> void setStyle(WidgetType<W> type, IWidgetStyle<W> style);
+    <W extends Widget> void setStyle(WidgetType<W> type, IWidgetStyle<W> style, String key);
 
-    <W extends Widget> IWidgetStyle<W> getStyle(WidgetType<W> type);
+    <W extends Widget> IWidgetStyle<W> getStyle(WidgetType<W> type, String key);
 }

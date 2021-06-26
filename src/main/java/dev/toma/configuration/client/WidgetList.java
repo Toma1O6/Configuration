@@ -5,14 +5,11 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.TypeKey;
-import dev.toma.configuration.api.client.IClientSettings;
-import dev.toma.configuration.api.client.IWidgetManager;
-import dev.toma.configuration.api.client.IWidgetPlacer;
-import dev.toma.configuration.api.client.ScreenOpenContext;
+import dev.toma.configuration.api.client.*;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import dev.toma.configuration.api.client.widget.ConfigLayoutWidget;
-import dev.toma.configuration.api.client.IWidgetRenderer;
 import dev.toma.configuration.api.client.widget.Widget;
+import dev.toma.configuration.api.client.widget.WidgetState;
 import dev.toma.configuration.api.client.widget.WidgetType;
 import net.minecraft.client.Minecraft;
 
@@ -63,8 +60,13 @@ public class WidgetList implements Iterable<Widget> {
         }
         stack.popPose();
         for (int i = index; i < Math.min(configElements.size(), index + displayAmount); i++) {
-            configElements.get(i).renderLayout(widget -> renderWidget(manager, widget, stack, mc, mouseX, mouseY, partialTicks));
+            configElements.get(i).renderWidget(widget -> renderWidget(manager, widget, stack, mc, mouseX, mouseY, partialTicks), stack, mc, mouseX, mouseY);
         }
+    }
+
+    public void markForUpdate() {
+        this.loaded = false;
+        configElements.clear();
     }
 
     public void init(Consumer<WidgetList> action, Supplier<Collection<IConfigType<?>>> supplier) {
@@ -78,7 +80,7 @@ public class WidgetList implements Iterable<Widget> {
     }
 
     public void addConfigTypes(Collection<IConfigType<?>> unsortedCollection) {
-        unsortedCollection.stream().sorted(Comparator.comparingInt(IConfigType::getSortIndex)).forEach(this::addConfigWidget);
+        unsortedCollection.stream().sorted(Comparator.comparingInt(t -> t.getType().getSortIndex())).forEach(this::addConfigWidget);
     }
 
     @Override
@@ -87,7 +89,12 @@ public class WidgetList implements Iterable<Widget> {
     }
 
     public <W extends Widget> W addControlWidget(WidgetType<W> type, int x, int y, int width, int height) {
-        W w = type.instantiateWidget(null, parent.getConfiguration().settings(), x, y, width, height);
+        return addControlWidget(type, x, y, width, height, null);
+    }
+
+    public <W extends Widget> W addControlWidget(WidgetType<W> type, int x, int y, int width, int height, String style) {
+        W w = type.instantiateWidget(null, parent.getConfiguration().settings(), x, y, width, height, style);
+        w.assignParent(parent);
         controls.add(w);
         return w;
     }
@@ -122,6 +129,7 @@ public class WidgetList implements Iterable<Widget> {
             int j = i - scroll;
             int yOffset = j * margin;
             Widget widget = configElements.get(i);
+            widget.visibilityState = j >= 0 && j < displayAmount ? WidgetState.VISIBLE : WidgetState.HIDDEN;
             widget.resize(x, y + yOffset, width, 20);
         }
     }
@@ -144,7 +152,15 @@ public class WidgetList implements Iterable<Widget> {
 
         @Override
         public boolean hasNext() {
-            return secondList ? (index - list1Size) < configElements.size() : index < list1Size;
+            if (secondList) {
+                return index - list1Size < configElements.size();
+            } else {
+                if (index == list1Size) {
+                    return (index - list1Size) < configElements.size();
+                } else {
+                    return index < list1Size;
+                }
+            }
         }
 
         @Override

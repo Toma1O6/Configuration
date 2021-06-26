@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DoubleType extends AbstractConfigType<Double> implements IFormatted<Double>, IBounded<Double> {
+public class DoubleType extends AbstractConfigType<Double> implements IFormatted, IBounded<Double> {
 
     private DecimalFormat format;
     private final double min, max;
@@ -57,9 +57,7 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
 
     @Override
     public void set(Double aDouble) {
-        double d = MathHelper.clamp(aDouble, min, max);
-        String f = format(d);
-        super.set(Double.parseDouble(f));
+        super.set(MathHelper.clamp(aDouble, min, max));
     }
 
     @Override
@@ -81,11 +79,11 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     }
 
     @Override
-    public String format(Double num) {
+    public String format(Object value) {
         if(format != null) {
-            return format.format(num);
+            return format.format(value);
         }
-        return num.toString();
+        return value.toString();
     }
 
     @Override
