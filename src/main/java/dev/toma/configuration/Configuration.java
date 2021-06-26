@@ -12,6 +12,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -98,7 +99,8 @@ public class Configuration {
                 Class<?> aClass = Class.forName(classpath);
                 Class<? extends IConfigPlugin> instance = aClass.asSubclass(IConfigPlugin.class);
                 IConfigPlugin plugin = instance.newInstance();
-                pluginList.add(plugin);
+                if (!plugin.getModID().equals(MODID) || !FMLEnvironment.production)
+                    pluginList.add(plugin);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
                 LOGGER.error("Failed to load {}", classpath, e);
             }

@@ -26,6 +26,8 @@ public class ClientSettings implements IClientSettings {
         widgetManager = new WidgetManager();
 
         widgetManager.setStyle(WidgetType.LABEL, widget -> widget.foreground = getBackgroundRenderer().getDefaultLabelForegroundColor(), null);
+        widgetManager.setStyle(WidgetType.INT_SLIDER, widget -> widget.showValue = false, "hideValue");
+        widgetManager.setStyle(WidgetType.DOUBLE_SLIDER, widget -> widget.showValue = false, "hideValue");
     }
 
     @Override

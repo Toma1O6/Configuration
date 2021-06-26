@@ -122,8 +122,10 @@ public final class WidgetRenderers {
         Widget.drawColorShape(stack, sliderLeft, y, sliderLeft + sliderWidth, y + height, colorFlag ? 0xFFFFFF00 : widget.background);
         Widget.drawColorShape(stack, sliderLeft + 1, y + 1, sliderLeft + sliderWidth - 1, y + height - 1, 0xFFFFFFFF);
 
-        String text = widget.formatter.apply(widget.getConfigType().get().toString());
-        Widget.drawCenteredString(text, stack, mc.font, x, y + 3, width, height, widget.foreground);
+        if (widget.showValue) {
+            String text = widget.formatter.apply(widget.getConfigType().get().toString());
+            Widget.drawCenteredString(text, stack, mc.font, x, y + 3, width, height, widget.foreground);
+        }
     }
 
     public static void renderColorDisplay(ColorDisplayWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {

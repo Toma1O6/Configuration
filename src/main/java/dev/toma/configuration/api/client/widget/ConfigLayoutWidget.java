@@ -104,8 +104,10 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
     private boolean invokeOnWidget(WidgetScreen.BooleanFunction<Widget> action) {
         boolean b = false;
         for (Widget widget : layout) {
-            if (widget.visibilityState.isEnabled() && action.apply(widget))
+            if (widget.visibilityState.isEnabled() && action.apply(widget)) {
                 b = true;
+                mouseOverTime = 0;
+            }
         }
         return b;
     }

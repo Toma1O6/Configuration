@@ -17,6 +17,7 @@ public class SliderWidget<N extends Number, T extends IConfigType<N> & IBounded<
     public int unsetBorderColor;
     public int setBorderColor;
     public boolean dragging;
+    public boolean showValue = true;
     public Function<String, String> formatter = Function.identity();
 
     public float sliderValue;
