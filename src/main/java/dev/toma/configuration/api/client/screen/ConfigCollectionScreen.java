@@ -5,8 +5,8 @@ import dev.toma.configuration.api.client.ScreenOpenContext;
 import dev.toma.configuration.api.client.widget.*;
 import dev.toma.configuration.api.type.CollectionType;
 import dev.toma.configuration.client.WidgetList;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,10 +47,10 @@ public class ConfigCollectionScreen extends WidgetScreen<CollectionType<?>> {
         int widgetSize = (width - totalEmptySpaceSize) / controlButtonCount;
 
         ButtonWidget buttonBack = list.addControlWidget(WidgetType.BUTTON, margin, height - 30, widgetSize, 20);
-        buttonBack.text = new StringTextComponent("Back");
+        buttonBack.text = new TextComponent("Back");
         buttonBack.clicked = this::buttonBack_Clicked;
         ButtonWidget addElement = list.addControlWidget(WidgetType.BUTTON, 2 * margin + widgetSize, height - 30, widgetSize, 20);
-        addElement.text = new StringTextComponent("Add element");
+        addElement.text = new TextComponent("Add element");
         addElement.clicked = this::buttonAddElement_Clicked;
         if (type.hasLockedSize()) {
             addElement.visibilityState = WidgetState.DISABLED;

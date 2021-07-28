@@ -7,7 +7,7 @@ import dev.toma.configuration.api.IBounded;
 import dev.toma.configuration.api.NumberDisplayType;
 import dev.toma.configuration.api.TypeKey;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class IntType extends AbstractConfigType<Integer> implements IBounded<Int
     }
 
     public IntType(String name, int entry, int min, int max, String... desc) {
-        super(TypeKey.INT, name, MathHelper.clamp(entry, min, max), desc);
+        super(TypeKey.INT, name, Mth.clamp(entry, min, max), desc);
         this.min = min;
         this.max = max;
     }
@@ -74,7 +74,7 @@ public class IntType extends AbstractConfigType<Integer> implements IBounded<Int
 
     @Override
     public void set(Integer integer) {
-        super.set(MathHelper.clamp(integer, min, max));
+        super.set(Mth.clamp(integer, min, max));
     }
 
     public IntType setDisplay(NumberDisplayType type) {

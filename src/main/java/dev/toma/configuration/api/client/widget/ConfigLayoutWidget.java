@@ -1,13 +1,12 @@
 package dev.toma.configuration.api.client.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.IClientSettings;
-import dev.toma.configuration.api.client.IWidgetManager;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +19,7 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
 
     final WidgetScreen<?> parent;
     final Layout layout;
-    final List<ITextComponent> description;
+    final List<Component> description;
     final IClientSettings settings;
     int mouseOverTime;
     boolean hovered;
@@ -30,10 +29,10 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
         this.settings = screen.getOpeningContext().getModConfig().settings();
         this.parent = screen;
         this.layout = new Layout();
-        this.description = Arrays.stream(type.getComments()).map(StringTextComponent::new).collect(Collectors.toList());
+        this.description = Arrays.stream(type.getComments()).map(TextComponent::new).collect(Collectors.toList());
     }
 
-    public void renderWidget(Consumer<Widget> render, MatrixStack stack, Minecraft mc, int mouseX, int mouseY) {
+    public void renderWidget(Consumer<Widget> render, PoseStack stack, Minecraft mc, int mouseX, int mouseY) {
         layout.drawElements(render);
         hovered = isMouseOver(mouseX, mouseY);
         if (mouseOverTime >= 20) {
@@ -112,8 +111,8 @@ public class ConfigLayoutWidget<T extends IConfigType<?>> extends ConfigWidget<T
         return b;
     }
 
-    private void showDescription(MatrixStack matrixStack, Minecraft mc, int mouseX, int mouseY) {
-        parent.renderWrappedToolTip(matrixStack, description, mouseX, mouseY, mc.font);
+    private void showDescription(PoseStack poseStack, Minecraft mc, int mouseX, int mouseY) {
+        parent.renderComponentToolTip(poseStack, description, mouseX, mouseY, mc.font);
     }
 
     class Layout implements Iterable<Widget> {

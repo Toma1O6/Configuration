@@ -2,12 +2,15 @@ package dev.toma.configuration.api.client.widget;
 
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.ModConfig;
-import dev.toma.configuration.api.client.*;
+import dev.toma.configuration.api.client.HorizontalAlignment;
+import dev.toma.configuration.api.client.IClientSettings;
+import dev.toma.configuration.api.client.ScreenOpenContext;
+import dev.toma.configuration.api.client.VerticalAlignment;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import dev.toma.configuration.api.type.CollectionType;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
 
 public class CollectionButton<T extends IConfigType<?>> extends ConfigWidget<CollectionType<T>> {
 

@@ -10,7 +10,7 @@ import dev.toma.configuration.api.client.widget.IWidgetStyle;
 import dev.toma.configuration.api.client.widget.LabelWidget;
 import dev.toma.configuration.api.client.widget.WidgetType;
 import dev.toma.configuration.client.WidgetManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

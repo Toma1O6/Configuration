@@ -1,45 +1,46 @@
 package dev.toma.configuration.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.api.client.HorizontalAlignment;
 import dev.toma.configuration.api.client.VerticalAlignment;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import dev.toma.configuration.api.client.widget.*;
 import dev.toma.configuration.api.type.ArrayType;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 public final class WidgetRenderers {
 
-    public static void renderLabel(LabelWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        FontRenderer renderer = mc.font;
-        ITextComponent component = widget.content;
+    public static void renderLabel(LabelWidget widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+        Font renderer = mc.font;
+        Component component = widget.content;
         String text = renderer.plainSubstrByWidth(component.getString(), widget.getWidth());
         float left = widget.horizontalAlignment.getHorizontalPos(widget.getX(), widget.getWidth(), renderer.width(text));
         float top = widget.verticalAlignment.getVerticalPos(widget.getY(), widget.getHeight(), renderer.lineHeight);
         renderer.drawShadow(stack, text, left, top, widget.foreground);
     }
 
-    public static void renderButton(ButtonWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        FontRenderer renderer = mc.font;
+    public static void renderButton(ButtonWidget widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+        Font renderer = mc.font;
         int x1 = widget.getX();
         int y1 = widget.getY();
         int x2 = x1 + widget.getWidth();
         int y2 = y1 + widget.getHeight();
         Widget.drawColorShape(stack, x1, y1, x2, y2, widget.isMouseOver(mouseX, mouseY) ? 0xFFFFFF00 : widget.borderColor);
         Widget.drawColorShape(stack, x1 + 1, y1 + 1, x2 - 1, y2 - 1, widget.background);
-        ITextComponent content = widget.text;
+        Component content = widget.text;
         if (content != null) {
             Widget.drawAlignedString(content.getString(), stack, renderer, x1, y1, widget.getWidth(), widget.getHeight(), widget.foreground, widget.horizontalAlignment, widget.verticalAlignment);
         }
     }
 
-    public static void renderBinaryButton(TwoStateButton widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
-        FontRenderer renderer = mc.font;
+    public static void renderBinaryButton(TwoStateButton widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+        Font renderer = mc.font;
         String value = widget.getContent();
         int x1 = widget.getX();
         int y1 = widget.getY();
@@ -50,22 +51,22 @@ public final class WidgetRenderers {
         Widget.drawCenteredString(value, stack, renderer, x1, y1, widget.getWidth(), widget.getHeight(), widget.foreground);
     }
 
-    public static <A> void renderArrayButton(ArrayButtonWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    public static <A> void renderArrayButton(ArrayButtonWidget widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         ArrayType<A> type = (ArrayType<A>) widget.getConfigType();
         A value = type.get();
         String text = type.getElementDisplayName(value);
         renderDefaultButton(mc.font, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.border, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, text);
     }
 
-    public static void renderCollectionButton(CollectionButton<?> widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    public static void renderCollectionButton(CollectionButton<?> widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         renderDefaultButton(mc.font, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.borderColor, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
     }
 
-    public static void renderObjectButton(ObjectTypeWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    public static void renderObjectButton(ObjectTypeWidget widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         renderDefaultButton(mc.font, stack, widget.isMouseOver(mouseX, mouseY), widget.getX(), widget.getY(), widget.getWidth(), widget.getHeight(), widget.border, widget.background, widget.foreground, widget.horizontalAlignment, widget.verticalAlignment, widget.getConfigType().getId());
     }
 
-    public static void renderTextField(InputWidget<?, ?> widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    public static void renderTextField(InputWidget<?, ?> widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         int x = widget.getX();
         int y = widget.getY();
         int width = widget.getWidth();
@@ -76,7 +77,7 @@ public final class WidgetRenderers {
         String rawText = widget.getText();
         int textFieldWidth = widget.getWidth(-widget.padding * 2);
         String text = mc.font.plainSubstrByWidth(rawText.substring(widget.characterOffset), textFieldWidth);
-        mc.font.drawShadow(stack, widget.isValid ? text : TextFormatting.ITALIC + text, x + widget.padding, y + (height - mc.font.lineHeight) / 2.0f, widget.isValid ? widget.foreground : 0xFFAA4444);
+        mc.font.drawShadow(stack, widget.isValid ? text : ChatFormatting.ITALIC + text, x + widget.padding, y + (height - mc.font.lineHeight) / 2.0f, widget.isValid ? widget.foreground : 0xFFAA4444);
 
         // cursor
         if (widget.listening && widget.cursorTick % 20 < 10) {
@@ -89,18 +90,18 @@ public final class WidgetRenderers {
 
         if (!widget.isValid) {
             // show error
-            List<ITextComponent> error = widget.getErrorMessage();
+            List<Component> error = widget.getErrorMessage();
             if (!error.isEmpty()) {
                 WidgetScreen<?> parent = widget.parent;
                 stack.pushPose();
                 stack.translate(0, 0, 2);
-                parent.renderWrappedToolTip(stack, error, widget.getX() - 15, widget.getY() - 12 * (error.size() - 1), mc.font);
+                parent.renderComponentToolTip(stack, error, widget.getX() - 15, widget.getY() - 12 * (error.size() - 1), mc.font);
                 stack.popPose();
             }
         }
     }
 
-    public static void renderSlider(SliderWidget<?, ?> widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    public static void renderSlider(SliderWidget<?, ?> widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         float value = widget.sliderValue;
         int x = widget.getX();
         int y = widget.getY();
@@ -128,19 +129,19 @@ public final class WidgetRenderers {
         }
     }
 
-    public static void renderColorDisplay(ColorDisplayWidget widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    public static void renderColorDisplay(ColorDisplayWidget widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         int x = widget.getX();
         int y = widget.getY();
         int width = widget.getWidth();
         int height = widget.getHeight();
         Widget.drawColorShape(stack, x, y, x + width, y + height, widget.background);
-        mc.getTextureManager().bind(widget.backgroundTexture);
+        RenderSystem.setShaderTexture(0, widget.backgroundTexture);
         Widget.drawTexturedShape(stack, x + 1, y + 1, x + width - 1, y + height - 1);
         int color = widget.getConfigType().getColor();
         Widget.drawColorShape(stack, x + 1, y + 1, x + width - 1, y + height - 1, color);
     }
 
-    private static void renderDefaultButton(FontRenderer renderer, MatrixStack stack, boolean hovered, int x, int y, int width, int height, int border, int background, int foreground, HorizontalAlignment hAlignment, VerticalAlignment vAlignment, String text) {
+    private static void renderDefaultButton(Font renderer, PoseStack stack, boolean hovered, int x, int y, int width, int height, int border, int background, int foreground, HorizontalAlignment hAlignment, VerticalAlignment vAlignment, String text) {
         Widget.drawColorShape(stack, x, y, x + width, y + height, hovered ? 0xFFFFFF00 : border);
         Widget.drawColorShape(stack, x + 1, y + 1, x + width - 1, y + height - 1, background);
         Widget.drawAlignedString(text, stack, renderer, x, y, width, height, foreground, hAlignment, vAlignment);

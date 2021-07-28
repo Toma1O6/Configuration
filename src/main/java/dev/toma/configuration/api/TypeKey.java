@@ -1,7 +1,7 @@
 package dev.toma.configuration.api;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public final class TypeKey {
 

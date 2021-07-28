@@ -2,7 +2,7 @@ package dev.toma.configuration.internal;
 
 import dev.toma.configuration.api.*;
 import dev.toma.configuration.api.type.*;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -54,7 +54,7 @@ public class ConfigWriter implements IConfigWriter {
 
     @Override
     public <T extends IConfigType<?>> ArrayType<T> writeArray(String name, int selectedIndex, T[] values, String... description) {
-        ArrayType<T> type = new ArrayType<>(name, values[MathHelper.clamp(selectedIndex, 0, values.length - 1)], values, description);
+        ArrayType<T> type = new ArrayType<>(name, values[Mth.clamp(selectedIndex, 0, values.length - 1)], values, description);
         return write(type);
     }
 

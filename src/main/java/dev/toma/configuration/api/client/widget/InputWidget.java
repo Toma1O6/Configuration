@@ -7,16 +7,16 @@ import dev.toma.configuration.api.client.screen.WidgetScreen;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
 import dev.toma.configuration.api.type.StringType;
-import net.minecraft.client.KeyboardListener;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.util.SharedConstants;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
@@ -45,7 +45,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
     public int cursorIndex;
     public int cursorTick;
     public int characterOffset;
-    public List<ITextComponent> errorMessage = Collections.emptyList();
+    public List<Component> errorMessage = Collections.emptyList();
     protected String text;
     private final Consumer<V> listenerRef;
     public WidgetScreen<?> parent;
@@ -78,7 +78,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
         if (message == null)
             errorMessage = Collections.emptyList();
         else
-            errorMessage = Arrays.stream(message).map(StringTextComponent::new).collect(Collectors.toList());
+            errorMessage = Arrays.stream(message).map(TextComponent::new).collect(Collectors.toList());
     }
 
     @Override
@@ -120,7 +120,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
             return false;
         } else {
             Minecraft mc = Minecraft.getInstance();
-            KeyboardListener kbHandler = mc.keyboardHandler;
+            KeyboardHandler kbHandler = mc.keyboardHandler;
             if (Screen.isCopy(keyCode)) { // copy field content
                 kbHandler.setClipboard(text);
             } else if (Screen.isPaste(keyCode)) { // paste clipboard content
@@ -207,7 +207,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
         return text;
     }
 
-    public List<ITextComponent> getErrorMessage() {
+    public List<Component> getErrorMessage() {
         return errorMessage;
     }
 
@@ -215,7 +215,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
         isValid = true;
     }
 
-    private int getSubstringPosition(FontRenderer renderer, int endIndex) {
+    private int getSubstringPosition(Font renderer, int endIndex) {
         String sub = text.substring(0, endIndex);
         int width = renderer.width(text);
         return getX(padding + width);
@@ -223,8 +223,8 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
 
     private void setCursorPosition(int pos) {
         int textLength = text.length();
-        cursorIndex = MathHelper.clamp(pos, 0, textLength);
-        FontRenderer renderer = Minecraft.getInstance().font;
+        cursorIndex = Mth.clamp(pos, 0, textLength);
+        Font renderer = Minecraft.getInstance().font;
         int textFieldWidth = getWidth(-padding * 2);
         String oldTrimmedText = renderer.plainSubstrByWidth(text, textFieldWidth);
         int index = oldTrimmedText.length() + characterOffset;
@@ -236,7 +236,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
         } else if (cursorIndex <= characterOffset) {
             characterOffset -= characterOffset - cursorIndex;
         }
-        characterOffset = MathHelper.clamp(characterOffset, 0, textLength);
+        characterOffset = Mth.clamp(characterOffset, 0, textLength);
     }
 
     private void setCursorPositionOnMouse(double mouseX, double mouseY) {
@@ -244,8 +244,8 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
     }
 
     private int getCursorPositionFromMouse(double mouseX, double mouseY) {
-        int i = MathHelper.floor(mouseX - getX()) - padding;
-        FontRenderer renderer = Minecraft.getInstance().font;
+        int i = Mth.floor(mouseX - getX()) - padding;
+        Font renderer = Minecraft.getInstance().font;
         return renderer.plainSubstrByWidth(text, i).length();
     }
 

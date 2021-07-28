@@ -8,9 +8,9 @@ import dev.toma.configuration.api.client.ScreenOpenContext;
 import dev.toma.configuration.api.client.VerticalAlignment;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import dev.toma.configuration.api.type.ObjectType;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
 
 public class ObjectTypeWidget extends ConfigWidget<ObjectType> {
 

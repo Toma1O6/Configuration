@@ -2,7 +2,7 @@ package dev.toma.configuration.api.client;
 
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * Config screen factory.

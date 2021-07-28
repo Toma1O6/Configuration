@@ -3,9 +3,9 @@ package dev.toma.configuration.api.client.widget;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.type.ColorType;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.minecraft.resources.ResourceLocation;
 
 public class ColorDisplayWidget extends ConfigWidget<ColorType> {
 

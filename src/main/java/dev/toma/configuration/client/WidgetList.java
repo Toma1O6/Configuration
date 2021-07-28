@@ -1,6 +1,6 @@
 package dev.toma.configuration.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.ModConfig;
@@ -51,7 +51,7 @@ public class WidgetList implements Iterable<Widget> {
         reorderElements();
     }
 
-    public void render(MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float partialTicks, int index) {
+    public void render(PoseStack stack, Minecraft mc, int mouseX, int mouseY, float partialTicks, int index) {
         IWidgetManager manager = parent.getConfiguration().settings().getWidgetManager();
         stack.pushPose();
         stack.translate(0, 0, 1);
@@ -134,7 +134,7 @@ public class WidgetList implements Iterable<Widget> {
         }
     }
 
-    private <W extends Widget> void renderWidget(IWidgetManager manager, W widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
+    private <W extends Widget> void renderWidget(IWidgetManager manager, W widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float delta) {
         if (widget.visibilityState.isHidden())
             return;
         WidgetType<W> type = (WidgetType<W>) widget.getWidgetType();
