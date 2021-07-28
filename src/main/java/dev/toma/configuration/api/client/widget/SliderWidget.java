@@ -32,8 +32,7 @@ public class SliderWidget<N extends Number, T extends IConfigType<N> & IBounded<
         getConfigType().addListener(valueExternalChangeCallback);
         updateSliderValue(getConfigType().get());
 
-        if (type instanceof IFormatted) {
-            IFormatted formatted = (IFormatted) type;
+        if (type instanceof IFormatted formatted) {
             formatter = formatted::format;
         }
 

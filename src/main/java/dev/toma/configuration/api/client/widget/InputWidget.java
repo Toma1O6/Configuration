@@ -54,8 +54,7 @@ public abstract class InputWidget<V, T extends IConfigType<V>> extends ConfigWid
         super(widgetType, type, x, y, width, height);
         background = 0xFF << 24;
         foreground = 0xFFFFFFFF;
-        if (type instanceof IFormatted) {
-            IFormatted formatted = (IFormatted) type;
+        if (type instanceof IFormatted formatted) {
             formatter = v -> formatted.format(type.get());
         }
         onValueChanged(type.get());
