@@ -42,7 +42,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
 
     /**
      * Use this method to create "static" widgets, i.e. back to menu buttons etc.
-     * Basically all buttons, which will be always shown on the screen regardless of
+     * Basically all buttons, which will always be shown on the screen regardless of
      * current scroll offset.
      * @param list Widget container containing all widgets for this screen
      */
