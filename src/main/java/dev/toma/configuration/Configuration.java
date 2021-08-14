@@ -65,10 +65,6 @@ public class Configuration {
         }
     }
 
-    public static IDistHandler distHandler() {
-        return distHandler;
-    }
-
     private synchronized void init() {
         List<IConfigPlugin> loadedPlugins = new ArrayList<>();
         loadPlugins(loadedPlugins);

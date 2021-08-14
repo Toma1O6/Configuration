@@ -6,6 +6,8 @@ import dev.toma.configuration.api.client.IClientSettings;
 import dev.toma.configuration.api.client.IScreenFactory;
 import dev.toma.configuration.api.client.ScreenOpenContext;
 import dev.toma.configuration.api.type.ObjectType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
@@ -14,6 +16,7 @@ import java.util.Optional;
 
 public class DistHandlerClient implements IDistHandler {
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void runConfigSetup(ModConfig config) {
         IConfigPlugin plugin = config.getPlugin();
