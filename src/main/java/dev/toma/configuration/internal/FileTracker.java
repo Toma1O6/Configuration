@@ -6,43 +6,43 @@ import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.client.IModID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class FileTracker {
 
     public static final FileTracker INSTANCE = new FileTracker();
-    private final Logger logger = LogManager.getLogger("FileChecker");
+    private static final File CONFIG_DIR = new File(".", "config");
+    private final Logger logger = LogManager.getLogger("Configuration");
+    private final Marker marker = MarkerManager.getMarker("FileTracker");
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final List<Entry> entryList = new ArrayList<>();
     private Queue<Update> scheduledUpdates;
+    private Future<?> updateTask;
+
+    public synchronized void registerConfigTrackingEntry(ModConfig config) {
+        registerConfigTrackingEntry(config, true);
+    }
 
     public synchronized void initialize(Collection<ModConfig> configs) {
         scheduledUpdates = new ArrayDeque<>(configs.size());
-        File dir = new File(".", "config");
-        if(!dir.exists()) {
-            dir.mkdirs();
+        if(!CONFIG_DIR.exists()) {
+            CONFIG_DIR.mkdirs();
         }
-        if(!dir.isDirectory()) {
+        if(!CONFIG_DIR.isDirectory()) {
             throw new IllegalStateException("Config file must be a directory!");
         }
         for (ModConfig config : configs) {
-            IConfigPlugin plugin = config.getPlugin();
-            File configFile = new File(dir, plugin.getConfigFileName() + ".json");
-            if(!configFile.exists()) {
-                logger.error("Couldn't locate config file {}, excluding {} from FileChecker", configFile.getAbsolutePath(), plugin.getModID());
-                continue;
-            }
-            entryList.add(new Entry(plugin, configFile.getName(), configFile.lastModified()));
-            logger.info("Added {} plugin into FileTracker", plugin.getModID());
+            registerConfigTrackingEntry(config, false);
         }
-        if(!entryList.isEmpty()) {
-            executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(dir), 10L, 4, TimeUnit.SECONDS);
-        }
+        updateSchedulerJob();
     }
 
     public synchronized void scheduleConfigUpdate(IModID iModID, UpdateAction action) {
@@ -63,6 +63,29 @@ public class FileTracker {
             if(!scheduledUpdates.offer(update)) {
                 logger.error("Failed to schedule config update for {}", modID);
             }
+        }
+    }
+
+    private void registerConfigTrackingEntry(ModConfig config, boolean refreshScheduler) {
+        IConfigPlugin plugin = config.getPlugin();
+        File configFile = new File(CONFIG_DIR, plugin.getConfigFileName() + ".json");
+        if (!configFile.exists()) {
+            logger.error(marker, "Couldn't locate config file {}, excluding {} from FileTracker", configFile.getAbsolutePath(), plugin.getModID());
+            return;
+        }
+        entryList.add(new Entry(plugin, configFile.getName(), configFile.lastModified()));
+        logger.info(marker, "Added {} plugin into FileTracker", plugin.getModID());
+        if (refreshScheduler) {
+            updateSchedulerJob();
+        }
+    }
+
+    private void updateSchedulerJob() {
+        if (updateTask != null) {
+            updateTask.cancel(false);
+        }
+        if (!entryList.isEmpty()) {
+            updateTask = executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(CONFIG_DIR), 10L, 4, TimeUnit.SECONDS);
         }
     }
 
