@@ -55,6 +55,13 @@ public class Configuration {
         }
     }
 
+    public static void loadConfig(IConfigPlugin plugin) {
+        ModConfig config = ConfigHandler.loadModConfig(plugin);
+        if (config != null) {
+            configMap.put(plugin.getModID(), config);
+        }
+    }
+
     /**
      * @param modID ID of very specific mod
      * @return {@link Optional} object possibly containing {@link ObjectType} for specified modID
@@ -70,10 +77,7 @@ public class Configuration {
         loadPlugins(loadedPlugins);
 
         for (IConfigPlugin plugin : loadedPlugins) {
-            ModConfig config = ConfigHandler.loadModConfig(plugin);
-            if (config != null) {
-                configMap.put(plugin.getModID(), config);
-            }
+            loadConfig(plugin);
         }
         FileTracker.INSTANCE.initialize(configMap.values());
     }
