@@ -2,15 +2,15 @@ package dev.toma.configuration.api.client.widget;
 
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.client.HorizontalAlignment;
-import dev.toma.configuration.api.client.IClientSettings;
 import dev.toma.configuration.api.client.VerticalAlignment;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
+@Deprecated
 public class ButtonWidget extends Widget {
 
     public int borderColor;
     public ClickCallback clicked;
-    public ITextComponent text;
+    public Component text;
     public HorizontalAlignment horizontalAlignment;
     public VerticalAlignment verticalAlignment;
 

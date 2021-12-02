@@ -8,7 +8,7 @@ import dev.toma.configuration.api.client.ScreenOpenContext;
 import dev.toma.configuration.api.type.ObjectType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 
@@ -25,7 +25,7 @@ public class DistHandlerClient implements IDistHandler {
         ModList list = ModList.get();
         Optional<? extends ModContainer> optionalModContainer = list.getModContainerById(plugin.getModID());
         ScreenOpenContext ctx = ScreenOpenContext.of(config);
-        optionalModContainer.ifPresent(container -> container.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc, screen) -> factory.createScreen(screen, config, ctx)));
+        optionalModContainer.ifPresent(container -> container.registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> factory.createScreen(screen, config, ctx))));
         plugin.setupClient(settings);
     }
 }

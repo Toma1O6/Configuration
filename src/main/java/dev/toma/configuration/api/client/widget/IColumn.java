@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
  *
  * You can also set custom margin and style for each column
  */
+@Deprecated
 public interface IColumn {
 
     /**

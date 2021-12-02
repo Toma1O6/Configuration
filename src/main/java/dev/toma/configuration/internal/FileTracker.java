@@ -23,7 +23,7 @@ public class FileTracker {
     private final Logger logger = LogManager.getLogger("Configuration");
     private final Marker marker = MarkerManager.getMarker("FileTracker");
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private final List<Entry> entryList = new ArrayList<>();
+    private final Set<Entry> entryList = new HashSet<>();
     private Queue<Update> scheduledUpdates;
     private Future<?> updateTask;
 
@@ -137,6 +137,19 @@ public class FileTracker {
             this.plugin = plugin;
             this.filePath = filePath;
             this.modified = modified;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Entry entry = (Entry) o;
+            return filePath.equals(entry.filePath);
+        }
+
+        @Override
+        public int hashCode() {
+            return filePath.hashCode();
         }
     }
 

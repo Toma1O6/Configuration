@@ -1,6 +1,6 @@
 package dev.toma.configuration.api.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.api.client.widget.Widget;
 import net.minecraft.client.Minecraft;
 
@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
  * Handles rendering of specific widget
  * @param <W> Type of widget
  */
+@Deprecated
 public interface IWidgetRenderer<W extends Widget> {
 
     /**
@@ -19,5 +20,5 @@ public interface IWidgetRenderer<W extends Widget> {
      * @param mouseY Y mouse position
      * @param partialTicks Partial render tick time, used for interpolation
      */
-    void renderWidget(W widget, MatrixStack stack, Minecraft mc, int mouseX, int mouseY, float partialTicks);
+    void renderWidget(W widget, PoseStack stack, Minecraft mc, int mouseX, int mouseY, float partialTicks);
 }

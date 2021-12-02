@@ -31,6 +31,7 @@ public interface IClientSettings {
      * WidgetManager is API for complete widget control
      * @return IWidgetManager implementation
      */
+    @Deprecated
     IWidgetManager getWidgetManager();
 
     // ================= INTERNAL STUFF

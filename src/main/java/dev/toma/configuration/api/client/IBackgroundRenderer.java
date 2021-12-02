@@ -1,6 +1,6 @@
 package dev.toma.configuration.api.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.api.client.screen.WidgetScreen;
 import dev.toma.configuration.api.client.widget.ITickable;
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,7 @@ public interface IBackgroundRenderer extends ITickable {
      * @param partialTicks partial render ticks, used for interpolation
      * @param screen Screen being rendered
      */
-    void drawBackground(Minecraft mc, MatrixStack stack, int mouseX, int mouseY, float partialTicks, WidgetScreen<?> screen);
+    void drawBackground(Minecraft mc, PoseStack stack, int mouseX, int mouseY, float partialTicks, WidgetScreen<?> screen);
 
     /**
      * Draws extra stuff into screen header
@@ -36,7 +36,7 @@ public interface IBackgroundRenderer extends ITickable {
      * @param partialTicks partial render ticks, used for interpolation
      * @param screen Screen being rendered
      */
-    void drawHeaderBackground(Minecraft mc, MatrixStack stack, int x, int y, int headerWidth, int headerHeight, int mouseX, int mouseY, float partialTicks, WidgetScreen<?> screen);
+    void drawHeaderBackground(Minecraft mc, PoseStack stack, int x, int y, int headerWidth, int headerHeight, int mouseX, int mouseY, float partialTicks, WidgetScreen<?> screen);
 
     /**
      * Draws extra stuff into screen footer
@@ -51,7 +51,7 @@ public interface IBackgroundRenderer extends ITickable {
      * @param partialTicks partial render ticks, used for interpolation
      * @param screen Screen being rendered
      */
-    void drawFooterBackground(Minecraft mc, MatrixStack stack, int x, int y, int footerWidth, int footerHeight, int mouseX, int mouseY, float partialTicks, WidgetScreen<?> screen);
+    void drawFooterBackground(Minecraft mc, PoseStack stack, int x, int y, int footerWidth, int footerHeight, int mouseX, int mouseY, float partialTicks, WidgetScreen<?> screen);
 
     /**
      * Draws scrollbar
@@ -64,7 +64,7 @@ public interface IBackgroundRenderer extends ITickable {
      * @param y Scrollbar Y position
      * @param height Screen height excluding header and footer
      */
-    void drawScrollbar(Minecraft mc, MatrixStack stack, int index, int displayAmount, int totalCount, int width, int y, int height);
+    void drawScrollbar(Minecraft mc, PoseStack stack, int index, int displayAmount, int totalCount, int width, int y, int height);
 
     /**
      * @return Default label color. Applied via default label style

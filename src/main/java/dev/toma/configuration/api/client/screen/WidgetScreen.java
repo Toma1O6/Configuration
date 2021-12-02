@@ -1,16 +1,18 @@
 package dev.toma.configuration.api.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.client.IBackgroundRenderer;
 import dev.toma.configuration.api.client.ScreenOpenContext;
-import dev.toma.configuration.api.client.widget.*;
+import dev.toma.configuration.api.client.widget.ConfigLayoutWidget;
+import dev.toma.configuration.api.client.widget.ITickable;
+import dev.toma.configuration.api.client.widget.Widget;
 import dev.toma.configuration.client.WidgetList;
 import dev.toma.configuration.internal.FileTracker;
 import dev.toma.configuration.util.Callback;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collection;
 
@@ -28,7 +30,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     protected int displayCount;
 
     public WidgetScreen(Screen screen, T type, ScreenOpenContext context) {
-        super(new StringTextComponent(type.getId()));
+        super(new TextComponent(type.getId()));
         this.parentScreen = screen;
         this.type = type;
         this.context = context;
@@ -67,7 +69,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         backgroundRenderer.drawBackground(minecraft, matrixStack, mouseX, mouseY, partialTicks, this);
         renderHeaderAndFooter(matrixStack, mouseX, mouseY, partialTicks, backgroundRenderer);
         backgroundRenderer.drawScrollbar(minecraft, matrixStack, scrollIndex, displayCount, widgets.configElementCount(), width, headerHeight, height - footerHeight - headerHeight);
@@ -176,7 +178,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
         this.scrollIndexCallback.call(scrollIndex);
     }
 
-    protected void renderHeaderAndFooter(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, IBackgroundRenderer renderer) {
+    protected void renderHeaderAndFooter(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, IBackgroundRenderer renderer) {
         matrixStack.pushPose(); // render header and footer above background
         matrixStack.translate(0, 0, 1);
         renderer.drawHeaderBackground(minecraft, matrixStack, 0, 0, width, headerHeight, mouseX, mouseY, partialTicks, this);

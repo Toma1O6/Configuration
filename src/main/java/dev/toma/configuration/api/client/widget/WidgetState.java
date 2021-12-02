@@ -1,5 +1,6 @@
 package dev.toma.configuration.api.client.widget;
 
+@Deprecated
 public enum WidgetState {
     VISIBLE,
     DISABLED,

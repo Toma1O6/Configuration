@@ -8,6 +8,7 @@ import dev.toma.configuration.api.type.IntType;
 
 import javax.annotation.Nullable;
 
+@Deprecated
 public final class WidgetType<W extends Widget> {
 
     public static final WidgetType<LabelWidget> LABEL = new WidgetType<>("configuration.label", LabelWidget::new);

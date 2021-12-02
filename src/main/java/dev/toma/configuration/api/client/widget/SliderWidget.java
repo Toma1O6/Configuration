@@ -5,13 +5,14 @@ import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.IFormatted;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.minecraft.util.Mth;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@Deprecated
 public class SliderWidget<N extends Number, T extends IConfigType<N> & IBounded<N>> extends ConfigWidget<T> {
 
     public int unsetBorderColor;
@@ -32,8 +33,7 @@ public class SliderWidget<N extends Number, T extends IConfigType<N> & IBounded<
         getConfigType().addListener(valueExternalChangeCallback);
         updateSliderValue(getConfigType().get());
 
-        if (type instanceof IFormatted) {
-            IFormatted formatted = (IFormatted) type;
+        if (type instanceof IFormatted formatted) {
             formatter = formatted::format;
         }
 
@@ -111,11 +111,11 @@ public class SliderWidget<N extends Number, T extends IConfigType<N> & IBounded<
     private void updateConfigValue() {
         double min = getConfigType().getMin().doubleValue();
         double max = getConfigType().getMax().doubleValue();
-        double value = MathHelper.clamp(min + (max - min) * sliderValue, min, max);
+        double value = Mth.clamp(min + (max - min) * sliderValue, min, max);
         getConfigType().set(mapper.apply(value));
     }
 
     private void setSliderValue(float value) {
-        sliderValue = MathHelper.clamp(value, 0.0F, 1.0F);
+        sliderValue = Mth.clamp(value, 0.0F, 1.0F);
     }
 }

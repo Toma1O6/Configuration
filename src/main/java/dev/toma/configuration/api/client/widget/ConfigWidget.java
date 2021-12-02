@@ -2,6 +2,7 @@ package dev.toma.configuration.api.client.widget;
 
 import dev.toma.configuration.api.IConfigType;
 
+@Deprecated
 public abstract class ConfigWidget<T extends IConfigType<?>> extends Widget {
 
     public ConfigWidget(WidgetType<?> widgetType, T t, int x, int y, int width, int height) {

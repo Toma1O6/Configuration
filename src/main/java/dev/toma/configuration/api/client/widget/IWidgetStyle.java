@@ -6,6 +6,7 @@ package dev.toma.configuration.api.client.widget;
  * this is the best place to set your desired values
  * @param <W> Type of widget
  */
+@Deprecated
 public interface IWidgetStyle<W extends Widget> {
     /**
      * Applies style on supplied widget

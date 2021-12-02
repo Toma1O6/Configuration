@@ -6,8 +6,8 @@ import dev.toma.configuration.api.client.widget.ButtonWidget;
 import dev.toma.configuration.api.client.widget.WidgetType;
 import dev.toma.configuration.api.type.ObjectType;
 import dev.toma.configuration.client.WidgetList;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -23,7 +23,7 @@ public class ModConfigScreen extends WidgetScreen<ObjectType> {
     protected void initWidgets(WidgetList list) {
         ButtonWidget backToMenu = list.addControlWidget(WidgetType.BUTTON, 10, height - 30, width - 20, 20);
         backToMenu.clicked = this::backToMenu_Clicked;
-        backToMenu.text = new StringTextComponent("Back");
+        backToMenu.text = new TextComponent("Back");
     }
 
     @Override

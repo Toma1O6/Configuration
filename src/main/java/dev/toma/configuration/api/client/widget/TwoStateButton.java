@@ -1,9 +1,10 @@
 package dev.toma.configuration.api.client.widget;
 
 import dev.toma.configuration.api.IConfigType;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 
+@Deprecated
 public class TwoStateButton extends ConfigWidget<IConfigType<Boolean>> {
 
     public int borderColor;

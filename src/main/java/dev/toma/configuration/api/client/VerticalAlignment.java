@@ -1,5 +1,6 @@
 package dev.toma.configuration.api.client;
 
+@Deprecated
 public enum VerticalAlignment {
 
     TOP, CENTER, BOTTOM;

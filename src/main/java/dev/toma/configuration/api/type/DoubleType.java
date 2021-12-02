@@ -8,7 +8,7 @@ import dev.toma.configuration.api.IFormatted;
 import dev.toma.configuration.api.NumberDisplayType;
 import dev.toma.configuration.api.TypeKey;
 import dev.toma.configuration.internal.ConfigHandler;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -27,7 +27,7 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
     }
 
     public DoubleType(String name, double entry, double min, double max, String... desc) {
-        super(TypeKey.DOUBLE, name, MathHelper.clamp(entry, min, max), desc);
+        super(TypeKey.DOUBLE, name, Mth.clamp(entry, min, max), desc);
         this.min = min;
         this.max = max;
     }
@@ -61,7 +61,7 @@ public class DoubleType extends AbstractConfigType<Double> implements IFormatted
 
     @Override
     public void set(Double aDouble) {
-        super.set(MathHelper.clamp(aDouble, min, max));
+        super.set(Mth.clamp(aDouble, min, max));
     }
 
     @Override

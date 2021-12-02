@@ -59,6 +59,7 @@ public class Configuration {
         ModConfig config = ConfigHandler.loadModConfig(plugin);
         if (config != null) {
             configMap.put(plugin.getModID(), config);
+            FileTracker.INSTANCE.registerConfigTrackingEntry(config);
         }
     }
 
@@ -89,8 +90,8 @@ public class Configuration {
         for (ModFileScanData data : scanDataList) {
             Iterable<ModFileScanData.AnnotationData> annotationData = data.getAnnotations();
             for (ModFileScanData.AnnotationData annotation : annotationData) {
-                if(Objects.equals(annotation.getAnnotationType(), type)) {
-                    classes.add(annotation.getMemberName());
+                if(Objects.equals(annotation.annotationType(), type)) {
+                    classes.add(annotation.memberName());
                 }
             }
         }

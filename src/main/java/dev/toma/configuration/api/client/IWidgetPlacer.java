@@ -8,6 +8,7 @@ import dev.toma.configuration.api.client.widget.IColumn;
  * Widget placer handles placement into container. Defines what type of widget is placed and where.
  * Refer to {@link dev.toma.configuration.client.WidgetPlacers} for examples
  */
+@Deprecated
 public interface IWidgetPlacer {
 
     /**

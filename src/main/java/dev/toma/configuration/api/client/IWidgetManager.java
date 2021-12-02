@@ -8,6 +8,7 @@ import dev.toma.configuration.api.client.widget.WidgetType;
 /**
  * Provides complete control over widget rendering, placing and styling
  */
+@Deprecated
 public interface IWidgetManager {
 
     /**

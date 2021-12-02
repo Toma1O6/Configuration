@@ -7,6 +7,7 @@ import dev.toma.configuration.api.client.widget.WidgetType;
 import dev.toma.configuration.api.type.DoubleType;
 import dev.toma.configuration.api.type.IntType;
 
+@Deprecated
 public final class WidgetPlacers {
 
     public static <V> void noPlacement(IConfigType<V> type, ConfigLayoutWidget<? extends IConfigType<V>> layout) {}

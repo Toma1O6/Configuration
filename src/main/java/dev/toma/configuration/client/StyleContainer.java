@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Deprecated
 public class StyleContainer<W extends Widget> implements IStyleContainer<W> {
 
     private final Map<String, IWidgetStyle<W>> styleMap = new HashMap<>();

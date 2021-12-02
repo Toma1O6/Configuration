@@ -5,11 +5,12 @@ import dev.toma.configuration.api.client.HorizontalAlignment;
 import dev.toma.configuration.api.client.VerticalAlignment;
 import dev.toma.configuration.api.type.ArrayType;
 import dev.toma.configuration.util.ArrayUtils;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.util.Mth;
 
+@Deprecated
 @SuppressWarnings("unchecked")
 public class ArrayButtonWidget extends ConfigWidget<ArrayType<?>> {
 
@@ -26,7 +27,7 @@ public class ArrayButtonWidget extends ConfigWidget<ArrayType<?>> {
 
         Object obj = type.get();
         Object[] values = type.collect();
-        int index = MathHelper.clamp(ArrayUtils.indexOf_ref(obj, values), 0, values.length);
+        int index = Mth.clamp(ArrayUtils.indexOf_ref(obj, values), 0, values.length);
         safetySet(index);
     }
 
