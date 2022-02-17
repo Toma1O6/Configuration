@@ -5,7 +5,9 @@ import dev.toma.configuration.api.IConfigType;
 import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.client.IBackgroundRenderer;
 import dev.toma.configuration.api.client.ScreenOpenContext;
-import dev.toma.configuration.api.client.widget.*;
+import dev.toma.configuration.api.client.widget.ConfigLayoutWidget;
+import dev.toma.configuration.api.client.widget.ITickable;
+import dev.toma.configuration.api.client.widget.Widget;
 import dev.toma.configuration.client.WidgetList;
 import dev.toma.configuration.internal.FileTracker;
 import dev.toma.configuration.util.Callback;
@@ -62,7 +64,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     public void removed() {
         widgets.forEach(Widget::save);
         if (!(parentScreen instanceof IConfigurationScreen)) {
-            FileTracker.INSTANCE.scheduleConfigUpdate(context, FileTracker.UpdateAction.WRITE);
+            FileTracker.INSTANCE.runConfigUpdateAsync(context, FileTracker.UpdateAction.WRITE);
         }
     }
 
