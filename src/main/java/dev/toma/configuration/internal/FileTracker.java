@@ -124,7 +124,6 @@ public class FileTracker {
                 ConfigHandler.write(entry);
                 break;
         }
-        System.out.println("updating");
     }
 
     static class Entry {
