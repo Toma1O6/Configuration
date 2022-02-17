@@ -91,17 +91,17 @@ public class ConfigHandler {
         }
     }
 
-    public synchronized static void write(ModConfig config, FileTracker.Entry entry) {
+    public synchronized static void write(FileTracker.Entry entry) {
         File configDir = new File(".", "config");
         if (!configDir.exists() || !configDir.isDirectory()) {
             Configuration.LOGGER.fatal("Couldn't locate config directory at {}", configDir.getAbsolutePath());
             return;
         }
-        File jsonFile = new File(configDir, config.getPlugin().getConfigFileName() + ".json");
+        ModConfig config = entry.config;
+        File jsonFile = new File(configDir, entry.filePath);
         if (!jsonFile.exists()) {
             return;
         }
         writeData(config, jsonFile, true);
-        entry.modified = jsonFile.lastModified();
     }
 }

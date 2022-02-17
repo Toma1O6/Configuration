@@ -4,15 +4,18 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.api.IConfigPlugin;
 import dev.toma.configuration.api.ModConfig;
 import dev.toma.configuration.api.client.IModID;
+import dev.toma.configuration.exception.ConfigLoadDataException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,160 +25,116 @@ public class FileTracker {
     private static final File CONFIG_DIR = new File(".", "config");
     private final Logger logger = LogManager.getLogger("Configuration");
     private final Marker marker = MarkerManager.getMarker("FileTracker");
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private final Set<Entry> entryList = new HashSet<>();
-    private Queue<Update> scheduledUpdates;
-    private Future<?> updateTask;
+    private final Map<String, Entry> entryList = new HashMap<>();
+    private final Set<String> ourPaths = new HashSet<>();
+    private final Set<String> expectedChanges = new HashSet<>();
+    private final WatchService watchService;
+    private final ScheduledExecutorService asyncService = Executors.newSingleThreadScheduledExecutor();
 
-    public synchronized void registerConfigTrackingEntry(ModConfig config) {
-        registerConfigTrackingEntry(config, true);
+    public FileTracker() {
+        WatchService service = null;
+        try {
+            service = FileSystems.getDefault().newWatchService();
+        } catch (IOException e) {
+            logger.fatal(marker, "!! Watch service create failed, files will not be synchronized automatically !!");
+            logger.fatal(marker, e.toString());
+        } finally {
+            this.watchService = service;
+        }
     }
 
-    public synchronized void initialize(Collection<ModConfig> configs) {
-        scheduledUpdates = new ArrayDeque<>(configs.size());
+    public void initialize(Collection<ModConfig> configs) {
         if(!CONFIG_DIR.exists()) {
             CONFIG_DIR.mkdirs();
         }
         if(!CONFIG_DIR.isDirectory()) {
             throw new IllegalStateException("Config file must be a directory!");
         }
-        for (ModConfig config : configs) {
-            registerConfigTrackingEntry(config, false);
-        }
-        updateSchedulerJob();
+        configs.forEach(this::registerConfigTrackingEntry);
+        initializeWatchService();
     }
 
-    public synchronized void scheduleConfigUpdate(IModID iModID, UpdateAction action) {
-        Entry entry = null;
-        String modID = iModID.getModID();
-        for (Entry e : entryList) {
-            if(e.plugin.getModID().equals(modID)) {
-                entry = e;
-                break;
-            }
-        }
-        if(entry == null) {
-            logger.error("Failed to schedule config update for {}", modID);
-            return;
-        }
-        Update update = new Update(modID, entry, action);
-        if(!scheduledUpdates.contains(update)) {
-            if(!scheduledUpdates.offer(update)) {
-                logger.error("Failed to schedule config update for {}", modID);
-            }
-        }
-    }
-
-    private void registerConfigTrackingEntry(ModConfig config, boolean refreshScheduler) {
+    public void registerConfigTrackingEntry(ModConfig config) {
         IConfigPlugin plugin = config.getPlugin();
         File configFile = new File(CONFIG_DIR, plugin.getConfigFileName() + ".json");
         if (!configFile.exists()) {
             logger.error(marker, "Couldn't locate config file {}, excluding {} from FileTracker", configFile.getAbsolutePath(), plugin.getModID());
             return;
         }
-        entryList.add(new Entry(plugin, configFile.getName(), configFile.lastModified()));
+        entryList.put(plugin.getModID(), new Entry(config, configFile.getName()));
+        ourPaths.add(configFile.getName());
         logger.info(marker, "Added {} plugin into FileTracker", plugin.getModID());
-        if (refreshScheduler) {
-            updateSchedulerJob();
+    }
+
+    public void runConfigUpdateAsync(IModID modIdProvider, UpdateAction action) {
+        String modId = modIdProvider.getModID();
+        Entry entry = entryList.get(modId);
+        if (entry == null) {
+            logger.error(marker, "Attempted to update config file, but no entry was registered for " + modId);
+            return;
+        }
+        CompletableFuture
+                .runAsync(() -> runUpdate(entry, action))
+                .exceptionally(throwable -> {
+                    logger.error(marker, "Config update failed for {}, {}", entry.config.getPlugin().getModID(), throwable.toString());
+                    return null;
+                });
+    }
+
+    private void initializeWatchService() {
+        if (watchService == null) return;
+        Path dir = Paths.get("./config");
+        try {
+            WatchKey watchKey = dir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+            asyncService.scheduleAtFixedRate(() -> {
+                List<WatchEvent<?>> events = watchKey.pollEvents();
+                events.forEach(this::processWatchEvent);
+            }, 0L, 1000L, TimeUnit.MILLISECONDS);
+        } catch (IOException exception) {
+            logger.fatal(marker, "Watch service init failed, disabling automatic file synchronization");
         }
     }
 
-    private void updateSchedulerJob() {
-        if (updateTask != null) {
-            updateTask.cancel(false);
+    private void processWatchEvent(WatchEvent<?> event) {
+        Path path = (Path) event.context();
+        String filePath = path.toString();
+        if (!ourPaths.contains(filePath))
+            return;
+        if (expectedChanges.contains(filePath)) {
+            expectedChanges.remove(filePath);
+            return;
         }
-        if (!entryList.isEmpty()) {
-            updateTask = executorService.scheduleAtFixedRate(() -> checkAndUpdateFiles(CONFIG_DIR), 10L, 4, TimeUnit.SECONDS);
-        }
+        String name = filePath.replaceAll("\\..+$", "");
+        Configuration.getConfig(name).ifPresent(config -> {
+            Entry entry = entryList.get(config.getPlugin().getModID());
+            runUpdate(entry, UpdateAction.LOAD_WRITE);
+        });
     }
 
-    private void checkAndUpdateFiles(File dir) {
-        Iterator<Entry> itr = entryList.iterator();
-        while (itr.hasNext()) {
-            Entry entry = itr.next();
-            File configFile = new File(dir, entry.filePath);
-            if(!configFile.exists()) {
-                itr.remove();
-                continue;
-            }
-            long lastModified = entry.modified;
-            long fileModified = configFile.lastModified();
-            if(lastModified != fileModified) {
-                scheduleConfigUpdate(entry.plugin, UpdateAction.LOAD_WRITE);
-            }
-        }
-        Update update;
-        while ((update = scheduledUpdates.poll()) != null) {
-            Optional<ModConfig> optional = Configuration.getConfig(update.modid);
-            if (optional.isPresent()) {
-                ModConfig config = optional.get();
-                IConfigPlugin plugin = config.getPlugin();
+    private void runUpdate(Entry entry, UpdateAction action) {
+        expectedChanges.add(entry.filePath);
+        switch (action) {
+            case LOAD_WRITE:
                 try {
-                    switch (update.action) {
-                        case LOAD_WRITE:
-                            ConfigHandler.loadData(config, new File(dir, update.entry.filePath));
-                            ConfigHandler.write(config, update.entry);
-                            break;
-                        case WRITE:
-                            ConfigHandler.write(config, update.entry);
-                            break;
-                    }
-                } catch (Exception e) {
-                    logger.error("Error updating config from {} plugin", update.modid);
+                    ConfigHandler.loadData(entry.config, new File(CONFIG_DIR, entry.filePath));
+                } catch (IOException ioe) {
+                    throw new ConfigLoadDataException(entry.config.getPlugin(), ioe);
                 }
-            }
+            case WRITE:
+                ConfigHandler.write(entry);
+                break;
         }
+        System.out.println("updating");
     }
 
     static class Entry {
 
-        final IConfigPlugin plugin;
+        final ModConfig config;
         final String filePath;
-        long modified;
 
-        public Entry(IConfigPlugin plugin, String filePath, long modified) {
-            this.plugin = plugin;
+        public Entry(ModConfig config, String filePath) {
+            this.config = config;
             this.filePath = filePath;
-            this.modified = modified;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Entry entry = (Entry) o;
-            return filePath.equals(entry.filePath);
-        }
-
-        @Override
-        public int hashCode() {
-            return filePath.hashCode();
-        }
-    }
-
-    static class Update {
-
-        final String modid;
-        final Entry entry;
-        final UpdateAction action;
-
-        public Update(String modid, Entry entry, UpdateAction action) {
-            this.modid = modid;
-            this.entry = entry;
-            this.action = action;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Update update = (Update) o;
-            return modid.equals(update.modid);
-        }
-
-        @Override
-        public int hashCode() {
-            return modid.hashCode();
         }
     }
 

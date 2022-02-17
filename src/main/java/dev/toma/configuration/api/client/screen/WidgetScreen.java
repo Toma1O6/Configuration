@@ -64,7 +64,7 @@ public abstract class WidgetScreen<T extends IConfigType<?>> extends Screen impl
     public void removed() {
         widgets.forEach(Widget::save);
         if (!(parentScreen instanceof IConfigurationScreen)) {
-            FileTracker.INSTANCE.scheduleConfigUpdate(context, FileTracker.UpdateAction.WRITE);
+            FileTracker.INSTANCE.runConfigUpdateAsync(context, FileTracker.UpdateAction.WRITE);
         }
     }
 
