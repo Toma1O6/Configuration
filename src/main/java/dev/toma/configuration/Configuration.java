@@ -59,6 +59,7 @@ public class Configuration {
         ModConfig config = ConfigHandler.loadModConfig(plugin);
         if (config != null) {
             configMap.put(plugin.getModID(), config);
+            FileTracker.INSTANCE.registerConfigTrackingEntry(config);
         }
     }
 
