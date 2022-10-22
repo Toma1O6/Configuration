@@ -18,7 +18,7 @@ Library mod which add .json based configs and enables config edits via UI ingame
 [[dependencies.configuration]]
     modId="forge"
     mandatory=true
-    versionRange="[36,)"
+    versionRange="[36.2.39,)"
     ordering="NONE"
     side="BOTH"
 
