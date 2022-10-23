@@ -1,5 +1,6 @@
 package dev.toma.configuration.io.adapters;
 
+import dev.toma.configuration.format.IFormattedWriter;
 import dev.toma.configuration.io.ConfigLoadingContext;
 import dev.toma.configuration.io.ITypeAdapter;
 
@@ -10,5 +11,10 @@ public class IntAdapter implements ITypeAdapter<Integer> {
     @Override
     public Integer fromField(Field field, ConfigLoadingContext context) throws Exception {
         return field.getInt(context.getInstance());
+    }
+
+    @Override
+    public void write(IFormattedWriter writer, String field, Integer value) {
+        writer.writeInt(field, value);
     }
 }

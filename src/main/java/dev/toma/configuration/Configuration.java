@@ -1,9 +1,9 @@
 package dev.toma.configuration;
 
-import dev.toma.configuration.annotation.Config;
 import dev.toma.configuration.config.PrimitivesTest;
 import dev.toma.configuration.format.ConfigFormats;
 import dev.toma.configuration.format.IConfigFormat;
+import dev.toma.configuration.io.ConfigFileIO;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +39,7 @@ public final class Configuration {
             ConfigHolder<T> holder = new ConfigHolder<>(configId, configInstance, format);
             Map<String, ConfigHolder<?>> map = CONFIGS_BY_MODID.computeIfAbsent(modId, key -> new HashMap<>());
             map.put(filename, holder);
+            ConfigFileIO.readFromFile(holder);
             return holder;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             LOGGER.fatal("Failed to instantiate configuration of class {} due to {} exception", configClass, e);

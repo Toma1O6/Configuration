@@ -13,4 +13,6 @@ public interface IConfigFormat {
     Set<ConfigValue<?>> processFile(ResourceLocation config, File file) throws IOException, ConfigLoadingException; // TODO possibly just expose reader directly
 
     String fileExtension();
+
+    IFactory<IFormattedWriter> getFormatWriterFactory();
 }

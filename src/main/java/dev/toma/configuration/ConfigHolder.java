@@ -7,6 +7,7 @@ import dev.toma.configuration.value.ConfigValue;
 import dev.toma.configuration.value.ConfigValueIdentifier;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -32,6 +33,14 @@ public final class ConfigHolder<T> implements Supplier<T> {
 
     public ResourceLocation getConfigId() {
         return configId;
+    }
+
+    public IConfigFormat getFormat() {
+        return format;
+    }
+
+    public Collection<ConfigValue<?>> getValues() {
+        return this.valueLookupMap.values();
     }
 
     private void loadDefault() {

@@ -1,6 +1,4 @@
-package dev.toma.configuration.annotation;
-
-import dev.toma.configuration.format.IConfigFormat;
+package dev.toma.configuration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

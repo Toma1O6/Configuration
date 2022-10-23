@@ -1,7 +1,7 @@
 package dev.toma.configuration.io;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.annotation.Config;
+import dev.toma.configuration.Config;
 import dev.toma.configuration.value.ConfigValue;
 import dev.toma.configuration.value.ConfigValueIdentifier;
 import org.apache.logging.log4j.Marker;
@@ -19,7 +19,7 @@ public final class ConfigClassReader {
         this.context = context;
     }
 
-    public void loadValues() throws Exception {
+    public <T> void loadValues() throws Exception {
         Field[] fields = this.context.getCfgClass().getDeclaredFields();
         for (Field field : fields) {
             Config.Entry entry = field.getAnnotation(Config.Entry.class);
@@ -32,16 +32,16 @@ public final class ConfigClassReader {
                 Configuration.LOGGER.error(MARKER, "Skipping static config field {}, only instance type members are allowed", field.getName());
                 return;
             }
-            ITypeAdapter<?> adapter = ClassMatchers.getAdapter(field);
+            ITypeAdapter<T> adapter = ClassMatchers.getAdapter(field);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Couldn't find appropriate type adapter for field {}", field.getName());
                 return;
             }
             field.setAccessible(true);
-            Object value = adapter.fromField(field, this.context);
+            T value = adapter.fromField(field, this.context);
             if (!adapter.isContainer()) {
                 ConfigValueIdentifier identifier = this.context.getProcessor().field(field.getName());
-                ConfigValue<?> cfgValue = new ConfigValue<>(identifier, value);
+                ConfigValue<?> cfgValue = new ConfigValue<>(identifier, adapter, value);
                 context.getMap().put(identifier, cfgValue);
             }
         }
