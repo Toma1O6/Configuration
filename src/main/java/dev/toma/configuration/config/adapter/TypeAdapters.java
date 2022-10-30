@@ -1,8 +1,6 @@
 package dev.toma.configuration.config.adapter;
 
-import dev.toma.configuration.config.value.BooleanValue;
-import dev.toma.configuration.config.value.IntValue;
-import dev.toma.configuration.config.value.ObjectValue;
+import dev.toma.configuration.config.value.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,9 +25,19 @@ public final class TypeAdapters {
     }
 
     static {
+        // primitives
         registerTypeAdapter(new BooleanValue.Adapter());
+        registerTypeAdapter(new CharValue.Adapter());
         registerTypeAdapter(new IntValue.Adapter());
+        registerTypeAdapter(new StringValue.Adapter());
 
+        // primitive arrays
+        registerTypeAdapter(new IntArrayValue.Adapter());
+
+        // enums
+        registerTypeAdapter(new EnumValue.Adapter<>());
+
+        // objects
         registerTypeAdapter(new ObjectValue.Adapter());
     }
 }

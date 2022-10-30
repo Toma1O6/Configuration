@@ -60,7 +60,7 @@ public final class ConfigIO {
         }
         IConfigFormatHandler handler = holder.getFormat();
         IConfigFormat format = handler.createFormat();
-        holder.values().forEach(value -> value.serialize(format));
+        holder.values().forEach(value -> value.serializeValue(format));
         format.writeFile(file);
     }
 

@@ -5,50 +5,42 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.exception.ConfigValueMissingException;
 
 import java.lang.reflect.Field;
-import java.util.Map;
 
-public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> {
+public final class CharValue extends ConfigValue<Character> {
 
-    public ObjectValue(ValueData<Map<String, ConfigValue<?>>> valueData) {
+    public CharValue(ValueData<Character> valueData) {
         super(valueData);
     }
 
     @Override
-    public void serialize(IConfigFormat format) {
-        format.writeMap(this.getId(), this.get());
+    protected void serialize(IConfigFormat format) {
+        format.writeChar(this.getId(), this.get());
     }
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        format.readMap(this.getId(), this.get().values());
+        this.set(format.readChar(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {
-            super("object");
+            super("char");
         }
 
         @Override
         public boolean isTargetType(Class<?> type) {
-            return !type.isArray();
+            return type.equals(Character.TYPE);
         }
 
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, SetField setter) throws IllegalAccessException {
-            Class<?> type = value.getClass();
-            Map<String, ConfigValue<?>> map = serializer.serialize(type, value);
-            return new ObjectValue(ValueData.of(name, map, setter, comments));
+            return new CharValue(ValueData.of(name, (char) value, setter, comments));
         }
 
         @Override
         public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
-            // Do not set anything, keep existing instance
-        }
-
-        @Override
-        public int getPriorityIndex() {
-            return Integer.MAX_VALUE;
+            field.setChar(instance, (char) value);
         }
     }
 }

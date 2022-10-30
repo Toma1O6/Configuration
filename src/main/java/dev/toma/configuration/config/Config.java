@@ -13,49 +13,5 @@ public @interface Config {
 
     String filename() default "";
 
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Value {
-    }
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Comment {
-        String[] value();
-    }
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Synchronized {
-    }
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface UpdatePolicy {
-        UpdatePolicyType value();
-    }
-
-    // --- String ---
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface StringPattern {
-        String value();
-    }
-
-    // --- Numbers ---
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface MinValue {
-        double value();
-    }
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface MaxValue {
-        double value();
-    }
-
     // --- Gui ---
 }

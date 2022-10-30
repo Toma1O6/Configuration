@@ -2,7 +2,7 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.adapter.TypeAdapter;
 
-public final class ValueData<T> {
+public final class ValueData<T> implements ICommentsProvider {
 
     private final String id;
     private final String[] tooltip;
@@ -24,7 +24,8 @@ public final class ValueData<T> {
         return id;
     }
 
-    public String[] getTooltip() {
+    @Override
+    public String[] getComments() {
         return tooltip;
     }
 

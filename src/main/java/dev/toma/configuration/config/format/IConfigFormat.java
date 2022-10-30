@@ -1,6 +1,7 @@
 package dev.toma.configuration.config.format;
 
 import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.ICommentsProvider;
 import dev.toma.configuration.exception.ConfigReadException;
 import dev.toma.configuration.exception.ConfigValueMissingException;
 
@@ -15,9 +16,25 @@ public interface IConfigFormat {
 
     boolean readBoolean(String field) throws ConfigValueMissingException;
 
+    void writeChar(String field, char value);
+
+    char readChar(String field) throws ConfigValueMissingException;
+
     void writeInt(String field, int value);
 
     int readInt(String field) throws ConfigValueMissingException;
+
+    void writeString(String field, String value);
+
+    String readString(String field) throws ConfigValueMissingException;
+
+    void writeIntArray(String field, int[] values);
+
+    int[] readIntArray(String field) throws ConfigValueMissingException;
+
+    <E extends Enum<E>> void writeEnum(String field, E value);
+
+    <E extends Enum<E>> E readEnum(String field, Class<E> enumClass) throws ConfigValueMissingException;
 
     void writeMap(String field, Map<String, ConfigValue<?>> value);
 
@@ -26,4 +43,6 @@ public interface IConfigFormat {
     void readFile(File file) throws IOException, ConfigReadException;
 
     void writeFile(File file) throws IOException;
+
+    void addComments(ICommentsProvider provider);
 }

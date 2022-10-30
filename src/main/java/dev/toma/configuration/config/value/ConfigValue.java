@@ -30,15 +30,16 @@ public abstract class ConfigValue<T> implements Supplier<T> {
         return this.valueData.getId();
     }
 
-    public final String[] getComments() {
-        return this.valueData.getTooltip();
-    }
-
     public final void useDefaultValue() {
         this.set(this.valueData.getDefaultValue());
     }
 
-    public abstract void serialize(IConfigFormat format);
+    protected abstract void serialize(IConfigFormat format);
+
+    public final void serializeValue(IConfigFormat format) {
+        format.addComments(valueData);
+        this.serialize(format);
+    }
 
     protected abstract void deserialize(IConfigFormat format) throws ConfigValueMissingException;
 

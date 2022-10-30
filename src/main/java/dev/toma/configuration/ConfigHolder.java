@@ -1,9 +1,8 @@
 package dev.toma.configuration;
 
-import dev.toma.configuration.config.Config;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapters;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.io.ConfigIO;
@@ -68,7 +67,7 @@ public final class ConfigHolder<CFG> {
         Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
         Field[] fields = type.getDeclaredFields();
         for (Field field : fields) {
-            Config.Value value = field.getAnnotation(Config.Value.class);
+            Configurable value = field.getAnnotation(Configurable.class);
             if (value == null)
                 continue;
             TypeAdapter adapter = TypeAdapters.getTypeAdapter(field.getType());
@@ -77,7 +76,7 @@ public final class ConfigHolder<CFG> {
                 continue;
             }
             String[] comments = new String[0];
-            Config.Comment comment = field.getAnnotation(Config.Comment.class);
+            Configurable.Comment comment = field.getAnnotation(Configurable.Comment.class);
             if (comment != null) {
                 comments = comment.value();
             }

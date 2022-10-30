@@ -1,9 +1,12 @@
 package dev.toma.configuration.config.format;
 
 import com.google.gson.*;
+import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.ICommentsProvider;
 import dev.toma.configuration.exception.ConfigReadException;
 import dev.toma.configuration.exception.ConfigValueMissingException;
+import dev.toma.configuration.io.ConfigIO;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,6 +41,16 @@ public class GsonConfig implements IConfigFormat {
     }
 
     @Override
+    public void writeChar(String field, char value) {
+        this.root.addProperty(field, value);
+    }
+
+    @Override
+    public char readChar(String field) throws ConfigValueMissingException {
+        return this.tryRead(field, JsonElement::getAsCharacter);
+    }
+
+    @Override
     public void writeInt(String field, int value) {
         this.root.addProperty(field, value);
     }
@@ -48,9 +61,56 @@ public class GsonConfig implements IConfigFormat {
     }
 
     @Override
+    public void writeString(String field, String value) {
+        this.root.addProperty(field, value);
+    }
+
+    @Override
+    public String readString(String field) throws ConfigValueMissingException {
+        return this.tryRead(field, JsonElement::getAsString);
+    }
+
+    @Override
+    public void writeIntArray(String field, int[] values) {
+        JsonArray array = new JsonArray();
+        for (int i : values) {
+            array.add(i);
+        }
+        this.root.add(field, array);
+    }
+
+    @Override
+    public int[] readIntArray(String field) throws ConfigValueMissingException {
+        Integer[] boxed = this.readArray(field, Integer[]::new, JsonElement::getAsInt);
+        int[] primitive = new int[boxed.length];
+        int i = 0;
+        for (int v : boxed) {
+            primitive[i++] = v;
+        }
+        return primitive;
+    }
+
+    @Override
+    public <E extends Enum<E>> void writeEnum(String field, E value) {
+        this.root.addProperty(field, value.name());
+    }
+
+    @Override
+    public <E extends Enum<E>> E readEnum(String field, Class<E> enumClass) throws ConfigValueMissingException {
+        String value = readString(field);
+        E[] constants = enumClass.getEnumConstants();
+        for (E e : constants) {
+            if (e.name().equals(value)) {
+                return e;
+            }
+        }
+        throw new ConfigValueMissingException("Missing enum value: " + value);
+    }
+
+    @Override
     public void writeMap(String field, Map<String, ConfigValue<?>> value) {
         GsonConfig config = new GsonConfig();
-        value.values().forEach(val -> val.serialize(config));
+        value.values().forEach(val -> val.serializeValue(config));
         this.root.add(field, config.root);
     }
 
@@ -92,11 +152,40 @@ public class GsonConfig implements IConfigFormat {
         }
     }
 
+    @Override
+    public void addComments(ICommentsProvider provider) {
+        // comments are not supported for JSON4 files
+    }
+
     private <T> T tryRead(String field, Function<JsonElement, T> function) throws ConfigValueMissingException {
         JsonElement element = this.root.get(field);
         if (element == null) {
             throw new ConfigValueMissingException("Missing value: " + field);
         }
-        return function.apply(element);
+        try {
+            return function.apply(element);
+        } catch (Exception e) {
+            Configuration.LOGGER.error(ConfigIO.MARKER, "Error loading value for field {} - {}", field, e);
+            throw new ConfigValueMissingException("Invalid value");
+        }
+    }
+
+    private <T> T[] readArray(String field, Function<Integer, T[]> arrayFactory, Function<JsonElement, T> function) throws ConfigValueMissingException {
+        JsonElement element = this.root.get(field);
+        if (element == null || !element.isJsonArray()) {
+            throw new ConfigValueMissingException("Missing value: " + field);
+        }
+        JsonArray array = element.getAsJsonArray();
+        T[] arr = arrayFactory.apply(array.size());
+        try {
+            int j = 0;
+            for (JsonElement el : array) {
+                arr[j++] = function.apply(el);
+            }
+            return arr;
+        } catch (Exception e) {
+            Configuration.LOGGER.error(ConfigIO.MARKER, "Error loading value for field {} - {}", field, e);
+            throw new ConfigValueMissingException("Invalid value");
+        }
     }
 }
