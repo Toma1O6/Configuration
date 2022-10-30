@@ -1,49 +1,38 @@
 package dev.toma.configuration;
 
-import dev.toma.configuration.config.PrimitivesTest;
-import dev.toma.configuration.format.ConfigFormats;
-import dev.toma.configuration.format.IConfigFormat;
-import dev.toma.configuration.io.ConfigFileIO;
-import net.minecraft.util.ResourceLocation;
+import dev.toma.configuration.config.Config;
+import dev.toma.configuration.config.format.ConfigFormats;
+import dev.toma.configuration.config.format.IConfigFormatHandler;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 
 @Mod(Configuration.MODID)
 public final class Configuration {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("Configuration");
-    private static final Map<String, Map<String, ConfigHolder<?>>> CONFIGS_BY_MODID = new HashMap<>();
+    public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
+    public static ConfigurationConfig config;
 
     public Configuration() {
-        ConfigHolder<PrimitivesTest> holder = registerConfig(PrimitivesTest.class, ConfigFormats.JSON4);
-        System.out.println(holder);
+        config = registerConfig(ConfigurationConfig.class, ConfigFormats.gson()).getConfigInstance();
     }
 
-    public static <T> ConfigHolder<T> registerConfig(Class<T> configClass, IConfigFormat format) {
-        try {
-            T configInstance = configClass.getDeclaredConstructor().newInstance();
-            Config configDef = configClass.getAnnotation(Config.class);
-            if (configDef == null) {
-                LOGGER.error("Attempted to register non-config class {}. Use @Config annotation for configuration classes", configClass);
-                return null;
-            }
-            String modId = configDef.value();
-            String filename = configDef.filename().isEmpty() ? modId : configDef.filename();
-            ResourceLocation configId = new ResourceLocation(modId, filename);
-            ConfigHolder<T> holder = new ConfigHolder<>(configId, configInstance, format);
-            Map<String, ConfigHolder<?>> map = CONFIGS_BY_MODID.computeIfAbsent(modId, key -> new HashMap<>());
-            map.put(filename, holder);
-            ConfigFileIO.readFromFile(holder);
-            return holder;
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            LOGGER.fatal("Failed to instantiate configuration of class {} due to {} exception", configClass, e);
-            throw new RuntimeException(e);
+    public static <CFG> ConfigHolder<CFG> registerConfig(Class<CFG> cfgClass, IConfigFormatHandler formatFactory) {
+        Config cfg = cfgClass.getAnnotation(Config.class);
+        if (cfg == null) {
+            throw new IllegalArgumentException("Config class must be annotated with '@Config' annotation");
         }
+        String id = cfg.id();
+        String filename = cfg.filename();
+        if (filename.isEmpty()) {
+            filename = id;
+        }
+        ConfigHolder<CFG> holder = new ConfigHolder<>(cfgClass, id, filename, formatFactory);
+        ConfigHolder.registerConfig(holder);
+        return holder;
     }
 }
