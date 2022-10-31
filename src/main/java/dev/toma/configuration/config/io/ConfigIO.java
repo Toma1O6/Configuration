@@ -34,10 +34,20 @@ public final class ConfigIO {
         Configuration.LOGGER.debug(MARKER, "Processing of config {} has finished", holder.getConfigId());
     }
 
-    public static void readConfig(ConfigHolder<?> holder) throws IOException {
+    public static void reloadClientValues(ConfigHolder<?> configHolder) {
+        try {
+            readConfig(configHolder);
+        } catch (IOException e) {
+            Configuration.LOGGER.error(MARKER, "Failed to read config file {}", configHolder.getConfigId());
+        }
+    }
+
+    private static void readConfig(ConfigHolder<?> holder) throws IOException {
         Configuration.LOGGER.debug(MARKER, "Reading config {}", holder.getConfigId());
         IConfigFormat format = holder.getFormat().createFormat();
         File file = getConfigFile(holder);
+        if (!file.exists())
+            return;
         try {
             format.readFile(file);
             holder.values().forEach(value -> value.deserializeValue(format));

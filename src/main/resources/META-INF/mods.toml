@@ -1,14 +1,13 @@
-modLoader="javafml" #mandatory
-loaderVersion="[36,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+modLoader="javafml"
+loaderVersion="[36,)"
 license="MIT License"
-issueTrackerURL="https://github.com/Toma1O6/Configuration/issues" #optional
+issueTrackerURL="https://github.com/Toma1O6/Configuration/issues"
 
 [[mods]]
 modId="configuration"
 version="${file.jarVersion}"
 displayName="Configuration"
-updateJSONURL="https://raw.githubusercontent.com/Toma1O6/Configuration/master/versions.json"
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/"
+updateJSONURL="https://raw.githubusercontent.com/Toma1O6/UpdateSchemas/master/configuration-forge.json"
 logoFile="logo.png"
 authors="Toma"
 description='''
