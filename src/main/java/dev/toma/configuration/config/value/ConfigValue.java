@@ -2,16 +2,16 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.UpdatePolicyType;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.format.IConfigFormat;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Supplier;
 
 public abstract class ConfigValue<T> implements Supplier<T> {
@@ -19,6 +19,8 @@ public abstract class ConfigValue<T> implements Supplier<T> {
     private final ValueData<T> valueData;
     private T value;
     private boolean synchronizeToClient;
+    @Nullable
+    private UpdatePolicyType updatePolicy;
 
     public ConfigValue(ValueData<T> valueData) {
         this.valueData = valueData;
@@ -35,8 +37,13 @@ public abstract class ConfigValue<T> implements Supplier<T> {
     }
 
     public final void set(T value) {
-        this.value = value; // TODO validation impl
-        this.valueData.setValueToMemory(value);
+        T corrected = this.getCorrectedValue(value);
+        if (corrected == null) {
+            this.useDefaultValue();
+            corrected = this.get();
+        }
+        this.value = corrected;
+        this.valueData.setValueToMemory(corrected);
     }
 
     public final String getId() {
@@ -49,11 +56,19 @@ public abstract class ConfigValue<T> implements Supplier<T> {
 
     public final void processFieldData(Field field) {
         this.synchronizeToClient = field.getAnnotation(Configurable.Synchronized.class) != null;
+        Configurable.UpdatePolicy policy = field.getAnnotation(Configurable.UpdatePolicy.class);
+        if (policy != null) {
+            this.updatePolicy = policy.value();
+        }
         this.readFieldData(field);
     }
 
     protected void readFieldData(Field field) {
 
+    }
+
+    protected T getCorrectedValue(T in) {
+        return in;
     }
 
     public final void useDefaultValue() {

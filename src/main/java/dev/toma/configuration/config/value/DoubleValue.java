@@ -1,5 +1,6 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
@@ -7,10 +8,22 @@ import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
 
-public class DoubleValue extends ConfigValue<Double> {
+public class DoubleValue extends DecimalValue<Double> {
 
     public DoubleValue(ValueData<Double> valueData) {
-        super(valueData);
+        super(valueData, Range.unboundedDouble());
+    }
+
+    @Override
+    public Double getCorrectedValue(Double in) {
+        if (this.range == null)
+            return in;
+        if (!this.range.isWithin(in)) {
+            double corrected = this.range.clamp(in);
+            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
+            return corrected;
+        }
+        return in;
     }
 
     @Override

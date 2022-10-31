@@ -2,6 +2,7 @@ package dev.toma.configuration.config.test;
 
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.UpdatePolicyType;
 
 @Config(id = "configuration:properties", filename = "tests/properties-test")
 public final class PropertiesConfig {
@@ -56,10 +57,12 @@ public final class PropertiesConfig {
 
     @Configurable
     @Configurable.Comment("Test string array")
+    @Configurable.UpdatePolicy(UpdatePolicyType.MENU)
     public final String[] stringArr = {"First", "Second", "Third"};
 
     @Configurable
     @Configurable.Comment({"Testing enum", "Value should be selectable on GUI"})
+    @Configurable.UpdatePolicy(UpdatePolicyType.RESTART)
     public final TestEnum testEnum = TestEnum.VAL_4;
 
     @Configurable

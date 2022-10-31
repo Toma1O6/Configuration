@@ -1,16 +1,29 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
 
-public final class IntValue extends ConfigValue<Integer> {
+public final class IntValue extends IntegerValue<Integer> {
 
     public IntValue(ValueData<Integer> valueData) {
-        super(valueData);
+        super(valueData, Range.unboundedInt());
+    }
+
+    @Override
+    public Integer getCorrectedValue(Integer in) {
+        if (this.range == null)
+            return in;
+        if (!this.range.isWithin(in)) {
+            int corrected = this.range.clamp(in);
+            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
+            return corrected;
+        }
+        return in;
     }
 
     @Override

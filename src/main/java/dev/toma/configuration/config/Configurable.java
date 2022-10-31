@@ -25,4 +25,18 @@ public @interface Configurable {
     @interface UpdatePolicy {
         UpdatePolicyType value();
     }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Range {
+        long min() default Long.MIN_VALUE;
+        long max() default Long.MAX_VALUE;
+    }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface DecimalRange {
+        double min() default -Double.MAX_VALUE;
+        double max() default Double.MAX_VALUE;
+    }
 }

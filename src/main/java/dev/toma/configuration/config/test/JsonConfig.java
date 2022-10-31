@@ -21,14 +21,17 @@ public final class JsonConfig {
 
     @Configurable
     @Configurable.Comment("Test long")
+    @Configurable.Range(max = 100L)
     public final long testLong = 1513213L;
 
     @Configurable
     @Configurable.Comment("Test float")
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     public final float testFloat = 156.31F;
 
     @Configurable
     @Configurable.Comment("Test double")
+    @Configurable.DecimalRange(min = 133.0, max = 266.0)
     public final double testDouble = 1651.313;
 
     @Configurable
@@ -96,6 +99,7 @@ public final class JsonConfig {
         @Configurable
         @Configurable.Comment("This value is deeply nested")
         @Configurable.Synchronized
+        @Configurable.Range(min = 10)
         public final int randomInt;
 
         public DoubleNestingTest(int randomInt) {

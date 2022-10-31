@@ -1,16 +1,30 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.MathHelper;
 
 import java.lang.reflect.Field;
 
-public class LongValue extends ConfigValue<Long> {
+public class LongValue extends IntegerValue<Long> {
 
     public LongValue(ValueData<Long> valueData) {
-        super(valueData);
+        super(valueData, Range.unboundedLong());
+    }
+
+    @Override
+    public Long getCorrectedValue(Long in) {
+        if (this.range == null)
+            return in;
+        if (!this.range.isWithin(in)) {
+            long corrected = this.range.clamp(in);
+            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
+            return corrected;
+        }
+        return in;
     }
 
     @Override
