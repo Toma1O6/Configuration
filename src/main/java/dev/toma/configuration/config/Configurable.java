@@ -39,4 +39,12 @@ public @interface Configurable {
         double min() default -Double.MAX_VALUE;
         double max() default Double.MAX_VALUE;
     }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface StringPattern {
+        String value();
+        int flags() default 0;
+        String errorDescriptor() default "";
+    }
 }

@@ -23,6 +23,14 @@ public abstract class IntegerValue<N extends Number> extends ConfigValue<N> {
     }
 
     @Override
+    public ValidationResult apply(N n) {
+        if (this.range == null || this.range.isWithin(n.longValue())) {
+            return ValidationResult.valid();
+        }
+        return ValidationResult.error(ValidationResult.NUMBER_OUT_OF_RANGE, n, this.range.min, this.range.max);
+    }
+
+    @Override
     public abstract N getCorrectedValue(N in);
 
     public static final class Range {

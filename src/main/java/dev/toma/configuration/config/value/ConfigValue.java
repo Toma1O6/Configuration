@@ -6,17 +6,20 @@ import dev.toma.configuration.config.UpdatePolicyType;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class ConfigValue<T> implements Supplier<T> {
+public abstract class ConfigValue<T> implements Supplier<T>, Function<T, ConfigValue.ValidationResult> {
 
-    private final ValueData<T> valueData;
+    protected final ValueData<T> valueData;
     private T value;
     private boolean synchronizeToClient;
     @Nullable
@@ -63,6 +66,11 @@ public abstract class ConfigValue<T> implements Supplier<T> {
         this.readFieldData(field);
     }
 
+    @Override
+    public ValidationResult apply(T t) {
+        return ValidationResult.valid();
+    }
+
     protected void readFieldData(Field field) {
 
     }
@@ -106,5 +114,35 @@ public abstract class ConfigValue<T> implements Supplier<T> {
         }
         Collections.reverse(paths);
         return paths.stream().reduce("$", (a, b) -> a + "." + b);
+    }
+
+    public static final class ValidationResult {
+
+        public static final String NUMBER_OUT_OF_RANGE = "configuration.config.validation.out_of_range";
+        public static final String INVALID_STRING = "configuration.config.validation.invalid_string";
+
+        private final boolean valid;
+        private final ITextComponent message;
+
+        private ValidationResult(boolean valid, String message, Object... data) {
+            this.valid = valid;
+            this.message = message != null ? new TranslationTextComponent(message, data) : null;
+        }
+
+        public static ValidationResult valid() {
+            return new ValidationResult(true, null);
+        }
+
+        public static ValidationResult error(String message, Object... data) {
+            return new ValidationResult(false, message, data);
+        }
+
+        public boolean isValid() {
+            return valid;
+        }
+
+        public ITextComponent getMessage() {
+            return message;
+        }
     }
 }
