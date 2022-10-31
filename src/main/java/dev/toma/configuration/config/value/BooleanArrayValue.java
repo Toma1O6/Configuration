@@ -5,53 +5,54 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import net.minecraft.network.PacketBuffer;
 
-import java.lang.reflect.Field;
+public class BooleanArrayValue extends ConfigValue<boolean[]> {
 
-public final class CharValue extends ConfigValue<Character> {
-
-    public CharValue(ValueData<Character> valueData) {
+    public BooleanArrayValue(ValueData<boolean[]> valueData) {
         super(valueData);
     }
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeChar(this.getId(), this.get());
+        format.writeBoolArray(this.getId(), this.get());
     }
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readChar(this.getId()));
+        this.set(format.readBoolArray(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {
-            super("char");
+            super("boolean[]");
         }
 
         @Override
         public boolean isTargetType(Class<?> type) {
-            return type.equals(Character.TYPE);
+            return type.equals(boolean[].class);
         }
 
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new CharValue(ValueData.of(name, (char) value, context, comments));
+            return new BooleanArrayValue(ValueData.of(name, (boolean[]) value, context, comments));
         }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            buffer.writeChar((Integer) value.get());
+            boolean[] arr = (boolean[]) value.get();
+            buffer.writeInt(arr.length);
+            for (boolean b : arr) {
+                buffer.writeBoolean(b);
+            }
         }
 
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            return buffer.readChar();
-        }
-
-        @Override
-        public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
-            field.setChar(instance, (char) value);
+            boolean[] arr = new boolean[buffer.readInt()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = buffer.readBoolean();
+            }
+            return arr;
         }
     }
 }

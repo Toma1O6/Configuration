@@ -25,26 +25,4 @@ public @interface Configurable {
     @interface UpdatePolicy {
         UpdatePolicyType value();
     }
-
-    // --- String ---
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface StringPattern {
-        String value();
-    }
-
-    // --- Numbers ---
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface MinValue {
-        double value();
-    }
-
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface MaxValue {
-        double value();
-    }
 }

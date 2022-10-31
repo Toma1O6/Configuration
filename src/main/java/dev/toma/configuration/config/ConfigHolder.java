@@ -1,15 +1,17 @@
-package dev.toma.configuration;
+package dev.toma.configuration.config;
 
-import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapters;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
+import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.io.ConfigIO;
+import dev.toma.configuration.config.value.ObjectValue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class ConfigHolder<CFG> {
 
@@ -20,8 +22,9 @@ public final class ConfigHolder<CFG> {
     private final Class<CFG> configClass;
     private final IConfigFormatHandler format;
     private final Map<String, ConfigValue<?>> valueMap = new LinkedHashMap<>();
+    private final Map<String, ConfigValue<?>> networkSerializedFields = new HashMap<>();
 
-    ConfigHolder(Class<CFG> cfgClass, String configId, String filename, IConfigFormatHandler format) {
+    public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, IConfigFormatHandler format) {
         this.configClass = cfgClass;
         this.configId = configId;
         this.filename = filename;
@@ -37,6 +40,7 @@ public final class ConfigHolder<CFG> {
             throw new RuntimeException("Config serialize failed", e);
         }
         this.format = format;
+        this.loadNetworkFields(valueMap, networkSerializedFields);
     }
 
     public String getConfigId() {
@@ -63,6 +67,10 @@ public final class ConfigHolder<CFG> {
         return this.valueMap.values();
     }
 
+    public Map<String, ConfigValue<?>> getNetworkSerializedFields() {
+        return networkSerializedFields;
+    }
+
     private Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
         Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
         Field[] fields = type.getDeclaredFields();
@@ -80,14 +88,24 @@ public final class ConfigHolder<CFG> {
             if (comment != null) {
                 comments = comment.value();
             }
-            ConfigValue<?> cfgValue = adapter.serialize(field.getName(), comments, field.get(instance), (type1, instance1) -> serializeType(type1, instance1, false), val -> {
-                field.setAccessible(true);
-                try {
-                    adapter.setFieldValue(field, instance, val);
-                } catch (IllegalAccessException e) {
-                    Configuration.LOGGER.error(ConfigIO.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, val, e);
+            field.setAccessible(true);
+            ConfigValue<?> cfgValue = adapter.serialize(field.getName(), comments, field.get(instance), (type1, instance1) -> serializeType(type1, instance1, false), new TypeAdapter.AdapterContext() {
+                @Override
+                public TypeAdapter getAdapter() {
+                    return adapter;
+                }
+
+                @Override
+                public void setFieldValue(Object value) {
+                    field.setAccessible(true);
+                    try {
+                        adapter.setFieldValue(field, instance, value);
+                    } catch (IllegalAccessException e) {
+                        Configuration.LOGGER.error(ConfigIO.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, value, e);
+                    }
                 }
             });
+            cfgValue.processFieldData(field);
             map.put(field.getName(), cfgValue);
             if (saveValue) {
                 this.assignValue(cfgValue);
@@ -100,7 +118,7 @@ public final class ConfigHolder<CFG> {
         this.valueMap.put(value.getId(), value);
     }
 
-    static void registerConfig(ConfigHolder<?> holder) {
+    public static void registerConfig(ConfigHolder<?> holder) {
         REGISTERED_CONFIGS.put(holder.configId, holder);
         ConfigIO.processConfig(holder);
     }
@@ -109,5 +127,27 @@ public final class ConfigHolder<CFG> {
     public static <CFG> Optional<ConfigHolder<CFG>> getConfig(String id) {
         ConfigHolder<CFG> value = (ConfigHolder<CFG>) REGISTERED_CONFIGS.get(id);
         return value == null ? Optional.empty() : Optional.of(value);
+    }
+
+    public static Set<String> getSynchronizedConfigs() {
+        return REGISTERED_CONFIGS.entrySet()
+                .stream()
+                .filter(e -> e.getValue().networkSerializedFields.size() > 0)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    private void loadNetworkFields(Map<String, ConfigValue<?>> src, Map<String, ConfigValue<?>> dest) {
+        src.values().forEach(value -> {
+            if (value instanceof ObjectValue) {
+                Map<String, ConfigValue<?>> data = ((ObjectValue) value).get();
+                loadNetworkFields(data, dest);
+            } else {
+                if (!value.shouldSynchronize())
+                    return;
+                String path = value.getFieldPath();
+                dest.put(path, value);
+            }
+        });
     }
 }

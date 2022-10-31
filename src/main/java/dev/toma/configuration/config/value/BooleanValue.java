@@ -2,7 +2,8 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.format.IConfigFormat;
-import dev.toma.configuration.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
 
@@ -36,8 +37,18 @@ public final class BooleanValue extends ConfigValue<Boolean> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, SetField setter) {
-            return new BooleanValue(ValueData.of(name, (boolean) value, setter, comments));
+        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) {
+            return new BooleanValue(ValueData.of(name, (boolean) value, context, comments));
+        }
+
+        @Override
+        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+            buffer.writeBoolean((Boolean) value.get());
+        }
+
+        @Override
+        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+            return buffer.readBoolean();
         }
 
         @Override

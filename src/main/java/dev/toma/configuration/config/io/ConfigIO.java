@@ -1,10 +1,10 @@
-package dev.toma.configuration.io;
+package dev.toma.configuration.config.io;
 
-import dev.toma.configuration.ConfigHolder;
+import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
-import dev.toma.configuration.exception.ConfigReadException;
+import dev.toma.configuration.config.exception.ConfigReadException;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 

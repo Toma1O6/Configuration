@@ -29,10 +29,18 @@ public final class TypeAdapters {
         registerTypeAdapter(new BooleanValue.Adapter());
         registerTypeAdapter(new CharValue.Adapter());
         registerTypeAdapter(new IntValue.Adapter());
+        registerTypeAdapter(new LongValue.Adapter());
+        registerTypeAdapter(new FloatValue.Adapter());
+        registerTypeAdapter(new DoubleValue.Adapter());
         registerTypeAdapter(new StringValue.Adapter());
 
         // primitive arrays
+        registerTypeAdapter(new BooleanArrayValue.Adapter());
         registerTypeAdapter(new IntArrayValue.Adapter());
+        registerTypeAdapter(new LongArrayValue.Adapter());
+        registerTypeAdapter(new FloatArrayValue.Adapter());
+        registerTypeAdapter(new DoubleArrayValue.Adapter());
+        registerTypeAdapter(new StringArrayValue.Adapter());
 
         // enums
         registerTypeAdapter(new EnumValue.Adapter<>());

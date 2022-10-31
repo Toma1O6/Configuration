@@ -7,51 +7,51 @@ import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
 
-public final class CharValue extends ConfigValue<Character> {
+public class FloatValue extends ConfigValue<Float> {
 
-    public CharValue(ValueData<Character> valueData) {
+    public FloatValue(ValueData<Float> valueData) {
         super(valueData);
     }
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeChar(this.getId(), this.get());
+        format.writeFloat(this.getId(), this.get());
     }
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readChar(this.getId()));
+        this.set(format.readFloat(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {
-            super("char");
+            super("float");
         }
 
         @Override
         public boolean isTargetType(Class<?> type) {
-            return type.equals(Character.TYPE);
+            return type.equals(Float.TYPE);
         }
 
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new CharValue(ValueData.of(name, (char) value, context, comments));
+            return new FloatValue(ValueData.of(name, (float) value, context, comments));
         }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            buffer.writeChar((Integer) value.get());
+            buffer.writeFloat((Float) value.get());
         }
 
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            return buffer.readChar();
+            return buffer.readFloat();
         }
 
         @Override
         public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
-            field.setChar(instance, (char) value);
+            field.setFloat(instance, (Float) value);
         }
     }
 }

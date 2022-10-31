@@ -2,7 +2,8 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.format.IConfigFormat;
-import dev.toma.configuration.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
 
@@ -34,13 +35,23 @@ public final class IntValue extends ConfigValue<Integer> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, SetField setter) {
-            return new IntValue(ValueData.of(name, (int) value, setter, comments));
+        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) {
+            return new IntValue(ValueData.of(name, (int) value, context, comments));
+        }
+
+        @Override
+        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+            buffer.writeInt((Integer) value.get());
+        }
+
+        @Override
+        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+            return buffer.readInt();
         }
 
         @Override
         public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
-            field.setInt(instance, (int) value);
+            field.setInt(instance, (Integer) value);
         }
     }
 }

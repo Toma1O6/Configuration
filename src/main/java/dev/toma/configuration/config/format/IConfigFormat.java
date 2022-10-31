@@ -2,8 +2,8 @@ package dev.toma.configuration.config.format;
 
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ICommentsProvider;
-import dev.toma.configuration.exception.ConfigReadException;
-import dev.toma.configuration.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.exception.ConfigReadException;
+import dev.toma.configuration.config.exception.ConfigValueMissingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +24,45 @@ public interface IConfigFormat {
 
     int readInt(String field) throws ConfigValueMissingException;
 
+    void writeLong(String field, long value);
+
+    long readLong(String field) throws ConfigValueMissingException;
+
+    void writeFloat(String field, float value);
+
+    float readFloat(String field) throws ConfigValueMissingException;
+
+    void writeDouble(String field, double value);
+
+    double readDouble(String field) throws ConfigValueMissingException;
+
     void writeString(String field, String value);
 
     String readString(String field) throws ConfigValueMissingException;
 
+    void writeBoolArray(String field, boolean[] values);
+
+    boolean[] readBoolArray(String field) throws ConfigValueMissingException;
+
     void writeIntArray(String field, int[] values);
 
     int[] readIntArray(String field) throws ConfigValueMissingException;
+
+    void writeLongArray(String field, long[] values);
+
+    long[] readLongArray(String field) throws ConfigValueMissingException;
+
+    void writeFloatArray(String field, float[] values);
+
+    float[] readFloatArray(String field) throws ConfigValueMissingException;
+
+    void writeDoubleArray(String field, double[] values);
+
+    double[] readDoubleArray(String field) throws ConfigValueMissingException;
+
+    void writeStringArray(String field, String[] values);
+
+    String[] readStringArray(String field) throws ConfigValueMissingException;
 
     <E extends Enum<E>> void writeEnum(String field, E value);
 

@@ -5,53 +5,54 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import net.minecraft.network.PacketBuffer;
 
-import java.lang.reflect.Field;
+public class LongArrayValue extends ConfigValue<long[]> {
 
-public final class CharValue extends ConfigValue<Character> {
-
-    public CharValue(ValueData<Character> valueData) {
+    public LongArrayValue(ValueData<long[]> valueData) {
         super(valueData);
     }
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeChar(this.getId(), this.get());
+        format.writeLongArray(this.getId(), this.get());
     }
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readChar(this.getId()));
+        this.set(format.readLongArray(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {
-            super("char");
+            super("long[]");
         }
 
         @Override
         public boolean isTargetType(Class<?> type) {
-            return type.equals(Character.TYPE);
-        }
-
-        @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new CharValue(ValueData.of(name, (char) value, context, comments));
+            return type.equals(long[].class);
         }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            buffer.writeChar((Integer) value.get());
+            long[] arr = (long[]) value.get();
+            buffer.writeInt(arr.length);
+            for (long v : arr) {
+                buffer.writeLong(v);
+            }
         }
 
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            return buffer.readChar();
+            long[] arr = new long[buffer.readInt()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = buffer.readLong();
+            }
+            return arr;
         }
 
         @Override
-        public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
-            field.setChar(instance, (char) value);
+        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
+            return new LongArrayValue(ValueData.of(name, (long[]) value, context, comments));
         }
     }
 }

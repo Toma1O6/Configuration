@@ -1,4 +1,4 @@
-package dev.toma.configuration.exception;
+package dev.toma.configuration.config.exception;
 
 public class ConfigValueMissingException extends Exception {
 

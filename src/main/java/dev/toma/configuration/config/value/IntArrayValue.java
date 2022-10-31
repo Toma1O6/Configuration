@@ -2,7 +2,8 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.format.IConfigFormat;
-import dev.toma.configuration.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import net.minecraft.network.PacketBuffer;
 
 public class IntArrayValue extends ConfigValue<int[]> {
 
@@ -32,8 +33,26 @@ public class IntArrayValue extends ConfigValue<int[]> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, SetField setter) throws IllegalAccessException {
-            return new IntArrayValue(ValueData.of(name, (int[]) value, setter, comments));
+        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+            int[] arr = (int[]) value.get();
+            buffer.writeInt(arr.length);
+            for (int v : arr) {
+                buffer.writeInt(v);
+            }
+        }
+
+        @Override
+        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+            int[] arr = new int[buffer.readInt()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = buffer.readInt();
+            }
+            return arr;
+        }
+
+        @Override
+        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
+            return new IntArrayValue(ValueData.of(name, (int[]) value, context, comments));
         }
     }
 }

@@ -1,9 +1,16 @@
 package dev.toma.configuration;
 
 import dev.toma.configuration.config.Config;
+import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
+import dev.toma.configuration.config.format.PropertiesFormat;
+import dev.toma.configuration.config.test.JsonConfig;
+import dev.toma.configuration.config.test.PropertiesConfig;
+import dev.toma.configuration.network.Networking;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -15,10 +22,14 @@ public final class Configuration {
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("Configuration");
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
-    public static ConfigurationConfig config;
+    public static JsonConfig jsonConfig;
+    public static PropertiesConfig propertiesConfig;
 
     public Configuration() {
-        config = registerConfig(ConfigurationConfig.class, ConfigFormats.gson()).getConfigInstance();
+        jsonConfig = registerConfig(JsonConfig.class, ConfigFormats.json()).getConfigInstance();
+        propertiesConfig = registerConfig(PropertiesConfig.class, ConfigFormats.properties(new PropertiesFormat.Settings().newlines(1))).getConfigInstance();
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
     }
 
     public static <CFG> ConfigHolder<CFG> registerConfig(Class<CFG> cfgClass, IConfigFormatHandler formatFactory) {
@@ -34,5 +45,9 @@ public final class Configuration {
         ConfigHolder<CFG> holder = new ConfigHolder<>(cfgClass, id, filename, formatFactory);
         ConfigHolder.registerConfig(holder);
         return holder;
+    }
+
+    private void init(FMLCommonSetupEvent event) {
+        Networking.PacketRegistry.register();
     }
 }

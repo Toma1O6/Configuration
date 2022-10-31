@@ -5,53 +5,54 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import net.minecraft.network.PacketBuffer;
 
-import java.lang.reflect.Field;
+public class FloatArrayValue extends ConfigValue<float[]> {
 
-public final class CharValue extends ConfigValue<Character> {
-
-    public CharValue(ValueData<Character> valueData) {
+    public FloatArrayValue(ValueData<float[]> valueData) {
         super(valueData);
     }
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeChar(this.getId(), this.get());
+        format.writeFloatArray(this.getId(), this.get());
     }
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readChar(this.getId()));
+        this.set(format.readFloatArray(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {
-            super("char");
+            super("float[]");
         }
 
         @Override
         public boolean isTargetType(Class<?> type) {
-            return type.equals(Character.TYPE);
-        }
-
-        @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new CharValue(ValueData.of(name, (char) value, context, comments));
+            return type.equals(float[].class);
         }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            buffer.writeChar((Integer) value.get());
+            float[] arr = (float[]) value.get();
+            buffer.writeInt(arr.length);
+            for (float v : arr) {
+                buffer.writeFloat(v);
+            }
         }
 
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
-            return buffer.readChar();
+            float[] arr = new float[buffer.readInt()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = buffer.readFloat();
+            }
+            return arr;
         }
 
         @Override
-        public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
-            field.setChar(instance, (char) value);
+        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
+            return new FloatArrayValue(ValueData.of(name, (float[]) value, context, comments));
         }
     }
 }
