@@ -1,10 +1,10 @@
 package dev.toma.configuration.config.format;
 
 import dev.toma.configuration.config.ConfigUtils;
-import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.ICommentsProvider;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.ICommentsProvider;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -287,8 +287,12 @@ public final class PropertiesFormat implements IConfigFormat {
             String line;
             while ((line = reader.readLine()) != null) {
                 String filtered = line.replaceAll("#.+$", "");
+                boolean isPair = filtered.contains("=");
                 String[] components = filtered.split("=");
                 if (components.length != 2) {
+                    if (isPair) {
+                        parsed.put(components[0], "");
+                    }
                     continue;
                 }
                 parsed.put(components[0], components[1]);
