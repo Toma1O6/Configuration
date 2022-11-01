@@ -53,6 +53,8 @@ public abstract class TypeAdapter {
 
         TypeAdapter getAdapter();
 
+        Field getOwner();
+
         void setFieldValue(Object value);
     }
 }

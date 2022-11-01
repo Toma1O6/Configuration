@@ -113,6 +113,11 @@ public final class ConfigHolder<CFG> {
                 }
 
                 @Override
+                public Field getOwner() {
+                    return field;
+                }
+
+                @Override
                 public void setFieldValue(Object value) {
                     field.setAccessible(true);
                     try {
