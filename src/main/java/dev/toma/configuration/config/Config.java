@@ -13,6 +13,8 @@ public @interface Config {
 
     String filename() default "";
 
+    String group() default "";
+
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @interface NoAutoSync {}

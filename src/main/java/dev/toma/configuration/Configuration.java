@@ -43,7 +43,11 @@ public final class Configuration {
         if (filename.isEmpty()) {
             filename = id;
         }
-        ConfigHolder<CFG> holder = new ConfigHolder<>(cfgClass, id, filename, formatFactory);
+        String group = cfg.group();
+        if (group.isEmpty()) {
+            group = id;
+        }
+        ConfigHolder<CFG> holder = new ConfigHolder<>(cfgClass, id, filename, group, formatFactory);
         ConfigHolder.registerConfig(holder);
         if (cfgClass.getAnnotation(Config.NoAutoSync.class) == null) {
             ConfigIO.FILE_WATCH_MANAGER.addTrackedConfig(holder);

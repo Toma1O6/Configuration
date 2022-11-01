@@ -18,6 +18,7 @@ public final class ConfigHolder<CFG> {
     private static final Map<String, ConfigHolder<?>> REGISTERED_CONFIGS = new HashMap<>();
     private final String configId;
     private final String filename;
+    private final String group;
     private final CFG configInstance;
     private final Class<CFG> configClass;
     private final IConfigFormatHandler format;
@@ -26,10 +27,11 @@ public final class ConfigHolder<CFG> {
     private final Set<IFileRefreshListener<CFG>> fileRefreshListeners = new HashSet<>();
     private final Object lock = new Object();
 
-    public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, IConfigFormatHandler format) {
+    public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, String group, IConfigFormatHandler format) {
         this.configClass = cfgClass;
         this.configId = configId;
         this.filename = filename;
+        this.group = group;
         try {
             this.configInstance = cfgClass.getDeclaredConstructor().newInstance();
         } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
@@ -142,6 +144,12 @@ public final class ConfigHolder<CFG> {
     public static <CFG> Optional<ConfigHolder<CFG>> getConfig(String id) {
         ConfigHolder<CFG> value = (ConfigHolder<CFG>) REGISTERED_CONFIGS.get(id);
         return value == null ? Optional.empty() : Optional.of(value);
+    }
+
+    public static Set<ConfigHolder<?>> getConfigsByGroup(String group) {
+        return REGISTERED_CONFIGS.values().stream()
+                .filter(configHolder -> configHolder.group.equals(group))
+                .collect(Collectors.toSet());
     }
 
     public static Set<String> getSynchronizedConfigs() {
