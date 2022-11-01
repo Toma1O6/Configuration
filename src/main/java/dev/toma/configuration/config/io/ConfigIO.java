@@ -1,10 +1,12 @@
 package dev.toma.configuration.config.io;
 
-import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.config.ConfigHolder;
+import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
-import dev.toma.configuration.config.exception.ConfigReadException;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -14,31 +16,47 @@ import java.io.IOException;
 public final class ConfigIO {
 
     public static final Marker MARKER = MarkerManager.getMarker("IO");
+    public static final FileWatchManager FILE_WATCH_MANAGER = new FileWatchManager();
 
     public static void processConfig(ConfigHolder<?> holder) {
         Configuration.LOGGER.debug(MARKER, "Starting processing of config {}", holder.getConfigId());
-        File file = getConfigFile(holder);
-        if (file.exists()) {
-            try {
-                readConfig(holder);
-            } catch (IOException e) {
-                Configuration.LOGGER.error(MARKER, "Config read failed for config ID {}, will create default config file", holder.getConfigId());
+        processSafely(holder, () -> {
+            File file = getConfigFile(holder);
+            if (file.exists()) {
+                try {
+                    readConfig(holder);
+                } catch (IOException e) {
+                    Configuration.LOGGER.error(MARKER, "Config read failed for config ID {}, will create default config file", holder.getConfigId());
+                }
             }
-        }
-        try {
-            writeConfig(holder);
-        } catch (IOException e) {
-            Configuration.LOGGER.fatal(MARKER, "Couldn't write config {}, aborting mod startup", holder.getConfigId());
-            throw new RuntimeException("Config write failed", e);
-        }
+            try {
+                writeConfig(holder);
+            } catch (IOException e) {
+                Configuration.LOGGER.fatal(MARKER, "Couldn't write config {}, aborting mod startup", holder.getConfigId());
+                throw new RuntimeException("Config write failed", e);
+            }
+        });
         Configuration.LOGGER.debug(MARKER, "Processing of config {} has finished", holder.getConfigId());
     }
 
     public static void reloadClientValues(ConfigHolder<?> configHolder) {
+        processSafely(configHolder, () -> {
+            try {
+                readConfig(configHolder);
+            } catch (IOException e) {
+                Configuration.LOGGER.error(MARKER, "Failed to read config file {}", configHolder.getConfigId());
+            }
+        });
+    }
+
+    private static void processSafely(ConfigHolder<?> holder, Runnable action) {
         try {
-            readConfig(configHolder);
-        } catch (IOException e) {
-            Configuration.LOGGER.error(MARKER, "Failed to read config file {}", configHolder.getConfigId());
+            synchronized (holder.getLock()) {
+                action.run();
+            }
+        } catch (Exception e) {
+            Configuration.LOGGER.fatal(MARKER, "Error loading config {} due to critical error '{}'. Report this issue to this config's owner!", holder.getConfigId(), e.getMessage());
+            throw new ReportedException(CrashReport.forThrowable(e, "Config " + holder.getConfigId() + " failed. Report issue to config owner"));
         }
     }
 

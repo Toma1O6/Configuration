@@ -23,6 +23,8 @@ public final class ConfigHolder<CFG> {
     private final IConfigFormatHandler format;
     private final Map<String, ConfigValue<?>> valueMap = new LinkedHashMap<>();
     private final Map<String, ConfigValue<?>> networkSerializedFields = new HashMap<>();
+    private final Set<IFileRefreshListener<CFG>> fileRefreshListeners = new HashSet<>();
+    private final Object lock = new Object();
 
     public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, IConfigFormatHandler format) {
         this.configClass = cfgClass;
@@ -41,6 +43,11 @@ public final class ConfigHolder<CFG> {
         }
         this.format = format;
         this.loadNetworkFields(valueMap, networkSerializedFields);
+    }
+
+    public ConfigHolder<CFG> addFileRefreshListener(IFileRefreshListener<CFG> listener) {
+        this.fileRefreshListeners.add(Objects.requireNonNull(listener));
+        return this;
     }
 
     public String getConfigId() {
@@ -69,6 +76,14 @@ public final class ConfigHolder<CFG> {
 
     public Map<String, ConfigValue<?>> getNetworkSerializedFields() {
         return networkSerializedFields;
+    }
+
+    public void dispatchFileRefreshEvent() {
+        this.fileRefreshListeners.forEach(listener -> listener.onFileRefresh(this));
+    }
+
+    public Object getLock() {
+        return lock;
     }
 
     private Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
@@ -149,5 +164,10 @@ public final class ConfigHolder<CFG> {
                 dest.put(path, value);
             }
         });
+    }
+
+    @FunctionalInterface
+    public interface IFileRefreshListener<CFG> {
+        void onFileRefresh(ConfigHolder<CFG> holder);
     }
 }

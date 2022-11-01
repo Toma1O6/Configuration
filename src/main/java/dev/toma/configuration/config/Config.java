@@ -13,5 +13,7 @@ public @interface Config {
 
     String filename() default "";
 
-    // --- Gui ---
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface NoAutoSync {}
 }

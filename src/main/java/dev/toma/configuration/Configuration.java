@@ -5,6 +5,7 @@ import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.format.PropertiesFormat;
+import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.test.JsonConfig;
 import dev.toma.configuration.config.test.PropertiesConfig;
 import dev.toma.configuration.network.Networking;
@@ -44,10 +45,14 @@ public final class Configuration {
         }
         ConfigHolder<CFG> holder = new ConfigHolder<>(cfgClass, id, filename, formatFactory);
         ConfigHolder.registerConfig(holder);
+        if (cfgClass.getAnnotation(Config.NoAutoSync.class) == null) {
+            ConfigIO.FILE_WATCH_MANAGER.addTrackedConfig(holder);
+        }
         return holder;
     }
 
     private void init(FMLCommonSetupEvent event) {
         Networking.PacketRegistry.register();
+        ConfigIO.FILE_WATCH_MANAGER.startService();
     }
 }

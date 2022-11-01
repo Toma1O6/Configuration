@@ -41,7 +41,7 @@ public class StringValue extends ConfigValue<String> {
             if (!this.pattern.matcher(in).matches()) {
                 String defaultValue = this.valueData.getDefaultValue();
                 if (!this.pattern.matcher(defaultValue).matches()) {
-                    throw new IllegalArgumentException(String.format("Invalid config default value %s for field %s - does not match required pattern %s", defaultValue, this.getId(), this.pattern.toString()));
+                    throw new IllegalArgumentException(String.format("Invalid config default value '%s' for field '%s' - does not match required pattern \\%s\\", defaultValue, this.getId(), this.pattern.toString()));
                 }
                 return defaultValue;
             }

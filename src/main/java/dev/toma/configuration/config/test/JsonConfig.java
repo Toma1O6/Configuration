@@ -4,6 +4,7 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 
 @Config(id = "configuration:json", filename = "tests/json-test")
+@Config.NoAutoSync
 public final class JsonConfig {
 
     @Configurable
