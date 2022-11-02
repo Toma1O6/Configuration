@@ -116,6 +116,11 @@ public abstract class ConfigValue<T> implements Supplier<T>, Function<T, ConfigV
         return paths.stream().reduce("$", (a, b) -> a + "." + b);
     }
 
+    @Override
+    public String toString() {
+        return this.value.toString();
+    }
+
     public static final class ValidationResult {
 
         public static final String NUMBER_OUT_OF_RANGE = "configuration.config.validation.out_of_range";

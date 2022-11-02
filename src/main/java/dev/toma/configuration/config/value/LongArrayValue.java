@@ -13,6 +13,7 @@ import java.util.Arrays;
 public class LongArrayValue extends ConfigValue<long[]> implements ArrayValue {
 
     private boolean fixedSize;
+    private IntegerValue.Range range;
 
     public LongArrayValue(ValueData<long[]> valueData) {
         super(valueData);
@@ -26,6 +27,10 @@ public class LongArrayValue extends ConfigValue<long[]> implements ArrayValue {
     @Override
     protected void readFieldData(Field field) {
         this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+        Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
+        if (intRange != null) {
+            this.range = IntegerValue.Range.newBoundedRange(intRange.min(), intRange.max());
+        }
     }
 
     @Override
@@ -34,7 +39,17 @@ public class LongArrayValue extends ConfigValue<long[]> implements ArrayValue {
             long[] defaultArray = this.valueData.getDefaultValue();
             if (in.length != defaultArray.length) {
                 ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
-                return defaultArray;
+                in = defaultArray;
+            }
+        }
+        if (this.range == null)
+            return in;
+        for (int i = 0; i < in.length; i++) {
+            long value = in[i];
+            if (!this.range.isWithin(value)) {
+                long corrected = this.range.clamp(value);
+                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", value, corrected);
+                in[i] = corrected;
             }
         }
         return in;

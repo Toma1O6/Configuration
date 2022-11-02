@@ -5,7 +5,7 @@ import dev.toma.configuration.config.Configurable;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public abstract class IntegerValue<N extends Number> extends ConfigValue<N> {
+public abstract class IntegerValue<N extends Number> extends NumberValue<N> {
 
     protected Range range;
 
@@ -16,6 +16,7 @@ public abstract class IntegerValue<N extends Number> extends ConfigValue<N> {
 
     @Override
     protected void readFieldData(Field field) {
+        super.readFieldData(field);
         Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
         if (intRange != null) {
             this.range = Range.newBoundedRange(intRange.min(), intRange.max());

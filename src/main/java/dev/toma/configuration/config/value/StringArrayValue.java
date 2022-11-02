@@ -1,18 +1,24 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.io.ConfigIO;
 import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class StringArrayValue extends ConfigValue<String[]> implements ArrayValue {
 
     private boolean fixedSize;
+    private Pattern pattern;
+    private String descriptor;
+    private String defaultElementValue = "";
 
     public StringArrayValue(ValueData<String[]> valueData) {
         super(valueData);
@@ -23,18 +29,42 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
         return fixedSize;
     }
 
+    @SuppressWarnings("MagicConstant")
     @Override
     protected void readFieldData(Field field) {
         this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+        Configurable.StringPattern stringPattern = field.getAnnotation(Configurable.StringPattern.class);
+        if (stringPattern != null) {
+            String value = stringPattern.value();
+            this.defaultElementValue = stringPattern.defaultValue();
+            this.descriptor = stringPattern.errorDescriptor().isEmpty() ? stringPattern.value() : stringPattern.errorDescriptor();
+            try {
+                this.pattern = Pattern.compile(value, stringPattern.flags());
+            } catch (IllegalArgumentException e) {
+                Configuration.LOGGER.error(ConfigIO.MARKER, "Invalid @StringPattern value for {} field - {}", this.getId(), e);
+            }
+            if (this.pattern != null && !this.pattern.matcher(this.defaultElementValue).matches()) {
+                throw new IllegalArgumentException(String.format("Invalid config default value '%s' for field '%s' - does not match required pattern \\%s\\", this.defaultElementValue, this.getId(), this.pattern.toString()));
+            }
+        }
     }
 
     @Override
     protected String[] getCorrectedValue(String[] in) {
+        String[] defaultArray = this.valueData.getDefaultValue();
         if (this.fixedSize) {
-            String[] defaultArray = this.valueData.getDefaultValue();
             if (in.length != defaultArray.length) {
                 ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
                 return defaultArray;
+            }
+        }
+        if (this.pattern != null) {
+            for (int i = 0; i < in.length; i++) {
+                String string = in[i];
+                if (!this.pattern.matcher(string).matches()) {
+                    ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", string, this.defaultElementValue);
+                    in[i] = this.defaultElementValue;
+                }
             }
         }
         return in;

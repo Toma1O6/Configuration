@@ -3,11 +3,14 @@ package dev.toma.configuration.config.value;
 import dev.toma.configuration.config.Configurable;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Objects;
 
-public abstract class DecimalValue<N extends Number> extends ConfigValue<N> {
+public abstract class DecimalValue<N extends Number> extends NumberValue<N> {
 
     protected Range range;
+    private DecimalFormat format;
 
     public DecimalValue(ValueData<N> data, Range range) {
         super(data);
@@ -16,9 +19,17 @@ public abstract class DecimalValue<N extends Number> extends ConfigValue<N> {
 
     @Override
     protected void readFieldData(Field field) {
+        super.readFieldData(field);
         Configurable.DecimalRange decimalRange = field.getAnnotation(Configurable.DecimalRange.class);
         if (decimalRange != null) {
             this.range = Range.newBoundedRange(decimalRange.min(), decimalRange.max());
+        }
+        // display properties
+        Configurable.Gui.DecimalNumberFormat decimalNumberFormat = field.getAnnotation(Configurable.Gui.DecimalNumberFormat.class);
+        if (decimalNumberFormat != null) {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            symbols.setDecimalSeparator('.');
+            this.format = new DecimalFormat(decimalNumberFormat.value(), symbols);
         }
     }
 
@@ -32,6 +43,14 @@ public abstract class DecimalValue<N extends Number> extends ConfigValue<N> {
 
     @Override
     public abstract N getCorrectedValue(N in);
+
+    @Override
+    public String toString() {
+        if (this.format == null) {
+            return super.toString();
+        }
+        return this.format.format(this.get());
+    }
 
     public static final class Range {
 

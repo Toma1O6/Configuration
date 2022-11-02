@@ -13,6 +13,7 @@ import java.util.Arrays;
 public class DoubleArrayValue extends ConfigValue<double[]> implements ArrayValue {
 
     private boolean fixedSize;
+    private DecimalValue.Range range;
 
     public DoubleArrayValue(ValueData<double[]> valueData) {
         super(valueData);
@@ -26,6 +27,10 @@ public class DoubleArrayValue extends ConfigValue<double[]> implements ArrayValu
     @Override
     protected void readFieldData(Field field) {
         this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+        Configurable.DecimalRange decimalRange = field.getAnnotation(Configurable.DecimalRange.class);
+        if (decimalRange != null) {
+            this.range = DecimalValue.Range.newBoundedRange(decimalRange.min(), decimalRange.max());
+        }
     }
 
     @Override
@@ -34,7 +39,17 @@ public class DoubleArrayValue extends ConfigValue<double[]> implements ArrayValu
             double[] defaultArray = this.valueData.getDefaultValue();
             if (in.length != defaultArray.length) {
                 ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
-                return defaultArray;
+                in = defaultArray;
+            }
+        }
+        if (this.range == null)
+            return in;
+        for (int i = 0; i < in.length; i++) {
+            double value = in[i];
+            if (!this.range.isWithin(value)) {
+                double corrected = this.range.clamp(value);
+                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", value, corrected);
+                in[i] = corrected;
             }
         }
         return in;

@@ -3,8 +3,8 @@ package dev.toma.configuration.config.value;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.PacketBuffer;
 
 import java.lang.reflect.Field;
@@ -13,6 +13,7 @@ import java.util.Arrays;
 public class IntArrayValue extends ConfigValue<int[]> implements ArrayValue {
 
     private boolean fixedSize;
+    private IntegerValue.Range range;
 
     public IntArrayValue(ValueData<int[]> valueData) {
         super(valueData);
@@ -26,6 +27,10 @@ public class IntArrayValue extends ConfigValue<int[]> implements ArrayValue {
     @Override
     protected void readFieldData(Field field) {
         this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+        Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
+        if (intRange != null) {
+            this.range = IntegerValue.Range.newBoundedRange(intRange.min(), intRange.max());
+        }
     }
 
     @Override
@@ -34,7 +39,17 @@ public class IntArrayValue extends ConfigValue<int[]> implements ArrayValue {
             int[] defaultArray = this.valueData.getDefaultValue();
             if (in.length != defaultArray.length) {
                 ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
-                return defaultArray;
+                in = defaultArray;
+            }
+        }
+        if (this.range == null)
+            return in;
+        for (int i = 0; i < in.length; i++) {
+            int value = in[i];
+            if (!this.range.isWithin(value)) {
+                int corrected = this.range.clamp(value);
+                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", value, corrected);
+                in[i] = corrected;
             }
         }
         return in;

@@ -44,6 +44,7 @@ public @interface Configurable {
     @Retention(RetentionPolicy.RUNTIME)
     @interface StringPattern {
         String value();
+        String defaultValue() default ""; // only for arrays
         int flags() default 0;
         String errorDescriptor() default "";
     }
@@ -51,5 +52,20 @@ public @interface Configurable {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface FixedSize {
+    }
+
+    final class Gui {
+
+        @Target(ElementType.FIELD)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface DecimalNumberFormat {
+            String value();
+        }
+
+        @Target(ElementType.FIELD)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface NumberDisplay {
+            NumberDisplayType value();
+        }
     }
 }

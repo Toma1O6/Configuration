@@ -45,6 +45,7 @@ public final class JsonConfig {
 
     @Configurable
     @Configurable.Comment("Test int array")
+    @Configurable.Range(min = 3, max = 15)
     public final int[] intArr = {12, 16, 71, 1};
 
     @Configurable
@@ -53,6 +54,7 @@ public final class JsonConfig {
 
     @Configurable
     @Configurable.Comment("Test float array")
+    @Configurable.DecimalRange(min = 100.0F)
     public final float[] floatArr = {1513.153f, 13.156f};
 
     @Configurable
@@ -64,6 +66,7 @@ public final class JsonConfig {
     @Configurable
     @Configurable.Comment("Test string array")
     @Configurable.Synchronized
+    @Configurable.StringPattern(value = "[A-Z][A-Za-z]{1,4}", defaultValue = "Abc")
     public final String[] stringArr = {"First", "Second", "Third"};
 
     @Configurable
