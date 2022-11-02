@@ -47,4 +47,9 @@ public @interface Configurable {
         int flags() default 0;
         String errorDescriptor() default "";
     }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface FixedSize {
+    }
 }

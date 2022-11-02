@@ -5,12 +5,17 @@ import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Objects;
 
 public final class ConfigUtils {
 
     public static void logCorrectedMessage(String field, @Nullable Object prevValue, Object corrected) {
         Configuration.LOGGER.warn(ConfigIO.MARKER, "Correcting config value '{}' from '{}' to '{}'", field, Objects.toString(prevValue), corrected);
+    }
+
+    public static void logArraySizeCorrectedMessage(String field, Object prevValue, Object corrected) {
+        Configuration.LOGGER.warn(ConfigIO.MARKER, "Correcting config array value '{}' due to invalid size from '{}' to '{}'", field, prevValue, corrected);
     }
 
     public static boolean[] unboxArray(Boolean[] values) {

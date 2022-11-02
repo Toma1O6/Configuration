@@ -5,6 +5,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdatePolicyType;
 
 @Config(id = "configuration:properties", filename = "tests/properties-test")
+@Config.NoAutoSync
 public final class PropertiesConfig {
 
     @Configurable

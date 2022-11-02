@@ -4,7 +4,6 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 
 @Config(id = "configuration:json", filename = "tests/json-test")
-@Config.NoAutoSync
 public final class JsonConfig {
 
     @Configurable
@@ -41,6 +40,7 @@ public final class JsonConfig {
 
     @Configurable
     @Configurable.Comment("Test boolean array")
+    @Configurable.FixedSize
     public final boolean[] boolArr = {true, false};
 
     @Configurable
@@ -58,6 +58,7 @@ public final class JsonConfig {
     @Configurable
     @Configurable.Comment("Test double array")
     @Configurable.Synchronized
+    @Configurable.FixedSize
     public final double[] doubleArr = {846.13, 156, 3, 13124, -456.12};
 
     @Configurable

@@ -1,6 +1,7 @@
 package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
@@ -43,6 +44,7 @@ public class StringValue extends ConfigValue<String> {
                 if (!this.pattern.matcher(defaultValue).matches()) {
                     throw new IllegalArgumentException(String.format("Invalid config default value '%s' for field '%s' - does not match required pattern \\%s\\", defaultValue, this.getId(), this.pattern.toString()));
                 }
+                ConfigUtils.logCorrectedMessage(this.getId(), in, defaultValue);
                 return defaultValue;
             }
         }

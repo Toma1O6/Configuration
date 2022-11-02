@@ -1,14 +1,38 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import net.minecraft.network.PacketBuffer;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+
 public class FloatArrayValue extends ConfigValue<float[]> {
+
+    private boolean fixedSize;
 
     public FloatArrayValue(ValueData<float[]> valueData) {
         super(valueData);
+    }
+
+    @Override
+    protected void readFieldData(Field field) {
+        this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+    }
+
+    @Override
+    protected float[] getCorrectedValue(float[] in) {
+        if (this.fixedSize) {
+            float[] defaultArray = this.valueData.getDefaultValue();
+            if (in.length != defaultArray.length) {
+                ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
+                return defaultArray;
+            }
+        }
+        return in;
     }
 
     @Override
