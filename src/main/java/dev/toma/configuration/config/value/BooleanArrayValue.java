@@ -10,12 +10,17 @@ import net.minecraft.network.PacketBuffer;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class BooleanArrayValue extends ConfigValue<boolean[]> {
+public class BooleanArrayValue extends ConfigValue<boolean[]> implements ArrayValue {
 
     private boolean fixedSize;
 
     public BooleanArrayValue(ValueData<boolean[]> valueData) {
         super(valueData);
+    }
+
+    @Override
+    public boolean isFixedSize() {
+        return fixedSize;
     }
 
     @Override

@@ -10,12 +10,17 @@ import net.minecraft.network.PacketBuffer;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class IntArrayValue extends ConfigValue<int[]> {
+public class IntArrayValue extends ConfigValue<int[]> implements ArrayValue {
 
     private boolean fixedSize;
 
     public IntArrayValue(ValueData<int[]> valueData) {
         super(valueData);
+    }
+
+    @Override
+    public boolean isFixedSize() {
+        return fixedSize;
     }
 
     @Override

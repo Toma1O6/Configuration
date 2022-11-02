@@ -10,12 +10,17 @@ import net.minecraft.network.PacketBuffer;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class LongArrayValue extends ConfigValue<long[]> {
+public class LongArrayValue extends ConfigValue<long[]> implements ArrayValue {
 
     private boolean fixedSize;
 
     public LongArrayValue(ValueData<long[]> valueData) {
         super(valueData);
+    }
+
+    @Override
+    public boolean isFixedSize() {
+        return fixedSize;
     }
 
     @Override

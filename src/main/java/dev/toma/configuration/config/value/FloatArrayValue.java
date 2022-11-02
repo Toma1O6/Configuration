@@ -10,12 +10,17 @@ import net.minecraft.network.PacketBuffer;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class FloatArrayValue extends ConfigValue<float[]> {
+public class FloatArrayValue extends ConfigValue<float[]> implements ArrayValue {
 
     private boolean fixedSize;
 
     public FloatArrayValue(ValueData<float[]> valueData) {
         super(valueData);
+    }
+
+    @Override
+    public boolean isFixedSize() {
+        return fixedSize;
     }
 
     @Override

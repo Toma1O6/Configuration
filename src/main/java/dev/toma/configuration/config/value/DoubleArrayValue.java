@@ -10,12 +10,17 @@ import net.minecraft.network.PacketBuffer;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class DoubleArrayValue extends ConfigValue<double[]> {
+public class DoubleArrayValue extends ConfigValue<double[]> implements ArrayValue {
 
     private boolean fixedSize;
 
     public DoubleArrayValue(ValueData<double[]> valueData) {
         super(valueData);
+    }
+
+    @Override
+    public boolean isFixedSize() {
+        return fixedSize;
     }
 
     @Override
