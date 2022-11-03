@@ -10,18 +10,6 @@ import java.lang.annotation.Target;
  * Inside this class you should define all configurable fields <b>(cannot be {@code STATIC})!</b>.
  * All configurable fields must be annotated with {@link Configurable} annotation, otherwise it will
  * be ignored.
- * <br/><br/>
- * Supported types are: <br/>
- * boolean, boolean[] <br/>
- * char <br/>
- * int, int[] <br/>
- * long, long[] <br/>
- * float, float[] <br/>
- * double, double[] <br/>
- * String, String[] <br/>
- * Enum <br/>
- * Object (For nesting) <br/>
- *
  *
  * @author Toma
  */

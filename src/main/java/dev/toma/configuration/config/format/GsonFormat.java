@@ -286,14 +286,26 @@ public final class GsonFormat implements IConfigFormat {
         }
     }
 
+    /**
+     * Settings holder for JSON configs
+     *
+     * @author Toma
+     */
     public static final class Settings {
 
         private final GsonBuilder builder = new GsonBuilder();
 
+        /**
+         * Default settings constructor
+         */
         public Settings() {
             this.builder.setPrettyPrinting().disableHtmlEscaping();
         }
 
+        /**
+         * Constructs new settings and allows you to customize {@link GsonBuilder} object
+         * @param consumer Consumer of {@link GsonBuilder} for this settings object
+         */
         public Settings(Consumer<GsonBuilder> consumer) {
             consumer.accept(builder);
         }

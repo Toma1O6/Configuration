@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Handles exporting of data to custom file format
+ *
+ * @author Toma
+ */
 public interface IConfigFormat {
 
     void writeBoolean(String field, boolean value);

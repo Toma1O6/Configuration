@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// TODO proper parsing
 public final class PropertiesFormat implements IConfigFormat {
 
     private final Settings settings;
@@ -350,11 +351,22 @@ public final class PropertiesFormat implements IConfigFormat {
         return value.split(this.settings.arraySeparator);
     }
 
+    /**
+     * Settings holder for JSON configs
+     *
+     * @author Toma
+     */
     public static final class Settings {
 
         private String arraySeparator = ";";
         private int newlines = 1;
 
+        /**
+         * Allows you to configure custom separator used for arrays in case the default
+         * one is causing issues
+         *
+         * @param arraySeparator Nonnull separator to be used
+         */
         public Settings arraySeparator(String arraySeparator) {
             this.arraySeparator = Objects.requireNonNull(arraySeparator);
             return this;

@@ -33,6 +33,16 @@ public final class Configuration {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
     }
 
+    /**
+     * Registers your config class. Config will be immediately loaded upon calling.
+     *
+     * @param cfgClass Your config class
+     * @param formatFactory File format to be used by this config class. You can use values
+     *                      from {@link ConfigFormats} for example.
+     * @return Config holder containing your config instance. You obtain it by calling
+     * {@link ConfigHolder#getConfigInstance()} method.
+     * @param <CFG> Config type
+     */
     public static <CFG> ConfigHolder<CFG> registerConfig(Class<CFG> cfgClass, IConfigFormatHandler formatFactory) {
         Config cfg = cfgClass.getAnnotation(Config.class);
         if (cfg == null) {
