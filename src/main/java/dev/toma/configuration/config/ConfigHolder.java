@@ -10,6 +10,7 @@ import dev.toma.configuration.config.value.ObjectValue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -95,6 +96,10 @@ public final class ConfigHolder<CFG> {
             Configurable value = field.getAnnotation(Configurable.class);
             if (value == null)
                 continue;
+            int modifiers = field.getModifiers();
+            if (Modifier.isStatic(modifiers)) {
+                Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping static config field {}, only instance types are supported", field.getType());
+            }
             TypeAdapter adapter = TypeAdapters.getTypeAdapter(field.getType());
             if (adapter == null) {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());
