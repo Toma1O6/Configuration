@@ -161,7 +161,6 @@ public @interface Configurable {
      */
     final class Gui {
 
-        // TODO array propagation
         /**
          * Allows you to specify number formatting for float and double values
          * in GUI.
@@ -177,7 +176,6 @@ public @interface Configurable {
             String value();
         }
 
-        // TODO array propagation
         /**
          * Allows you to change number display type for numeric config values
          * in GUI.

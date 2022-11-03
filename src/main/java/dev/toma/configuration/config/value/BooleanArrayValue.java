@@ -50,6 +50,21 @@ public class BooleanArrayValue extends ConfigValue<boolean[]> implements ArrayVa
         this.set(format.readBoolArray(this.getId()));
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        boolean[] booleans = this.get();
+        for (int i = 0; i < booleans.length; i++) {
+            builder.append(this.elementToString(booleans[i]));
+            if (i < booleans.length - 1) {
+                builder.append(",");
+            }
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {

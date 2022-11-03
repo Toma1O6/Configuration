@@ -80,6 +80,21 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
         this.set(format.readStringArray(this.getId()));
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        String[] strings = this.get();
+        for (int i = 0; i < strings.length; i++) {
+            builder.append(this.elementToString(strings[i]));
+            if (i < strings.length - 1) {
+                builder.append(",");
+            }
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+
     public static final class Adapter extends TypeAdapter {
 
         public Adapter() {
