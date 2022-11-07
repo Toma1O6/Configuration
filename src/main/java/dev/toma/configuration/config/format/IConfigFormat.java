@@ -1,7 +1,7 @@
 package dev.toma.configuration.config.format;
 
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.ICommentsProvider;
+import dev.toma.configuration.config.value.IDescriptionProvider;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 
@@ -81,5 +81,5 @@ public interface IConfigFormat {
 
     void writeFile(File file) throws IOException;
 
-    void addComments(ICommentsProvider provider);
+    void addComments(IDescriptionProvider provider);
 }

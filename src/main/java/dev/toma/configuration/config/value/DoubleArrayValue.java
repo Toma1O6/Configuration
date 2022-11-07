@@ -2,24 +2,18 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.NumberDisplayType;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.PacketBuffer;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 
-public class DoubleArrayValue extends ConfigValue<double[]> implements NumericArrayValue {
+public class DoubleArrayValue extends ConfigValue<double[]> implements ArrayValue {
 
     private boolean fixedSize;
     private DecimalValue.Range range;
-    private DecimalFormat format;
-    private NumberDisplayType displayType;
 
     public DoubleArrayValue(ValueData<double[]> valueData) {
         super(valueData);
@@ -30,34 +24,11 @@ public class DoubleArrayValue extends ConfigValue<double[]> implements NumericAr
         return fixedSize;
     }
 
-    @Nullable
-    @Override
-    public DecimalFormat getDecimalFormat() {
-        return format;
-    }
-
-    @Override
-    public NumberDisplayType getDisplayType() {
-        return displayType;
-    }
-
     @Override
     protected void readFieldData(Field field) {
         this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
         Configurable.DecimalRange decimalRange = field.getAnnotation(Configurable.DecimalRange.class);
-        if (decimalRange != null) {
-            this.range = DecimalValue.Range.newBoundedRange(decimalRange.min(), decimalRange.max());
-        }
-        Configurable.Gui.DecimalNumberFormat decimalNumberFormat = field.getAnnotation(Configurable.Gui.DecimalNumberFormat.class);
-        if (decimalNumberFormat != null) {
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-            symbols.setDecimalSeparator('.');
-            this.format = new DecimalFormat(decimalNumberFormat.value(), symbols);
-        }
-        Configurable.Gui.NumberDisplay display = field.getAnnotation(Configurable.Gui.NumberDisplay.class);
-        if (display != null) {
-            this.displayType = display.value();
-        }
+        this.range = decimalRange != null ? DecimalValue.Range.newBoundedRange(decimalRange.min(), decimalRange.max()) : DecimalValue.Range.unboundedDouble();
     }
 
     @Override
@@ -107,16 +78,11 @@ public class DoubleArrayValue extends ConfigValue<double[]> implements NumericAr
         return builder.toString();
     }
 
+    public DecimalValue.Range getRange() {
+        return range;
+    }
+
     public static final class Adapter extends TypeAdapter {
-
-        public Adapter() {
-            super("double[]");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(double[].class);
-        }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {

@@ -34,7 +34,11 @@ public final class FileWatchManager {
             Configuration.LOGGER.error(MARKER, "Failed to initialize file watch service due to error, configs won't be automatically refreshed", e);
         } finally {
             this.service = watchService;
-            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            this.executorService = Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r);
+                t.setName("Auto-Sync thread");
+                return t;
+            });
         }
     }
 

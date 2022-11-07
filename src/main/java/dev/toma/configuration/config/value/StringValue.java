@@ -27,7 +27,7 @@ public class StringValue extends ConfigValue<String> {
         Configurable.StringPattern stringPattern = field.getAnnotation(Configurable.StringPattern.class);
         if (stringPattern != null) {
             String value = stringPattern.value();
-            this.descriptor = stringPattern.errorDescriptor().isEmpty() ? stringPattern.value() : stringPattern.errorDescriptor();
+            this.descriptor = stringPattern.errorDescriptor().isEmpty() ? null : stringPattern.errorDescriptor();
             try {
                 this.pattern = Pattern.compile(value, stringPattern.flags());
             } catch (IllegalArgumentException e) {
@@ -52,17 +52,6 @@ public class StringValue extends ConfigValue<String> {
     }
 
     @Override
-    public ValidationResult apply(String s) {
-        if (this.pattern == null) {
-            return ValidationResult.valid();
-        }
-        if (this.pattern.matcher(s).matches()) {
-            return ValidationResult.valid();
-        }
-        return ValidationResult.error(ValidationResult.INVALID_STRING, this.descriptor);
-    }
-
-    @Override
     protected void serialize(IConfigFormat format) {
         format.writeString(this.getId(), this.get());
     }
@@ -72,16 +61,15 @@ public class StringValue extends ConfigValue<String> {
         this.set(format.readString(this.getId()));
     }
 
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    public String getErrorDescriptor() {
+        return descriptor;
+    }
+
     public static final class Adapter extends TypeAdapter {
-
-        public Adapter() {
-            super("string");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(String.class);
-        }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {

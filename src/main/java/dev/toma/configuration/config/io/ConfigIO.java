@@ -49,6 +49,16 @@ public final class ConfigIO {
         });
     }
 
+    public static void saveClientValues(ConfigHolder<?> configHolder) {
+        processSafely(configHolder, () -> {
+            try {
+                writeConfig(configHolder);
+            } catch (IOException e) {
+                Configuration.LOGGER.error(MARKER, "Failed to write config file {}", configHolder.getConfigId());
+            }
+        });
+    }
+
     private static void processSafely(ConfigHolder<?> holder, Runnable action) {
         try {
             synchronized (holder.getLock()) {

@@ -2,50 +2,51 @@ package dev.toma.configuration.config.adapter;
 
 import dev.toma.configuration.config.value.*;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class TypeAdapters {
 
-    private static final List<TypeAdapter> TYPE_ADAPTERS = new ArrayList<>();
+    private static final Map<TypeMatcher, TypeAdapter> ADAPTER_MAP = new HashMap<>();
 
-    public static TypeAdapter getTypeAdapter(Class<?> type) {
-        for (TypeAdapter adapter : TYPE_ADAPTERS) {
-            if (adapter.isTargetType(type)) {
-                return adapter;
-            }
-        }
-        return null;
+    public static TypeAdapter forType(Class<?> type) {
+        return ADAPTER_MAP.entrySet().stream()
+                .filter(entry -> entry.getKey().test(type))
+                .sorted(Comparator.comparingInt(value -> value.getKey().priority()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
-    public static void registerTypeAdapter(TypeAdapter adapter) {
-        TYPE_ADAPTERS.add(adapter);
-        TYPE_ADAPTERS.sort(Comparator.comparingInt(TypeAdapter::getPriorityIndex));
+    public static void registerTypeAdapter(TypeMatcher matcher, TypeAdapter adapter) {
+        if (ADAPTER_MAP.put(matcher, adapter) != null) {
+            throw new IllegalArgumentException("Duplicate type matcher with id: " + matcher.getIdentifier());
+        }
     }
 
     static {
         // primitives
-        registerTypeAdapter(new BooleanValue.Adapter());
-        registerTypeAdapter(new CharValue.Adapter());
-        registerTypeAdapter(new IntValue.Adapter());
-        registerTypeAdapter(new LongValue.Adapter());
-        registerTypeAdapter(new FloatValue.Adapter());
-        registerTypeAdapter(new DoubleValue.Adapter());
-        registerTypeAdapter(new StringValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchBoolean(), new BooleanValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchCharacter(), new CharValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchInteger(), new IntValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchLong(), new LongValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchFloat(), new FloatValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchDouble(), new DoubleValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchString(), new StringValue.Adapter());
 
         // primitive arrays
-        registerTypeAdapter(new BooleanArrayValue.Adapter());
-        registerTypeAdapter(new IntArrayValue.Adapter());
-        registerTypeAdapter(new LongArrayValue.Adapter());
-        registerTypeAdapter(new FloatArrayValue.Adapter());
-        registerTypeAdapter(new DoubleArrayValue.Adapter());
-        registerTypeAdapter(new StringArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchBooleanArray(), new BooleanArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchIntegerArray(), new IntArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchLongArray(), new LongArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchFloatArray(), new FloatArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchDoubleArray(), new DoubleArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchStringArray(), new StringArrayValue.Adapter());
 
         // enums
-        registerTypeAdapter(new EnumValue.Adapter<>());
+        registerTypeAdapter(TypeMatcher.matchEnum(), new EnumValue.Adapter<>());
 
         // objects
-        registerTypeAdapter(new ObjectValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchObject(), new ObjectValue.Adapter());
     }
 }

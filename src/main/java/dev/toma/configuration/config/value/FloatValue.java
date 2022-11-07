@@ -38,15 +38,6 @@ public class FloatValue extends DecimalValue<Float> {
 
     public static final class Adapter extends TypeAdapter {
 
-        public Adapter() {
-            super("float");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(Float.TYPE);
-        }
-
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
             return new FloatValue(ValueData.of(name, (float) value, context, comments));

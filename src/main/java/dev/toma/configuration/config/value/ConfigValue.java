@@ -2,28 +2,22 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.UpdatePolicyType;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class ConfigValue<T> implements Supplier<T>, Function<T, ConfigValue.ValidationResult> {
+public abstract class ConfigValue<T> implements Supplier<T>{
 
     protected final ValueData<T> valueData;
     private T value;
     private boolean synchronizeToClient;
-    @Nullable
-    private UpdatePolicyType updatePolicy;
 
     public ConfigValue(ValueData<T> valueData) {
         this.valueData = valueData;
@@ -59,16 +53,7 @@ public abstract class ConfigValue<T> implements Supplier<T>, Function<T, ConfigV
 
     public final void processFieldData(Field field) {
         this.synchronizeToClient = field.getAnnotation(Configurable.Synchronized.class) != null;
-        Configurable.UpdatePolicy policy = field.getAnnotation(Configurable.UpdatePolicy.class);
-        if (policy != null) {
-            this.updatePolicy = policy.value();
-        }
         this.readFieldData(field);
-    }
-
-    @Override
-    public ValidationResult apply(T t) {
-        return ValidationResult.valid();
     }
 
     protected void readFieldData(Field field) {
@@ -101,8 +86,12 @@ public abstract class ConfigValue<T> implements Supplier<T>, Function<T, ConfigV
         }
     }
 
+    public final TypeAdapter.AdapterContext getSerializationContext() {
+        return this.valueData.getContext();
+    }
+
     public final TypeAdapter getAdapter() {
-        return this.valueData.getContext().getAdapter();
+        return this.getSerializationContext().getAdapter();
     }
 
     public final String getFieldPath() {
@@ -119,35 +108,5 @@ public abstract class ConfigValue<T> implements Supplier<T>, Function<T, ConfigV
     @Override
     public String toString() {
         return this.value.toString();
-    }
-
-    public static final class ValidationResult {
-
-        public static final String NUMBER_OUT_OF_RANGE = "configuration.config.validation.out_of_range";
-        public static final String INVALID_STRING = "configuration.config.validation.invalid_string";
-
-        private final boolean valid;
-        private final ITextComponent message;
-
-        private ValidationResult(boolean valid, String message, Object... data) {
-            this.valid = valid;
-            this.message = message != null ? new TranslationTextComponent(message, data) : null;
-        }
-
-        public static ValidationResult valid() {
-            return new ValidationResult(true, null);
-        }
-
-        public static ValidationResult error(String message, Object... data) {
-            return new ValidationResult(false, message, data);
-        }
-
-        public boolean isValid() {
-            return valid;
-        }
-
-        public ITextComponent getMessage() {
-            return message;
-        }
     }
 }

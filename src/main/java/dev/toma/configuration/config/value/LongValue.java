@@ -39,15 +39,6 @@ public class LongValue extends IntegerValue<Long> {
 
     public static final class Adapter extends TypeAdapter {
 
-        public Adapter() {
-            super("long");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(Long.TYPE);
-        }
-
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
             return new LongValue(ValueData.of(name, (long) value, context, comments));

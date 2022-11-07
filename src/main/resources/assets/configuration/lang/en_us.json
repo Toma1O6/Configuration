@@ -1,0 +1,15 @@
+{
+  "text.configuration.value.true": "True",
+  "text.configuration.value.false": "False",
+  "text.configuration.value.edit": "Edit",
+  "text.configuration.value.back": "Back",
+  "text.configuration.value.revert.default": "Use default config",
+  "text.configuration.value.revert.changes": "Rollback changes",
+  "text.configuration.value.add_element": "Add element",
+  "text.configuration.screen.select_config": "Select config",
+
+  "text.configuration.error.character_value_empty": "Character field cannot be empty!",
+  "text.configuration.error.nan": "Value '%s' is not a valid number!",
+  "text.configuration.error.num_bounds": "Value '%s' is not from interval <%s;%s>!",
+  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!"
+}

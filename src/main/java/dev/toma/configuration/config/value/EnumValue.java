@@ -25,15 +25,6 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
     public static final class Adapter<E extends Enum<E>> extends TypeAdapter {
 
-        public Adapter() {
-            super("enum");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.isEnum();
-        }
-
         @SuppressWarnings("unchecked")
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
@@ -52,11 +43,6 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
             E e = (E) value.get();
             Class<E> eClass = e.getDeclaringClass();
             return buffer.readEnum(eClass);
-        }
-
-        @Override
-        public int getPriorityIndex() {
-            return 1;
         }
     }
 }

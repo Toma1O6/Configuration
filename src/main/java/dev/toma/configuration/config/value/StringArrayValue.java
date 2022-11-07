@@ -17,7 +17,6 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
 
     private boolean fixedSize;
     private Pattern pattern;
-    private String descriptor;
     private String defaultElementValue = "";
 
     public StringArrayValue(ValueData<String[]> valueData) {
@@ -37,7 +36,6 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
         if (stringPattern != null) {
             String value = stringPattern.value();
             this.defaultElementValue = stringPattern.defaultValue();
-            this.descriptor = stringPattern.errorDescriptor().isEmpty() ? stringPattern.value() : stringPattern.errorDescriptor();
             try {
                 this.pattern = Pattern.compile(value, stringPattern.flags());
             } catch (IllegalArgumentException e) {
@@ -70,6 +68,10 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
         return in;
     }
 
+    public String getDefaultElementValue() {
+        return defaultElementValue;
+    }
+
     @Override
     protected void serialize(IConfigFormat format) {
         format.writeStringArray(this.getId(), this.get());
@@ -96,15 +98,6 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
     }
 
     public static final class Adapter extends TypeAdapter {
-
-        public Adapter() {
-            super("string[]");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(String[].class);
-        }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {

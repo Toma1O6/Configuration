@@ -2,22 +2,18 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.NumberDisplayType;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.PacketBuffer;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
-public class LongArrayValue extends ConfigValue<long[]> implements NumericArrayValue {
+public class LongArrayValue extends ConfigValue<long[]> implements ArrayValue {
 
     private boolean fixedSize;
     private IntegerValue.Range range;
-    private NumberDisplayType displayType;
 
     public LongArrayValue(ValueData<long[]> valueData) {
         super(valueData);
@@ -28,28 +24,11 @@ public class LongArrayValue extends ConfigValue<long[]> implements NumericArrayV
         return fixedSize;
     }
 
-    @Nullable
-    @Override
-    public DecimalFormat getDecimalFormat() {
-        return null;
-    }
-
-    @Override
-    public NumberDisplayType getDisplayType() {
-        return displayType;
-    }
-
     @Override
     protected void readFieldData(Field field) {
         this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
         Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
-        if (intRange != null) {
-            this.range = IntegerValue.Range.newBoundedRange(intRange.min(), intRange.max());
-        }
-        Configurable.Gui.NumberDisplay display = field.getAnnotation(Configurable.Gui.NumberDisplay.class);
-        if (display != null) {
-            this.displayType = display.value();
-        }
+        this.range = intRange != null ? IntegerValue.Range.newBoundedRange(intRange.min(), intRange.max()) : IntegerValue.Range.unboundedLong();
     }
 
     @Override
@@ -99,16 +78,11 @@ public class LongArrayValue extends ConfigValue<long[]> implements NumericArrayV
         return builder.toString();
     }
 
+    public IntegerValue.Range getRange() {
+        return range;
+    }
+
     public static final class Adapter extends TypeAdapter {
-
-        public Adapter() {
-            super("long[]");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(long[].class);
-        }
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {

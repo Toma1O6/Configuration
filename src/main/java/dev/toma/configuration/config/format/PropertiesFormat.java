@@ -4,7 +4,7 @@ import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.ICommentsProvider;
+import dev.toma.configuration.config.value.IDescriptionProvider;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -308,8 +308,8 @@ public final class PropertiesFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(ICommentsProvider provider) {
-        String[] comments = provider.getComments();
+    public void addComments(IDescriptionProvider provider) {
+        String[] comments = provider.getDescription();
         if (comments.length == 0) {
             return;
         }

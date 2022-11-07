@@ -5,7 +5,7 @@ import dev.toma.configuration.config.Configurable;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public abstract class IntegerValue<N extends Number> extends NumberValue<N> {
+public abstract class IntegerValue<N extends Number> extends ConfigValue<N> {
 
     protected Range range;
 
@@ -24,15 +24,11 @@ public abstract class IntegerValue<N extends Number> extends NumberValue<N> {
     }
 
     @Override
-    public ValidationResult apply(N n) {
-        if (this.range == null || this.range.isWithin(n.longValue())) {
-            return ValidationResult.valid();
-        }
-        return ValidationResult.error(ValidationResult.NUMBER_OUT_OF_RANGE, n, this.range.min, this.range.max);
-    }
-
-    @Override
     public abstract N getCorrectedValue(N in);
+
+    public Range getRange() {
+        return range;
+    }
 
     public static final class Range {
 

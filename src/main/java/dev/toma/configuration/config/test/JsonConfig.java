@@ -3,7 +3,7 @@ package dev.toma.configuration.config.test;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 
-@Config(id = "configuration:json", filename = "tests/json-test")
+@Config(id = "configuration", filename = "tests/json-test")
 public final class JsonConfig {
 
     @Configurable
@@ -32,6 +32,7 @@ public final class JsonConfig {
     @Configurable
     @Configurable.Comment("Test double")
     @Configurable.DecimalRange(min = 133.0, max = 266.0)
+    @Configurable.Gui.NumberFormat("0.0##")
     public final double testDouble = 1651.313;
 
     @Configurable
@@ -40,7 +41,6 @@ public final class JsonConfig {
 
     @Configurable
     @Configurable.Comment("Test boolean array")
-    @Configurable.FixedSize
     public final boolean[] boolArr = {true, false};
 
     @Configurable
@@ -55,6 +55,7 @@ public final class JsonConfig {
     @Configurable
     @Configurable.Comment("Test float array")
     @Configurable.DecimalRange(min = 100.0F)
+    @Configurable.Gui.NumberFormat("0.0##")
     public final float[] floatArr = {1513.153f, 13.156f};
 
     @Configurable

@@ -5,10 +5,18 @@ import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public final class ConfigUtils {
+
+    public static final char[] INTEGER_CHARS = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    public static final char[] DECIMAL_CHARS = { '-', '.', 'E', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    public static final Pattern INTEGER_PATTERN = Pattern.compile("-?[0-9]+");
+    public static final Pattern DECIMAL_PATTERN = Pattern.compile("-?[0-9]+(\\.[0-9]+)?(E[0-9]+)?");
 
     public static void logCorrectedMessage(String field, @Nullable Object prevValue, Object corrected) {
         Configuration.LOGGER.warn(ConfigIO.MARKER, "Correcting config value '{}' from '{}' to '{}'", field, Objects.toString(prevValue), corrected);
@@ -71,5 +79,32 @@ public final class ConfigUtils {
             }
         }
         throw new ConfigValueMissingException("Missing enum value: " + value);
+    }
+
+    public static boolean containsOnlyValidCharacters(String in, char[] allowedChars) {
+        char[] arr = in.toCharArray();
+        for (char c : arr) {
+            boolean valid = false;
+            for (char validate : allowedChars) {
+                if (validate == c) {
+                    valid = true;
+                    break;
+                }
+            }
+            if (!valid) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static DecimalFormat getDecimalFormat(Field field) {
+        Configurable.Gui.NumberFormat format = field.getAnnotation(Configurable.Gui.NumberFormat.class);
+        if (format != null) {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            symbols.setDecimalSeparator('.');
+            return new DecimalFormat(format.value(), symbols);
+        }
+        return null;
     }
 }

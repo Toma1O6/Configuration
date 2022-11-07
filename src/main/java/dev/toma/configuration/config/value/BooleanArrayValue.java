@@ -67,15 +67,6 @@ public class BooleanArrayValue extends ConfigValue<boolean[]> implements ArrayVa
 
     public static final class Adapter extends TypeAdapter {
 
-        public Adapter() {
-            super("boolean[]");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(boolean[].class);
-        }
-
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
             return new BooleanArrayValue(ValueData.of(name, (boolean[]) value, context, comments));

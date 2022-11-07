@@ -38,15 +38,6 @@ public class DoubleValue extends DecimalValue<Double> {
 
     public static final class Adapter extends TypeAdapter {
 
-        public Adapter() {
-            super("double");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(Double.TYPE);
-        }
-
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
             return new DoubleValue(ValueData.of(name, (double) value, context, comments));

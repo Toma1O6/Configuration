@@ -61,6 +61,10 @@ public final class ConfigHolder<CFG> {
         return filename;
     }
 
+    public String getGroup() {
+        return group;
+    }
+
     public CFG getConfigInstance() {
         return configInstance;
     }
@@ -75,6 +79,10 @@ public final class ConfigHolder<CFG> {
 
     public Collection<ConfigValue<?>> values() {
         return this.valueMap.values();
+    }
+
+    public Map<String, ConfigValue<?>> getValueMap() {
+        return valueMap;
     }
 
     public Map<String, ConfigValue<?>> getNetworkSerializedFields() {
@@ -100,7 +108,7 @@ public final class ConfigHolder<CFG> {
             if (Modifier.isStatic(modifiers)) {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping static config field {}, only instance types are supported", field.getType());
             }
-            TypeAdapter adapter = TypeAdapters.getTypeAdapter(field.getType());
+            TypeAdapter adapter = TypeAdapters.forType(field.getType());
             if (adapter == null) {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());
                 continue;
@@ -156,10 +164,14 @@ public final class ConfigHolder<CFG> {
         return value == null ? Optional.empty() : Optional.of(value);
     }
 
-    public static Set<ConfigHolder<?>> getConfigsByGroup(String group) {
+    public static Map<String, List<ConfigHolder<?>>> getConfigGroupingByGroup() {
+        return REGISTERED_CONFIGS.values().stream().collect(Collectors.groupingBy(ConfigHolder::getGroup));
+    }
+
+    public static List<ConfigHolder<?>> getConfigsByGroup(String group) {
         return REGISTERED_CONFIGS.values().stream()
                 .filter(configHolder -> configHolder.group.equals(group))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     public static Set<String> getSynchronizedConfigs() {

@@ -54,22 +54,6 @@ public @interface Configurable {
     }
 
     /**
-     * Allows you to specify when config value can be modified.
-     * When this annotation is <b>not</b> present, config value can be always
-     * modified
-     */
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface UpdatePolicy {
-
-        /**
-         * @return {@code MENU} for values which cannot be set while in world. Or
-         * {@code RESTART} for values which require MC restart to work correctly
-         */
-        UpdatePolicyType value();
-    }
-
-    /**
      * Allows you to specify number range for int or long values.
      * This annotation is also applicable to int/long arrays
      */
@@ -167,31 +151,13 @@ public @interface Configurable {
          */
         @Target(ElementType.FIELD)
         @Retention(RetentionPolicy.RUNTIME)
-        public @interface DecimalNumberFormat {
+        public @interface NumberFormat {
 
             /**
              * @return Number format according to {@link java.text.DecimalFormat}.
              * @throws IllegalArgumentException When invalid format is provided
              */
             String value();
-        }
-
-        /**
-         * Allows you to change number display type for numeric config values
-         * in GUI.
-         */
-        @Target(ElementType.FIELD)
-        @Retention(RetentionPolicy.RUNTIME)
-        public @interface NumberDisplay {
-
-            /**
-             * There are 3 available display types:
-             * <li> TEXT_FIELD (default) - Editable text field
-             * <li> SLIDER - Slider between min-max values
-             * <li> TEXT_FIELD_WITH_SLIDER - Combination of options above
-             * @return Your preferred display type
-             */
-            NumberDisplayType value();
         }
     }
 }

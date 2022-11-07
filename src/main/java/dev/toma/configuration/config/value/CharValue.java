@@ -25,15 +25,6 @@ public final class CharValue extends ConfigValue<Character> {
 
     public static final class Adapter extends TypeAdapter {
 
-        public Adapter() {
-            super("char");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(Character.TYPE);
-        }
-
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
             return new CharValue(ValueData.of(name, (char) value, context, comments));

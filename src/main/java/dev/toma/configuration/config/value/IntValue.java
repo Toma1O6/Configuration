@@ -38,15 +38,6 @@ public final class IntValue extends IntegerValue<Integer> {
 
     public static final class Adapter extends TypeAdapter {
 
-        public Adapter() {
-            super("int");
-        }
-
-        @Override
-        public boolean isTargetType(Class<?> type) {
-            return type.equals(Integer.TYPE);
-        }
-
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) {
             return new IntValue(ValueData.of(name, (int) value, context, comments));

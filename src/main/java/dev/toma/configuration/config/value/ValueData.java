@@ -4,7 +4,7 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 
 import javax.annotation.Nullable;
 
-public final class ValueData<T> implements ICommentsProvider {
+public final class ValueData<T> implements IDescriptionProvider {
 
     private final String id;
     private final String[] tooltip;
@@ -29,7 +29,7 @@ public final class ValueData<T> implements ICommentsProvider {
     }
 
     @Override
-    public String[] getComments() {
+    public String[] getDescription() {
         return tooltip;
     }
 
