@@ -6,11 +6,7 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
-import dev.toma.configuration.config.format.PropertiesFormat;
 import dev.toma.configuration.config.io.ConfigIO;
-import dev.toma.configuration.config.test.JsonConfig;
-import dev.toma.configuration.config.test.PropertiesConfig;
-import dev.toma.configuration.config.test.YamlConfig;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.network.Networking;
 import net.minecraft.client.gui.screen.Screen;
@@ -39,15 +35,8 @@ public final class Configuration {
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("Configuration");
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
-    public static JsonConfig jsonConfig;
-    public static YamlConfig yamlConfig;
-    public static PropertiesConfig propertiesConfig;
 
     public Configuration() {
-        jsonConfig = registerConfig(JsonConfig.class, ConfigFormats.json()).getConfigInstance();
-        yamlConfig = registerConfig(YamlConfig.class, ConfigFormats.yaml()).getConfigInstance();
-        propertiesConfig = registerConfig(PropertiesConfig.class, ConfigFormats.properties(new PropertiesFormat.Settings().newlines(1))).getConfigInstance();
-
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
