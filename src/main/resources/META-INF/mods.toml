@@ -11,13 +11,14 @@ updateJSONURL="https://raw.githubusercontent.com/Toma1O6/UpdateSchemas/master/co
 logoFile="logo.png"
 authors="Toma"
 description='''
-Library mod which add .json based configs and enables config edits via UI ingame
+Library mod which adds annotation based configs which can be in various config formats such as json/yaml/etc.
+Provides simple way to edit values via GUI or synchronize data from server
 '''
 
 [[dependencies.configuration]]
     modId="forge"
     mandatory=true
-    versionRange="[36.2.39,)"
+    versionRange="[36.2,)"
     ordering="NONE"
     side="BOTH"
 
