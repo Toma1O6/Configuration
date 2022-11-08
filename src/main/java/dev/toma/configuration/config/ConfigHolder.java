@@ -99,7 +99,7 @@ public final class ConfigHolder<CFG> {
 
     private Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
         Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
-        Field[] fields = type.getDeclaredFields();
+        Field[] fields = type.getFields();
         for (Field field : fields) {
             Configurable value = field.getAnnotation(Configurable.class);
             if (value == null)

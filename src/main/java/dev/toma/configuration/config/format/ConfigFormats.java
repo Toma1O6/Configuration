@@ -14,9 +14,8 @@ public final class ConfigFormats {
 
     // file extensions
     private static final String EXT_JSON = "json";
+    private static final String EXT_YAML = "yaml";
     private static final String EXT_PROPERTIES = "properties";
-
-    // TODO yaml, toml, ...?
 
     /**
      * Creates new JSON config format handler with customized format settings.
@@ -35,6 +34,15 @@ public final class ConfigFormats {
      */
     public static IConfigFormatHandler json() {
         return json(new GsonFormat.Settings());
+    }
+
+    /**
+     * Creates new YAML config format handler with default format settings
+     *
+     * @return new instance of config format handler for YAML configs
+     */
+    public static IConfigFormatHandler yaml() {
+        return new SimpleFormatImpl(EXT_YAML, YamlFormat::new);
     }
 
     /**
