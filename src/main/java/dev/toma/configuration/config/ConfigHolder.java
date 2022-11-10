@@ -91,7 +91,7 @@ public final class ConfigHolder<CFG> {
     }
 
     /**
-     * Groups all configs from registry into Group->List
+     * Groups all configs from registry into Group-List
      * @return Mapped values
      */
     public static Map<String, List<ConfigHolder<?>>> getConfigGroupingByGroup() {
@@ -179,14 +179,14 @@ public final class ConfigHolder<CFG> {
     }
 
     /**
-     * @return Map ID->ConfigValue for this config
+     * @return Map ID-ConfigValue for this config
      */
     public Map<String, ConfigValue<?>> getValueMap() {
         return valueMap;
     }
 
     /**
-     * @return Map ID->ConfigValue for network serialization
+     * @return Map ID-ConfigValue for network serialization
      */
     public Map<String, ConfigValue<?>> getNetworkSerializedFields() {
         return networkSerializedFields;
