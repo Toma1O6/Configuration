@@ -63,11 +63,13 @@ public class ConfigScreen extends AbstractConfigScreen {
         this.addFooter();
     }
 
-    private void renderEntryDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
+    private void renderEntryDescription(MatrixStack stack, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
+        int x = widget.x + 5;
+        int y = widget.y + widget.getHeight() + 10;
         if (!severity.isOkStatus()) {
-            this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
+            this.renderNotification(severity, stack, text, x, y);
         } else {
-            this.renderNotification(NotificationSeverity.INFO, stack, text, mouseX, mouseY);
+            this.renderNotification(NotificationSeverity.INFO, stack, text, x, y);
         }
     }
 

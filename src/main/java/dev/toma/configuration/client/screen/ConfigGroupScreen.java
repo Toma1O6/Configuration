@@ -105,7 +105,7 @@ public class ConfigGroupScreen extends Screen {
 
         @Override
         public void renderButton(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-            this.font.draw(stack, this.getMessage(), this.x, this.y + (this.height - this.font.lineHeight) / 2.0F, 0xFFFFFF);
+            this.font.draw(stack, this.getMessage(), this.x, this.y + (this.height - this.font.lineHeight) / 2.0F, 0xAAAAAA);
         }
 
         @Override

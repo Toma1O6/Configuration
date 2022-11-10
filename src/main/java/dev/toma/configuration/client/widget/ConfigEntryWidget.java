@@ -57,7 +57,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
                 IFormattableTextComponent textComponent = this.result.getText().withStyle(severity.getExtraFormatting());
                 List<ITextComponent> desc = isError ? Collections.singletonList(textComponent) : this.description;
                 List<IReorderingProcessor> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
-                renderer.drawDescription(stack, mouseX, mouseY, this, severity, split);
+                renderer.drawDescription(stack, this, severity, split);
             }
         }
         this.lastHoverState = isHovered;
@@ -76,6 +76,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     @FunctionalInterface
     public interface IDescriptionRenderer {
-        void drawDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text);
+        void drawDescription(MatrixStack stack, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text);
     }
 }

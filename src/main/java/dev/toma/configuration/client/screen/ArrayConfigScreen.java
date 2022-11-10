@@ -106,7 +106,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         addFooter();
     }
 
-    private void renderEntryDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
+    private void renderEntryDescription(MatrixStack stack, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
         if (!severity.isOkStatus()) {
             this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
         }
