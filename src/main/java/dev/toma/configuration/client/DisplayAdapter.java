@@ -3,15 +3,18 @@ package dev.toma.configuration.client;
 import dev.toma.configuration.client.screen.ArrayConfigScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
 import dev.toma.configuration.client.widget.BooleanWidget;
+import dev.toma.configuration.client.widget.ColorWidget;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.EnumWidget;
 import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -19,6 +22,7 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.IntSupplier;
 import java.util.regex.Pattern;
 
 @FunctionalInterface
@@ -41,13 +45,14 @@ public interface DisplayAdapter {
             widget.setFilter(str -> str.length() <= 1);
             widget.setResponder(str -> {
                 if (str.length() > 0) {
-                    container.setError(null);
+                    container.setOkStatus();
                     char toSet = str.charAt(0);
-                    charValue.set(toSet);
+                    charValue.setWithValidationHandler(toSet, container);
                 } else {
-                    container.setError(ClientErrors.CHAR_VALUE_EMPTY);
+                    container.setValidationResult(ValidationResult.error(ClientErrors.CHAR_VALUE_EMPTY));
                 }
             });
+            ConfigUtils.adjustCharacterLimit(field, widget);
             return widget;
         });
     }
@@ -61,24 +66,25 @@ public interface DisplayAdapter {
             tfw.setFilter(str -> ConfigUtils.containsOnlyValidCharacters(str, ConfigUtils.INTEGER_CHARS));
             tfw.setResponder(str -> {
                 if (!ConfigUtils.INTEGER_PATTERN.matcher(str).matches()) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 int n;
                 try {
                     n = Integer.parseInt(str);
                 } catch (NumberFormatException e) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 IntegerValue.Range range = intValue.getRange();
                 if (!range.isWithin(n)) {
-                    container.setError(ClientErrors.outOfBounds(n, range));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
                     return;
                 }
-                container.setError(null);
-                intValue.set(n);
+                container.setOkStatus();
+                intValue.setWithValidationHandler(n, container);
             });
+            ConfigUtils.adjustCharacterLimit(field, tfw);
             return tfw;
         });
     }
@@ -92,24 +98,25 @@ public interface DisplayAdapter {
             tfw.setFilter(str -> ConfigUtils.containsOnlyValidCharacters(str, ConfigUtils.INTEGER_CHARS));
             tfw.setResponder(str -> {
                 if (!ConfigUtils.INTEGER_PATTERN.matcher(str).matches()) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 long n;
                 try {
                     n = Long.parseLong(str);
                 } catch (NumberFormatException e) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 IntegerValue.Range range = longValue.getRange();
                 if (!range.isWithin(n)) {
-                    container.setError(ClientErrors.outOfBounds(n, range));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
                     return;
                 }
-                container.setError(null);
-                longValue.set(n);
+                container.setOkStatus();
+                longValue.setWithValidationHandler(n, container);
             });
+            ConfigUtils.adjustCharacterLimit(field, tfw);
             return tfw;
         });
     }
@@ -124,24 +131,25 @@ public interface DisplayAdapter {
             tfw.setFilter(str -> ConfigUtils.containsOnlyValidCharacters(str, ConfigUtils.DECIMAL_CHARS));
             tfw.setResponder(str -> {
                 if (!ConfigUtils.DECIMAL_PATTERN.matcher(str).matches()) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 float n;
                 try {
                     n = Float.parseFloat(str);
                 } catch (NumberFormatException e) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 DecimalValue.Range range = floatValue.getRange();
                 if (!range.isWithin(n)) {
-                    container.setError(ClientErrors.outOfBounds(n, range));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
                     return;
                 }
-                container.setError(null);
-                floatValue.set(n);
+                container.setOkStatus();
+                floatValue.setWithValidationHandler(n, container);
             });
+            ConfigUtils.adjustCharacterLimit(field, tfw);
             return tfw;
         });
     }
@@ -156,49 +164,70 @@ public interface DisplayAdapter {
             tfw.setFilter(str -> ConfigUtils.containsOnlyValidCharacters(str, ConfigUtils.DECIMAL_CHARS));
             tfw.setResponder(str -> {
                 if (!ConfigUtils.DECIMAL_PATTERN.matcher(str).matches()) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 double n;
                 try {
                     n = Double.parseDouble(str);
                 } catch (NumberFormatException e) {
-                    container.setError(ClientErrors.notANumber(str));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
                 DecimalValue.Range range = doubleValue.getRange();
                 if (!range.isWithin(n)) {
-                    container.setError(ClientErrors.outOfBounds(n, range));
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
                     return;
                 }
-                container.setError(null);
-                doubleValue.set(n);
+                container.setOkStatus();
+                doubleValue.setWithValidationHandler(n, container);
             });
+            ConfigUtils.adjustCharacterLimit(field, tfw);
             return tfw;
         });
     }
 
     static DisplayAdapter stringValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            TextFieldWidget tfw = new TextFieldWidget(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, StringTextComponent.EMPTY);
-            StringValue strValue = (StringValue) value;
-            String val = strValue.get();
-            tfw.setValue(val);
-            tfw.setResponder(str -> {
-                Pattern pattern = strValue.getPattern();
-                if (pattern != null) {
-                    if (!pattern.matcher(str).matches()) {
-                        String errDescriptor = strValue.getErrorDescriptor();
-                        ITextComponent error = errDescriptor != null ? new TranslationTextComponent(errDescriptor, str, pattern) : ClientErrors.invalidText(str, pattern);
-                        container.setError(error);
-                        return;
+        return (value, field, container) -> {
+            Configurable.Gui.ColorValue colorValue = field.getAnnotation(Configurable.Gui.ColorValue.class);
+            TextFieldWidget widget = container.addConfigWidget((x, y, width, height, configId) -> {
+                TextFieldWidget tfw = new TextFieldWidget(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, StringTextComponent.EMPTY);
+                StringValue strValue = (StringValue) value;
+                String val = strValue.get();
+                tfw.setValue(val);
+                tfw.setResponder(str -> {
+                    Pattern pattern = strValue.getPattern();
+                    if (pattern != null) {
+                        if (!pattern.matcher(str).matches()) {
+                            String errDescriptor = strValue.getErrorDescriptor();
+                            IFormattableTextComponent error = errDescriptor != null ? new TranslationTextComponent(errDescriptor, str, pattern) : ClientErrors.invalidText(str, pattern);
+                            container.setValidationResult(ValidationResult.error(error));
+                            return;
+                        }
                     }
-                }
-                container.setError(null);
-                strValue.set(str);
+                    container.setOkStatus();
+                    strValue.setWithValidationHandler(str, container);
+                });
+                ConfigUtils.adjustCharacterLimit(field, tfw);
+                return tfw;
             });
-            return tfw;
-        });
+            if (colorValue != null) {
+                boolean isArgb = colorValue.isARGB();
+                IntSupplier colorProvider = () -> {
+                    String rawColor = widget.getValue();
+                    try {
+                        long longClr = Long.decode(rawColor);
+                        return (int) longClr;
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                };
+                container.addConfigWidget((x, y, width, height, configId) -> {
+                    int left = getValueX(x, width) - 25;
+                    return new ColorWidget(left, y, 20, 20, isArgb, colorProvider);
+                });
+            }
+        };
     }
 
     static DisplayAdapter booleanArrayValue() {

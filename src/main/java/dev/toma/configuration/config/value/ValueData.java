@@ -3,6 +3,7 @@ package dev.toma.configuration.config.value;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public final class ValueData<T> implements IDescriptionProvider {
 
@@ -10,18 +11,21 @@ public final class ValueData<T> implements IDescriptionProvider {
     private final String[] tooltip;
     private final T defaultValue;
     private final TypeAdapter.AdapterContext context;
+    private final Class<T> valueType;
     @Nullable
     private ConfigValue<?> parent;
 
+    @SuppressWarnings("unchecked")
     private ValueData(String id, String[] tooltip, T defaultValue, TypeAdapter.AdapterContext context) {
         this.id = id;
         this.tooltip = tooltip;
         this.defaultValue = defaultValue;
         this.context = context;
+        this.valueType = (Class<T>) defaultValue.getClass();
     }
 
     public static <V> ValueData<V> of(String id, V value, TypeAdapter.AdapterContext setter, String... comments) {
-        return new ValueData<>(id, comments, value, setter);
+        return new ValueData<>(id, comments, Objects.requireNonNull(value), setter);
     }
 
     public String getId() {
@@ -52,5 +56,9 @@ public final class ValueData<T> implements IDescriptionProvider {
 
     public TypeAdapter.AdapterContext getContext() {
         return context;
+    }
+
+    public Class<T> getValueType() {
+        return valueType;
     }
 }

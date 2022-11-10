@@ -3,11 +3,16 @@ package dev.toma.configuration.config;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -17,6 +22,7 @@ public final class ConfigUtils {
     public static final char[] DECIMAL_CHARS = { '-', '.', 'E', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     public static final Pattern INTEGER_PATTERN = Pattern.compile("-?[0-9]+");
     public static final Pattern DECIMAL_PATTERN = Pattern.compile("-?[0-9]+(\\.[0-9]+)?(E[0-9]+)?");
+    public static final Map<Class<?>, Class<?>> PRIMITIVE_MAPPINGS = new HashMap<>();
 
     public static void logCorrectedMessage(String field, @Nullable Object prevValue, Object corrected) {
         Configuration.LOGGER.warn(ConfigIO.MARKER, "Correcting config value '{}' from '{}' to '{}'", field, Objects.toString(prevValue), corrected);
@@ -106,5 +112,28 @@ public final class ConfigUtils {
             return new DecimalFormat(format.value(), symbols);
         }
         return null;
+    }
+
+    public static Class<?> remapPrimitiveType(Class<?> type) {
+        return PRIMITIVE_MAPPINGS.getOrDefault(type, type);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void adjustCharacterLimit(Field field, TextFieldWidget widget) {
+        Configurable.Gui.CharacterLimit limit = field.getAnnotation(Configurable.Gui.CharacterLimit.class);
+        if (limit != null) {
+            widget.setMaxLength(Math.max(limit.value(), 1));
+        }
+    }
+
+    static {
+        PRIMITIVE_MAPPINGS.put(Boolean.class, Boolean.TYPE);
+        PRIMITIVE_MAPPINGS.put(Character.class, Character.TYPE);
+        PRIMITIVE_MAPPINGS.put(Byte.class, Byte.TYPE);
+        PRIMITIVE_MAPPINGS.put(Short.class, Short.TYPE);
+        PRIMITIVE_MAPPINGS.put(Integer.class, Integer.TYPE);
+        PRIMITIVE_MAPPINGS.put(Long.class, Long.TYPE);
+        PRIMITIVE_MAPPINGS.put(Float.class, Float.TYPE);
+        PRIMITIVE_MAPPINGS.put(Double.class, Double.TYPE);
     }
 }

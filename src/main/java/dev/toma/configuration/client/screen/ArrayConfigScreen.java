@@ -5,17 +5,20 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.DisplayAdapterManager;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
+import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapters;
 import dev.toma.configuration.config.value.ArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -76,12 +79,14 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
             ConfigEntryWidget widget = addButton(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, i, this.configId));
+            widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
                 continue;
             }
             try {
                 adapter.placeWidgets(dummy, owner, widget);
+                initializeGuiValue(dummy, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, "Unable to create config field for {} type due to error {}", compType.getSimpleName(), e);
             }
@@ -98,6 +103,12 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             }
         }
         addFooter();
+    }
+
+    private void renderEntryDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<ITextComponent> text) {
+        if (!severity.isOkStatus()) {
+            this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
+        }
     }
 
     @Override

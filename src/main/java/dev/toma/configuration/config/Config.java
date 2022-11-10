@@ -30,7 +30,6 @@ public @interface Config {
      * Allows you to customize your config filename. Your custom filename must be valid
      * according to your operating system, otherwise {@link java.io.IOException} will
      * be raised during config processing.
-     * </br>
      * Using {@code empty} string as filename will use your {@link Config#id()} value as default.
      *
      * @return Your custom filename.

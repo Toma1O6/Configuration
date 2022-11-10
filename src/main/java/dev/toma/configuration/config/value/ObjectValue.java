@@ -25,6 +25,11 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> {
         format.readMap(this.getId(), this.get().values());
     }
 
+    @Override
+    public void setValueValidator(SetValueCallback<Map<String, ConfigValue<?>>> callback) {
+        throw new UnsupportedOperationException("Cannot attach value validator to Object types!");
+    }
+
     public static final class Adapter extends TypeAdapter {
 
         @Override

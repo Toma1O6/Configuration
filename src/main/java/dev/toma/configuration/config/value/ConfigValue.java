@@ -1,5 +1,6 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
@@ -18,6 +19,8 @@ public abstract class ConfigValue<T> implements Supplier<T>{
     protected final ValueData<T> valueData;
     private T value;
     private boolean synchronizeToClient;
+    @Nullable
+    private SetValueCallback<T> setValueCallback;
 
     public ConfigValue(ValueData<T> valueData) {
         this.valueData = valueData;
@@ -41,6 +44,11 @@ public abstract class ConfigValue<T> implements Supplier<T>{
         }
         this.value = corrected;
         this.valueData.setValueToMemory(corrected);
+    }
+
+    public final void setWithValidationHandler(T value, IValidationHandler handler) {
+        this.invokeValueValidator(value, handler);
+        this.set(value);
     }
 
     public final String getId() {
@@ -68,11 +76,25 @@ public abstract class ConfigValue<T> implements Supplier<T>{
         this.set(this.valueData.getDefaultValue());
     }
 
+    public void setValueValidator(SetValueCallback<T> callback) {
+        this.setValueCallback = callback;
+    }
+
+    public final void invokeValueValidator(T value, IValidationHandler handler) {
+        if (this.setValueCallback != null) {
+            this.setValueCallback.processValue(value, handler);
+        }
+    }
+
     protected abstract void serialize(IConfigFormat format);
 
     public final void serializeValue(IConfigFormat format) {
         format.addComments(valueData);
         this.serialize(format);
+    }
+
+    public final String[] getDescription() {
+        return this.valueData.getDescription();
     }
 
     protected abstract void deserialize(IConfigFormat format) throws ConfigValueMissingException;
@@ -94,6 +116,10 @@ public abstract class ConfigValue<T> implements Supplier<T>{
         return this.getSerializationContext().getAdapter();
     }
 
+    public final Class<T> getValueType() {
+        return this.valueData.getValueType();
+    }
+
     public final String getFieldPath() {
         List<String> paths = new ArrayList<>();
         paths.add(this.getId());
@@ -108,5 +134,11 @@ public abstract class ConfigValue<T> implements Supplier<T>{
     @Override
     public String toString() {
         return this.value.toString();
+    }
+
+    @FunctionalInterface
+    public interface SetValueCallback<V> {
+
+        void processValue(V value, IValidationHandler handler);
     }
 }

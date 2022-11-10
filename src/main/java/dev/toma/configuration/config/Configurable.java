@@ -7,19 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marker annotation for field to config serialization.
- * Only instance fields are allowed (final values too).
- *
- * <br/><br/>
- * Supported types are: <br/>
- * boolean, boolean[] <br/>
- * char <br/>
- * int, int[] <br/>
- * long, long[] <br/>
- * float, float[] <br/>
- * double, double[] <br/>
- * String, String[] <br/>
- * Enum <br/>
- * Object (For nesting) <br/>
+ * Only public instance fields are allowed.
  *
  * @author Toma
  */
@@ -140,6 +128,15 @@ public @interface Configurable {
     @interface FixedSize {
     }
 
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface ChangeCallback {
+
+        String method();
+
+        boolean allowPrimitivesMapping() default true;
+    }
+
     /**
      * Group of GUI cosmetic properties
      */
@@ -158,6 +155,20 @@ public @interface Configurable {
              * @throws IllegalArgumentException When invalid format is provided
              */
             String value();
+        }
+
+        @Target(ElementType.FIELD)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface ColorValue {
+
+            boolean isARGB() default false;
+        }
+
+        @Target(ElementType.FIELD)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface CharacterLimit {
+
+            int value() default 32;
         }
     }
 }

@@ -5,9 +5,12 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.DisplayAdapterManager;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
+import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.lang.reflect.Field;
@@ -42,6 +45,7 @@ public class ConfigScreen extends AbstractConfigScreen {
             offset += correct;
             ConfigValue<?> value = values.get(i);
             ConfigEntryWidget widget = addButton(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
+            widget.setDescriptionRenderer(this::renderEntryDescription);
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();
             DisplayAdapter adapter = DisplayAdapterManager.forType(field.getType());
@@ -51,11 +55,20 @@ public class ConfigScreen extends AbstractConfigScreen {
             }
             try {
                 adapter.placeWidgets(value, field, widget);
+                initializeGuiValue(value, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, "Unable to create config field for {} type due to error {}", field.getType().getSimpleName(), e);
             }
         }
         this.addFooter();
+    }
+
+    private void renderEntryDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<ITextComponent> text) {
+        if (!severity.isOkStatus()) {
+            this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
+        } else {
+            this.renderNotification(NotificationSeverity.INFO, stack, text, mouseX, mouseY);
+        }
     }
 
     @Override

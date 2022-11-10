@@ -365,6 +365,7 @@ public final class PropertiesFormat implements IConfigFormat {
          * one is causing issues
          *
          * @param arraySeparator Nonnull separator to be used
+         * @return This instance
          */
         public Settings arraySeparator(String arraySeparator) {
             this.arraySeparator = Objects.requireNonNull(arraySeparator);
@@ -374,6 +375,7 @@ public final class PropertiesFormat implements IConfigFormat {
         /**
          * Specifies amount of newlines after each value (Not comments)
          * @param count Count of newlines
+         * @return This instance
          */
         public Settings newlines(int count) {
             this.newlines = Math.max(1, count);

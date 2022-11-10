@@ -1,24 +1,18 @@
 package dev.toma.configuration.client;
 
-import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.validate.ValidationResult;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 
-public interface WidgetAdder {
+public interface WidgetAdder extends IValidationHandler {
 
-    ConfigValue<?> getConfigValue();
-
-    void addConfigWidget(ToWidgetFunction function);
-
-    void setError(@Nullable ITextComponent error);
-
-    int elementIndex();
+    <W extends Widget> W addConfigWidget(ToWidgetFunction<W> function);
 
     @FunctionalInterface
-    interface ToWidgetFunction {
+    interface ToWidgetFunction<W extends Widget> {
 
-        Widget asWidget(int x, int y, int width, int height, String configId);
+        W asWidget(int x, int y, int width, int height, String configId);
     }
 }

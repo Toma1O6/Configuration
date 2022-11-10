@@ -1,6 +1,7 @@
 package dev.toma.configuration.config;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapters;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
@@ -10,6 +11,7 @@ import dev.toma.configuration.config.value.ObjectValue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,9 +50,8 @@ public final class ConfigHolder<CFG> {
         this.loadNetworkFields(valueMap, networkSerializedFields);
     }
 
-    public ConfigHolder<CFG> addFileRefreshListener(IFileRefreshListener<CFG> listener) {
+    public void addFileRefreshListener(IFileRefreshListener<CFG> listener) {
         this.fileRefreshListeners.add(Objects.requireNonNull(listener));
-        return this;
     }
 
     public String getConfigId() {
@@ -105,8 +106,9 @@ public final class ConfigHolder<CFG> {
             if (value == null)
                 continue;
             int modifiers = field.getModifiers();
-            if (Modifier.isStatic(modifiers)) {
-                Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping static config field {}, only instance types are supported", field.getType());
+            if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
+                Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping config field {}, only instance non-final types are supported", field);
+                continue;
             }
             TypeAdapter adapter = TypeAdapters.forType(field.getType());
             if (adapter == null) {
@@ -140,6 +142,10 @@ public final class ConfigHolder<CFG> {
                     }
                 }
             });
+            Configurable.ChangeCallback callback = field.getAnnotation(Configurable.ChangeCallback.class);
+            if (callback != null) {
+                this.processCallback(callback, type, instance, cfgValue);
+            }
             cfgValue.processFieldData(field);
             map.put(field.getName(), cfgValue);
             if (saveValue) {
@@ -147,6 +153,32 @@ public final class ConfigHolder<CFG> {
             }
         }
         return map;
+    }
+
+    private <T> void processCallback(Configurable.ChangeCallback callback, Class<?> type, Object instance, ConfigValue<T> value) {
+        String methodName = callback.method();
+        try {
+            Class<?> valueType = value.getValueType();
+            if (callback.allowPrimitivesMapping()) {
+                valueType = ConfigUtils.remapPrimitiveType(valueType);
+            }
+            Method method = type.getDeclaredMethod(methodName, valueType, IValidationHandler.class);
+            ConfigValue.SetValueCallback<T> setValueCallback = (val, handler) -> {
+                try {
+                    method.setAccessible(true);
+                    method.invoke(instance, val, handler);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    Configuration.LOGGER.error(ConfigIO.MARKER, "Error occurred while invoking {} method: {}", method, e);
+                }
+            };
+            value.setValueValidator(setValueCallback);
+            Configuration.LOGGER.debug(ConfigIO.MARKER, "Attached new value listener method '{}' for config value {}", methodName, value.getId());
+        } catch (NoSuchMethodException e) {
+            Configuration.LOGGER.error(ConfigIO.MARKER, "Unable to map method {} for config value {} due to {}", methodName, value.getId(), e);
+        } catch (Exception e) {
+            Configuration.LOGGER.fatal(ConfigIO.MARKER, "Fatal error occurred while trying to map value listener for {} method", methodName);
+            throw new RuntimeException("Value listener map failed", e);
+        }
     }
 
     private <T> void assignValue(ConfigValue<T> value) {
