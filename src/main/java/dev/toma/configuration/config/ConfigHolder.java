@@ -16,18 +16,36 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Manages config values and stores some default parameters of your config class.
+ * This class also acts as config registry.
+ *
+ * @param <CFG> Your config type
+ * @author Toma
+ */
 public final class ConfigHolder<CFG> {
 
+    // Map of all registered configs
     private static final Map<String, ConfigHolder<?>> REGISTERED_CONFIGS = new HashMap<>();
+    // Unique config ID
     private final String configId;
+    // Config filename without extension
     private final String filename;
+    // Config group, same as config ID unless changed
     private final String group;
+    // Registered config instance
     private final CFG configInstance;
+    // Type of config
     private final Class<CFG> configClass;
+    // File format used by this config
     private final IConfigFormatHandler format;
+    // Mapping of all config values
     private final Map<String, ConfigValue<?>> valueMap = new LinkedHashMap<>();
+    // Map of fields which will be synced to client upon login
     private final Map<String, ConfigValue<?>> networkSerializedFields = new HashMap<>();
+    // Set of file refresh listeners
     private final Set<IFileRefreshListener<CFG>> fileRefreshListeners = new HashSet<>();
+    // Lock for async operations
     private final Object lock = new Object();
 
     public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, String group, IConfigFormatHandler format) {
@@ -50,50 +68,140 @@ public final class ConfigHolder<CFG> {
         this.loadNetworkFields(valueMap, networkSerializedFields);
     }
 
+    /**
+     * Registers config to internal registry. You should never call
+     * this method. Instead, use {@link Configuration#registerConfig(Class, IConfigFormatHandler)} for config registration
+     * @param holder Config holder to be registered
+     */
+    public static void registerConfig(ConfigHolder<?> holder) {
+        REGISTERED_CONFIGS.put(holder.configId, holder);
+        ConfigIO.processConfig(holder);
+    }
+
+    /**
+     * Allows you to get your config holder based on ID
+     * @param id Config ID
+     * @return Optional with config holder when such object exists
+     * @param <CFG> Config type
+     */
+    @SuppressWarnings("unchecked")
+    public static <CFG> Optional<ConfigHolder<CFG>> getConfig(String id) {
+        ConfigHolder<CFG> value = (ConfigHolder<CFG>) REGISTERED_CONFIGS.get(id);
+        return value == null ? Optional.empty() : Optional.of(value);
+    }
+
+    /**
+     * Groups all configs from registry into Group->List
+     * @return Mapped values
+     */
+    public static Map<String, List<ConfigHolder<?>>> getConfigGroupingByGroup() {
+        return REGISTERED_CONFIGS.values().stream().collect(Collectors.groupingBy(ConfigHolder::getGroup));
+    }
+
+    /**
+     * Returns list of config holders for the specified group
+     * @param group Group ID
+     * @return List with config holders. May be empty.
+     */
+    public static List<ConfigHolder<?>> getConfigsByGroup(String group) {
+        return REGISTERED_CONFIGS.values().stream()
+                .filter(configHolder -> configHolder.group.equals(group))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtain all configs which have some network serialized values
+     * @return Set of config holders which need to be synchronized to client
+     */
+    public static Set<String> getSynchronizedConfigs() {
+        return REGISTERED_CONFIGS.entrySet()
+                .stream()
+                .filter(e -> e.getValue().networkSerializedFields.size() > 0)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Register new file refresh listener for this config holder
+     * @param listener The file listener
+     */
     public void addFileRefreshListener(IFileRefreshListener<CFG> listener) {
         this.fileRefreshListeners.add(Objects.requireNonNull(listener));
     }
 
+    /**
+     * @return ID of this config
+     */
     public String getConfigId() {
         return configId;
     }
 
+    /**
+     * @return Filename without extension for this config
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * @return Group ID of this config
+     */
     public String getGroup() {
         return group;
     }
 
+    /**
+     * @return Your registered config
+     */
     public CFG getConfigInstance() {
         return configInstance;
     }
 
+    /**
+     * @return Type of config
+     */
     public Class<CFG> getConfigClass() {
         return configClass;
     }
 
+    /**
+     * @return File format factory for this config
+     */
     public IConfigFormatHandler getFormat() {
         return format;
     }
 
+    /**
+     * @return Collection of mapped config values
+     */
     public Collection<ConfigValue<?>> values() {
         return this.valueMap.values();
     }
 
+    /**
+     * @return Map ID->ConfigValue for this config
+     */
     public Map<String, ConfigValue<?>> getValueMap() {
         return valueMap;
     }
 
+    /**
+     * @return Map ID->ConfigValue for network serialization
+     */
     public Map<String, ConfigValue<?>> getNetworkSerializedFields() {
         return networkSerializedFields;
     }
 
+    /**
+     * Dispatches file refresh event to all registered listeners
+     */
     public void dispatchFileRefreshEvent() {
         this.fileRefreshListeners.forEach(listener -> listener.onFileRefresh(this));
     }
 
+    /**
+     * @return Lock for async operations. Used for IO operations currently
+     */
     public Object getLock() {
         return lock;
     }
@@ -142,7 +250,7 @@ public final class ConfigHolder<CFG> {
                     }
                 }
             });
-            Configurable.ChangeCallback callback = field.getAnnotation(Configurable.ChangeCallback.class);
+            Configurable.ValueUpdateCallback callback = field.getAnnotation(Configurable.ValueUpdateCallback.class);
             if (callback != null) {
                 this.processCallback(callback, type, instance, cfgValue);
             }
@@ -155,7 +263,7 @@ public final class ConfigHolder<CFG> {
         return map;
     }
 
-    private <T> void processCallback(Configurable.ChangeCallback callback, Class<?> type, Object instance, ConfigValue<T> value) {
+    private <T> void processCallback(Configurable.ValueUpdateCallback callback, Class<?> type, Object instance, ConfigValue<T> value) {
         String methodName = callback.method();
         try {
             Class<?> valueType = value.getValueType();
@@ -185,35 +293,6 @@ public final class ConfigHolder<CFG> {
         this.valueMap.put(value.getId(), value);
     }
 
-    public static void registerConfig(ConfigHolder<?> holder) {
-        REGISTERED_CONFIGS.put(holder.configId, holder);
-        ConfigIO.processConfig(holder);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <CFG> Optional<ConfigHolder<CFG>> getConfig(String id) {
-        ConfigHolder<CFG> value = (ConfigHolder<CFG>) REGISTERED_CONFIGS.get(id);
-        return value == null ? Optional.empty() : Optional.of(value);
-    }
-
-    public static Map<String, List<ConfigHolder<?>>> getConfigGroupingByGroup() {
-        return REGISTERED_CONFIGS.values().stream().collect(Collectors.groupingBy(ConfigHolder::getGroup));
-    }
-
-    public static List<ConfigHolder<?>> getConfigsByGroup(String group) {
-        return REGISTERED_CONFIGS.values().stream()
-                .filter(configHolder -> configHolder.group.equals(group))
-                .collect(Collectors.toList());
-    }
-
-    public static Set<String> getSynchronizedConfigs() {
-        return REGISTERED_CONFIGS.entrySet()
-                .stream()
-                .filter(e -> e.getValue().networkSerializedFields.size() > 0)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
-    }
-
     private void loadNetworkFields(Map<String, ConfigValue<?>> src, Map<String, ConfigValue<?>> dest) {
         src.values().forEach(value -> {
             if (value instanceof ObjectValue) {
@@ -228,6 +307,11 @@ public final class ConfigHolder<CFG> {
         });
     }
 
+    /**
+     * Listener which is triggered when config file changes on disk
+     * @param <CFG> Config type
+     * @author Toma
+     */
     @FunctionalInterface
     public interface IFileRefreshListener<CFG> {
         void onFileRefresh(ConfigHolder<CFG> holder);

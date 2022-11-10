@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,6 +75,14 @@ public final class Configuration {
         return holder;
     }
 
+    /**
+     * You can obtain default config screen based on provided config class.
+     *
+     * @param configClass Your config class
+     * @param previous Previously open screen
+     * @return Either new config screen or {@code null} when no config exists for the provided class
+     */
+    @Nullable
     @OnlyIn(Dist.CLIENT)
     public static Screen getConfigScreen(Class<?> configClass, Screen previous) {
         Config cfg = configClass.getAnnotation(Config.class);
@@ -84,6 +93,14 @@ public final class Configuration {
         return getConfigScreen(id, previous);
     }
 
+    /**
+     * You can obtain default config screen based on provided config ID.
+     *
+     * @param configId ID of your config
+     * @param previous Previously open screen
+     * @return Either new config screen or {@code null} when no config exists with the provided ID
+     */
+    @Nullable
     @OnlyIn(Dist.CLIENT)
     public static Screen getConfigScreen(String configId, Screen previous) {
         return ConfigHolder.getConfig(configId).map(holder -> {
@@ -92,6 +109,14 @@ public final class Configuration {
         }).orElse(null);
     }
 
+    /**
+     * Obtain group of multiple configs based on group ID. This is useful when you have multiple config files
+     * for your mod.
+     *
+     * @param group Group ID, usually mod ID
+     * @param previous Previously open screen
+     * @return Either new config group screen or null when no config exists under the provided group
+     */
     @OnlyIn(Dist.CLIENT)
     public static Screen getConfigScreenByGroup(String group, Screen previous) {
         List<ConfigHolder<?>> list = ConfigHolder.getConfigsByGroup(group);
@@ -101,7 +126,7 @@ public final class Configuration {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
+    private static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
         return new ConfigGroupScreen(previous, groupId, group);
     }
 

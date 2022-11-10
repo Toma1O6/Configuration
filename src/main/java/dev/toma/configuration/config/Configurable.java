@@ -128,12 +128,29 @@ public @interface Configurable {
     @interface FixedSize {
     }
 
+    /**
+     * Allows you to map custom listener method to listen for value change.
+     * Could be useful for example when validating item ID or something like that.
+     */
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
-    @interface ChangeCallback {
+    @interface ValueUpdateCallback {
 
+        /**
+         * You must have defined custom method in the same class as where this configurable value is.
+         * The method also requires specific signature with {@code void} return type, value type and {@link dev.toma.configuration.client.IValidationHandler} parameter.
+         * For example value listener method for int config field would look like this
+         * {@code public void onValueChange(int value, IValidationHandler validationHandler) {}}
+         *
+         * @return Name of your method
+         */
         String method();
 
+        /**
+         * Handles remapping of boxed java types to their primitive values
+         * @return Whether remapping is allowed, unless specific implementation is provided, this should always
+         * be set to true
+         */
         boolean allowPrimitivesMapping() default true;
     }
 
@@ -157,17 +174,29 @@ public @interface Configurable {
             String value();
         }
 
+        /**
+         * Adds color display next to your string value
+         */
         @Target(ElementType.FIELD)
         @Retention(RetentionPolicy.RUNTIME)
         public @interface ColorValue {
 
+            /**
+             * @return If your value supports alpha values, otherwise will always be rendered as solid color
+             */
             boolean isARGB() default false;
         }
 
+        /**
+         * Allows you to change character limit for text fields
+         */
         @Target(ElementType.FIELD)
         @Retention(RetentionPolicy.RUNTIME)
         public @interface CharacterLimit {
 
+            /**
+             * @return Character limit to be used by text field
+             */
             int value() default 32;
         }
     }
