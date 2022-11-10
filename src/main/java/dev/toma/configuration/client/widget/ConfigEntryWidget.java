@@ -8,10 +8,8 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,8 +24,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     public static final ITextComponent REVERT_CHANGES = new TranslationTextComponent("text.configuration.value.revert.changes");
 
     private final String configId;
-    private final ConfigValue<?> value;
-    private final int elementIndex;
     private final List<ITextComponent> description;
 
     private ValidationResult result = ValidationResult.ok();
@@ -38,21 +34,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, String configId) {
         super(x, y, w, h, new TranslationTextComponent("config." + configId + ".option." + value.getId()));
         this.configId = configId;
-        this.value = value;
-        this.elementIndex = -1;
-        this.description = this.getDescription(value);
-    }
-
-    public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, int i, String configId) {
-        super(x, y, w, h, new StringTextComponent("[" + i + "] " + new TranslationTextComponent("config." + configId + ".option." + value.getId()).getString()));
-        this.configId = configId;
-        this.value = value;
-        this.elementIndex = i;
-        this.description = this.getDescription(value);
-    }
-
-    private List<ITextComponent> getDescription(ConfigValue<?> value) {
-        return Arrays.stream(value.getDescription()).map(StringTextComponent::new).collect(Collectors.toList());
+        this.description = Arrays.stream(value.getDescription()).map(text -> new StringTextComponent(text).withStyle(TextFormatting.GRAY)).collect(Collectors.toList());
     }
 
     public void setDescriptionRenderer(IDescriptionRenderer renderer) {
@@ -66,14 +48,16 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
             hoverTimeStart = System.currentTimeMillis();
         }
         boolean isError = !this.result.isOk();
-        font.draw(stack, this.getMessage(), this.x, this.y + (this.height - font.lineHeight) / 2.0F, 0xFFFFFF);
+        font.draw(stack, this.getMessage(), this.x, this.y + (this.height - font.lineHeight) / 2.0F, 0xAAAAAA);
         super.renderButton(stack, mouseX, mouseY, partialTicks);
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {
                 NotificationSeverity severity = this.result.getSeverity();
                 IFormattableTextComponent textComponent = this.result.getText().withStyle(severity.getExtraFormatting());
-                renderer.drawDescription(stack, mouseX, mouseY, this, severity, isError ? Collections.singletonList(textComponent) : this.description);
+                List<ITextComponent> desc = isError ? Collections.singletonList(textComponent) : this.description;
+                List<IReorderingProcessor> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
+                renderer.drawDescription(stack, mouseX, mouseY, this, severity, split);
             }
         }
         this.lastHoverState = isHovered;
@@ -92,6 +76,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     @FunctionalInterface
     public interface IDescriptionRenderer {
-        void drawDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<ITextComponent> text);
+        void drawDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text);
     }
 }

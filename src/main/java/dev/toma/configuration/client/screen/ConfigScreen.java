@@ -5,12 +5,12 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.DisplayAdapterManager;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
-import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.adapter.TypeAdapter;
+import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.lang.reflect.Field;
@@ -63,7 +63,7 @@ public class ConfigScreen extends AbstractConfigScreen {
         this.addFooter();
     }
 
-    private void renderEntryDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<ITextComponent> text) {
+    private void renderEntryDescription(MatrixStack stack, int mouseX, int mouseY, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
         if (!severity.isOkStatus()) {
             this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
         } else {

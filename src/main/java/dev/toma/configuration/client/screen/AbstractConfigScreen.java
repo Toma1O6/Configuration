@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
@@ -131,11 +132,11 @@ public abstract class AbstractConfigScreen extends Screen {
         }
     }
 
-    public void renderNotification(NotificationSeverity severity, MatrixStack stack, List<ITextComponent> texts, int mouseX, int mouseY) {
+    public void renderNotification(NotificationSeverity severity, MatrixStack stack, List<IReorderingProcessor> texts, int mouseX, int mouseY) {
         if (!texts.isEmpty()) {
             int maxTextWidth = 0;
             int iconOffset = 13;
-            for(ITextComponent textComponent : texts) {
+            for(IReorderingProcessor textComponent : texts) {
                 int textWidth = this.font.width(textComponent);
                 if (!severity.isOkStatus()) {
                     textWidth += iconOffset;
@@ -161,23 +162,23 @@ public abstract class AbstractConfigScreen extends Screen {
             }
 
             stack.pushPose();
-            int l = -267386864;
-            int i1 = 1347420415;
-            int j1 = 1344798847;
-            int k1 = 400;
+            int background = severity.background;
+            int fadeMin = severity.fadeMin;
+            int fadeMax = severity.fadeMax;
+            int zIndex = 400;
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuilder();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
             Matrix4f matrix4f = stack.last().pose();
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, k1, l, l);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, k1, l, l);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, k1, l, l);
-            fillGradient(matrix4f, bufferbuilder, startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, k1, l, l);
-            fillGradient(matrix4f, bufferbuilder, startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, k1, l, l);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, k1, i1, j1);
-            fillGradient(matrix4f, bufferbuilder, startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, k1, i1, j1);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, k1, i1, i1);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, k1, j1, j1);
+            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
+            fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
+            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, background, background);
+            fillGradient(matrix4f, bufferbuilder, startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, zIndex, background, background);
+            fillGradient(matrix4f, bufferbuilder, startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, zIndex, background, background);
+            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
+            fillGradient(matrix4f, bufferbuilder, startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
+            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, zIndex, fadeMin, fadeMin);
+            fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, fadeMax, fadeMax);
             RenderSystem.enableDepthTest();
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
@@ -193,10 +194,10 @@ public abstract class AbstractConfigScreen extends Screen {
                 bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
                 float min = -0.5f;
                 float max = 8.5f;
-                bufferbuilder.vertex(matrix4f, startX + min, startY + min, k1).uv(0.0F, 0.0F).endVertex();
-                bufferbuilder.vertex(matrix4f, startX + min, startY + max, k1).uv(0.0F, 1.0F).endVertex();
-                bufferbuilder.vertex(matrix4f, startX + max, startY + max, k1).uv(1.0F, 1.0F).endVertex();
-                bufferbuilder.vertex(matrix4f, startX + max, startY + min, k1).uv(1.0F, 0.0F).endVertex();
+                bufferbuilder.vertex(matrix4f, startX + min, startY + min, zIndex).uv(0.0F, 0.0F).endVertex();
+                bufferbuilder.vertex(matrix4f, startX + min, startY + max, zIndex).uv(0.0F, 1.0F).endVertex();
+                bufferbuilder.vertex(matrix4f, startX + max, startY + max, zIndex).uv(1.0F, 1.0F).endVertex();
+                bufferbuilder.vertex(matrix4f, startX + max, startY + min, zIndex).uv(1.0F, 0.0F).endVertex();
                 bufferbuilder.end();
                 WorldVertexBufferUploader.end(bufferbuilder);
             }
@@ -204,11 +205,11 @@ public abstract class AbstractConfigScreen extends Screen {
 
             RenderSystem.disableBlend();
             IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
-            stack.translate(0.0D, 0.0D, k1);
+            stack.translate(0.0D, 0.0D, zIndex);
 
             int textOffset = severity.isOkStatus() ? 0 : iconOffset;
             for(int i = 0; i < texts.size(); i++) {
-                ITextComponent textComponent = texts.get(i);
+                IReorderingProcessor textComponent = texts.get(i);
                 if (textComponent != null) {
                     this.font.drawInBatch(textComponent, (float)startX + textOffset, (float)startY, -1, true, matrix4f, irendertypebuffer$impl, false, 0, 0xf000f0);
                 }
