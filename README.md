@@ -1,6 +1,5 @@
-# Configuration ![](https://img.shields.io/badge/Author-Toma-orange.svg) ![](https://img.shields.io/badge/API-wip-blue.svg) ![](https://img.shields.io/badge/Latest_Version-1.2.0-green.svg)
-Introduces `.json` based configs. Let's you edit config values through user-friendly UI.\
-Stable API for other mods.
+# Configuration ![](https://img.shields.io/badge/Author-Toma-orange.svg) ![](https://img.shields.io/badge/v2-a.svg) ![](https://img.shields.io/badge/Latest_Version-2.0.0-green.svg)
+Introduces annotation based configs which can use various file formats such as yaml, json or properties. This API also supports automatic synchronization of server properties to client, all you have to do is to annotate your config field by @Configurable.Synchronized and you're done.
 
 ## User setup
 Just head to [CurseForge](https://www.curseforge.com/minecraft/mc-mods/configuration) and download latest mod for your version.\
@@ -13,6 +12,7 @@ For this setup please take look at [Developer Wiki](https://github.com/Toma1O6/C
 ## FAQ
 ### Which Minecraft versions will this mod cover?
 This mod will cover everything starting from `1.12.2` and newer.
+However V2 version will be available only for versions starting with 1.16.5
 
 ### Why won't this mod cover versions before `1.12.2`?
 Because these versions are quite old and not used much anymore.
