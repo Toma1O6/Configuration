@@ -3,9 +3,9 @@ package dev.toma.configuration.config.value;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
-import net.minecraft.network.PacketBuffer;
+import dev.toma.configuration.config.format.IConfigFormat;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -73,7 +73,7 @@ public class BooleanArrayValue extends ConfigValue<boolean[]> implements ArrayVa
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             boolean[] arr = (boolean[]) value.get();
             buffer.writeInt(arr.length);
             for (boolean b : arr) {
@@ -82,7 +82,7 @@ public class BooleanArrayValue extends ConfigValue<boolean[]> implements ArrayVa
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             boolean[] arr = new boolean[buffer.readInt()];
             for (int i = 0; i < arr.length; i++) {
                 arr[i] = buffer.readBoolean();

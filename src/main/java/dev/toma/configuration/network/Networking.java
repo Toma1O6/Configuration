@@ -1,13 +1,13 @@
 package dev.toma.configuration.network;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
@@ -22,7 +22,7 @@ public final class Networking {
             .serverAcceptedVersions(NETWORK_VERSION::equals)
             .simpleChannel();
 
-    public static void sendClientPacket(ServerPlayerEntity target, IPacket<?> packet) {
+    public static void sendClientPacket(ServerPlayer target, IPacket<?> packet) {
         CHANNEL.sendTo(packet, target.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 

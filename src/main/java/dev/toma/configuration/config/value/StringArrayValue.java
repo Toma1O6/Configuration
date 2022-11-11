@@ -7,7 +7,7 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -100,7 +100,7 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             String[] arr = (String[]) value.get();
             buffer.writeInt(arr.length);
             for (String v : arr) {
@@ -109,7 +109,7 @@ public class StringArrayValue extends ConfigValue<String[]> implements ArrayValu
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             String[] arr = new String[buffer.readInt()];
             for (int i = 0; i < arr.length; i++) {
                 arr[i] = buffer.readUtf();

@@ -1,15 +1,15 @@
 package dev.toma.configuration.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public interface IPacket<P extends IPacket<P>> {
 
-    void encode(PacketBuffer buffer);
+    void encode(FriendlyByteBuf buffer);
 
-    P decode(PacketBuffer buffer);
+    P decode(FriendlyByteBuf buffer);
 
     void handle(Supplier<NetworkEvent.Context> supplier);
 }

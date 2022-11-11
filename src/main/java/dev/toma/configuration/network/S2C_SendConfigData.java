@@ -4,8 +4,8 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.value.ConfigValue;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ public class S2C_SendConfigData implements IPacket<S2C_SendConfigData> {
     }
 
     @Override
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeUtf(this.config);
         ConfigHolder.getConfig(this.config).ifPresent(data -> {
             Map<String, ConfigValue<?>> serialized = data.getNetworkSerializedFields();
@@ -39,7 +39,7 @@ public class S2C_SendConfigData implements IPacket<S2C_SendConfigData> {
     }
 
     @Override
-    public S2C_SendConfigData decode(PacketBuffer buffer) {
+    public S2C_SendConfigData decode(FriendlyByteBuf buffer) {
         String config = buffer.readUtf();
         int i = buffer.readInt();
         ConfigHolder.getConfig(config).ifPresent(data -> {
@@ -63,7 +63,7 @@ public class S2C_SendConfigData implements IPacket<S2C_SendConfigData> {
     }
 
     @SuppressWarnings("unchecked")
-    private <V> void setValue(ConfigValue<V> value, PacketBuffer buffer) {
+    private <V> void setValue(ConfigValue<V> value, FriendlyByteBuf buffer) {
         TypeAdapter adapter = value.getAdapter();
         V v = (V) adapter.decodeFromBuffer(value, buffer);
         value.set(v);

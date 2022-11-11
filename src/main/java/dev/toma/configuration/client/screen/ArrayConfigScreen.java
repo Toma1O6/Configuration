@@ -1,6 +1,6 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.DisplayAdapterManager;
@@ -10,13 +10,13 @@ import dev.toma.configuration.config.adapter.TypeAdapters;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends AbstractConfigScreen {
 
-    public static final ITextComponent ADD_ELEMENT = new TranslationTextComponent("text.configuration.value.add_element");
+    public static final Component ADD_ELEMENT = new TranslatableComponent("text.configuration.value.add_element");
 
     public final C array;
     private final boolean fixedSize;
@@ -36,7 +36,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
     private ElementRemoveHandler<V> removeHandler;
 
     public ArrayConfigScreen(String ownerIdentifier, String configId, C array, Screen previous) {
-        super(new TranslationTextComponent("config.screen." + ownerIdentifier), previous, configId);
+        super(new TranslatableComponent("config.screen." + ownerIdentifier), previous, configId);
         this.array = array;
         this.fixedSize = array.isFixedSize();
     }
@@ -79,7 +79,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             offset += correct;
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
-            ConfigEntryWidget widget = addButton(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.configId));
+            ConfigEntryWidget widget = addWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.configId));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
@@ -93,7 +93,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             }
             if (!fixedSize) {
                 final int elementIndex = i;
-                addButton(new Button(this.width - 28, widget.y, 20, 20, new StringTextComponent("x"), btn -> {
+                addWidget(new Button(this.width - 28, widget.y, 20, 20, new TextComponent("x"), btn -> {
                     this.removeHandler.removeElementAt(elementIndex, (index, src, dest) -> {
                         System.arraycopy(src, 0, dest, 0, index);
                         System.arraycopy(src, index + 1, dest, index, this.sizeSupplier.get() - 1 - index);
@@ -106,14 +106,14 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         addFooter();
     }
 
-    private void renderEntryDescription(MatrixStack stack, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
+    private void renderEntryDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
         if (!severity.isOkStatus()) {
             this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
         }
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(stack);
         // HEADER
         int titleWidth = this.font.width(this.title);
@@ -128,7 +128,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         super.addFooter();
         if (!this.fixedSize) {
             int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-            addButton(new Button(width - 20 - 80, centerY, 80, 20, ADD_ELEMENT, btn -> {
+            addWidget(new Button(width - 20 - 80, centerY, 80, 20, ADD_ELEMENT, btn -> {
                 this.addHandler.insertElement();
                 this.init(minecraft, width, height);
             }));

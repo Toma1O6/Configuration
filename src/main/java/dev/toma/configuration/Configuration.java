@@ -4,16 +4,17 @@ import dev.toma.configuration.client.screen.ConfigGroupScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.network.Networking;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -38,6 +39,7 @@ public final class Configuration {
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
 
     public Configuration() {
+        registerConfig(Test.class, ConfigFormats.json());
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
@@ -143,13 +145,21 @@ public final class Configuration {
             Optional<? extends ModContainer> optional = modList.getModContainerById(modId);
             optional.ifPresent(modContainer -> {
                 List<ConfigHolder<?>> list = entry.getValue();
-                modContainer.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (client, previousScreen) -> {
+                modContainer.registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
                     if (list.size() == 1) {
-                        return getConfigScreen(modId, previousScreen);
+                        return getConfigScreen(modId, screen);
                     }
-                    return getConfigScreenByGroup(list, modId, previousScreen);
-                });
+                    return getConfigScreenByGroup(list, modId, screen);
+                }));
             });
         }
+    }
+
+    @Config(id = MODID)
+    public static final class Test {
+
+        @Configurable
+        @Configurable.Synchronized
+        public int number = 15;
     }
 }

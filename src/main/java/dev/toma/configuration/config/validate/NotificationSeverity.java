@@ -1,22 +1,22 @@
 package dev.toma.configuration.config.validate;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
 
 public enum NotificationSeverity {
 
-    INFO("", TextFormatting.RESET, 0xF0030319, 0x502493E5, 0x502469E5),
-    WARNING("warning", TextFormatting.GOLD, 0xF0563900, 0x50FFB200, 0x509E6900),
-    ERROR("error", TextFormatting.RED, 0xF0270006, 0x50FF0000, 0x50880000);
+    INFO("", ChatFormatting.RESET, 0xF0030319, 0x502493E5, 0x502469E5),
+    WARNING("warning", ChatFormatting.GOLD, 0xF0563900, 0x50FFB200, 0x509E6900),
+    ERROR("error", ChatFormatting.RED, 0xF0270006, 0x50FF0000, 0x50880000);
 
     private final ResourceLocation icon;
-    private final TextFormatting extraFormatting;
+    private final ChatFormatting extraFormatting;
     public final int background;
     public final int fadeMin;
     public final int fadeMax;
 
-    NotificationSeverity(String iconName, TextFormatting formatting, int background, int fadeMin, int fadeMax) {
+    NotificationSeverity(String iconName, ChatFormatting formatting, int background, int fadeMin, int fadeMax) {
         this.icon = new ResourceLocation(Configuration.MODID, "textures/icons/" + iconName + ".png");
         this.extraFormatting = formatting;
         this.background = background;
@@ -28,7 +28,7 @@ public enum NotificationSeverity {
         return icon;
     }
 
-    public TextFormatting getExtraFormatting() {
+    public ChatFormatting getExtraFormatting() {
         return extraFormatting;
     }
 

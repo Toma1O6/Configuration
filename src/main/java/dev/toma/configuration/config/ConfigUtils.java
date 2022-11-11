@@ -3,7 +3,7 @@ package dev.toma.configuration.config;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -119,7 +119,7 @@ public final class ConfigUtils {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void adjustCharacterLimit(Field field, TextFieldWidget widget) {
+    public static void adjustCharacterLimit(Field field, EditBox widget) {
         Configurable.Gui.CharacterLimit limit = field.getAnnotation(Configurable.Gui.CharacterLimit.class);
         if (limit != null) {
             widget.setMaxLength(Math.max(limit.value(), 1));

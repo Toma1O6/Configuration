@@ -1,9 +1,9 @@
 package dev.toma.configuration.config.format;
 
-import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IDescriptionProvider;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
+import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.IDescriptionProvider;
 
 import java.io.File;
 import java.io.IOException;

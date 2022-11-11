@@ -3,7 +3,7 @@ package dev.toma.configuration.config.value;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -40,11 +40,11 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> {
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             return null;
         }
 
