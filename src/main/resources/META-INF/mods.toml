@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[40,)"
 license="MIT License"
 issueTrackerURL="https://github.com/Toma1O6/Configuration/issues"
 
@@ -18,13 +18,13 @@ Provides simple way to edit values via GUI or synchronize data from server
 [[dependencies.configuration]]
     modId="forge"
     mandatory=true
-    versionRange="[36.2,)"
+    versionRange="[40,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.configuration]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5,1.17)"
+    versionRange="[1.18.2,1.19)"
     ordering="NONE"
     side="BOTH"

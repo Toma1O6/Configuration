@@ -4,7 +4,6 @@ import dev.toma.configuration.client.screen.ConfigGroupScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
@@ -39,7 +38,6 @@ public final class Configuration {
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
 
     public Configuration() {
-        registerConfig(Test.class, ConfigFormats.json());
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
@@ -153,13 +151,5 @@ public final class Configuration {
                 }));
             });
         }
-    }
-
-    @Config(id = MODID)
-    public static final class Test {
-
-        @Configurable
-        @Configurable.Synchronized
-        public int number = 15;
     }
 }

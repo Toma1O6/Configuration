@@ -29,7 +29,7 @@ public abstract class ContainerWidget extends AbstractWidget implements Containe
         listeners.remove(listener);
     }
 
-    public <W extends AbstractWidget> W addWidget(W widget) {
+    public <W extends AbstractWidget> W addRenderableWidget(W widget) {
         widgets.add(widget);
         return addGuiEventListener(widget);
     }

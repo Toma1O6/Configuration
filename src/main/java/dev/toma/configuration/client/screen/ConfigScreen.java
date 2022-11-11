@@ -44,7 +44,7 @@ public class ConfigScreen extends AbstractConfigScreen {
             errorOffset -= correct;
             offset += correct;
             ConfigValue<?> value = values.get(i);
-            ConfigEntryWidget widget = addWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
+            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();

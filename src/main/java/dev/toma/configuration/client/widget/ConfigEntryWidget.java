@@ -80,7 +80,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     @Override
     public <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function) {
         W widget = function.asWidget(this.x, this.y, this.width, this.height, this.configId);
-        return this.addWidget(widget);
+        return this.addRenderableWidget(widget);
     }
 
     @FunctionalInterface
