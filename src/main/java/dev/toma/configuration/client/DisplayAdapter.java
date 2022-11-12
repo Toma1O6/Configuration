@@ -14,9 +14,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -38,7 +38,7 @@ public interface DisplayAdapter {
 
     static DisplayAdapter characterValue() {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            EditBox widget = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, TextComponent.EMPTY);
+            EditBox widget = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             CharValue charValue = (CharValue) value;
             char character = charValue.get();
             widget.setValue(String.valueOf(character));
@@ -59,7 +59,7 @@ public interface DisplayAdapter {
 
     static DisplayAdapter integerValue() {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, TextComponent.EMPTY);
+            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             IntValue intValue = (IntValue) value;
             int num = intValue.get();
             tfw.setValue(String.valueOf(num));
@@ -91,7 +91,7 @@ public interface DisplayAdapter {
 
     static DisplayAdapter longValue() {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, TextComponent.EMPTY);
+            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             LongValue longValue = (LongValue) value;
             long num = longValue.get();
             tfw.setValue(String.valueOf(num));
@@ -123,7 +123,7 @@ public interface DisplayAdapter {
 
     static DisplayAdapter floatValue() {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, TextComponent.EMPTY);
+            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             FloatValue floatValue = (FloatValue) value;
             DecimalFormat format = ConfigUtils.getDecimalFormat(field);
             float number = floatValue.get();
@@ -156,7 +156,7 @@ public interface DisplayAdapter {
 
     static DisplayAdapter doubleValue() {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, TextComponent.EMPTY);
+            EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             DoubleValue doubleValue = (DoubleValue) value;
             DecimalFormat format = ConfigUtils.getDecimalFormat(field);
             double number = doubleValue.get();
@@ -191,7 +191,7 @@ public interface DisplayAdapter {
         return (value, field, container) -> {
             Configurable.Gui.ColorValue colorValue = field.getAnnotation(Configurable.Gui.ColorValue.class);
             EditBox widget = container.addConfigWidget((x, y, width, height, configId) -> {
-                EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, TextComponent.EMPTY);
+                EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
                 StringValue strValue = (StringValue) value;
                 String val = strValue.get();
                 tfw.setValue(val);
@@ -200,7 +200,7 @@ public interface DisplayAdapter {
                     if (pattern != null) {
                         if (!pattern.matcher(str).matches()) {
                             String errDescriptor = strValue.getErrorDescriptor();
-                            MutableComponent error = errDescriptor != null ? new TranslatableComponent(errDescriptor, str, pattern) : ClientErrors.invalidText(str, pattern);
+                            MutableComponent error = errDescriptor != null ? Component.translatable(errDescriptor, str, pattern) : ClientErrors.invalidText(str, pattern);
                             container.setValidationResult(ValidationResult.error(error));
                             return;
                         }

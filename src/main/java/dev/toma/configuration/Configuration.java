@@ -12,7 +12,7 @@ import dev.toma.configuration.network.Networking;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
@@ -38,6 +38,7 @@ public final class Configuration {
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
 
     public Configuration() {
+        registerConfig(TestingConfig.class, ConfigFormats.json());
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
@@ -143,7 +144,7 @@ public final class Configuration {
             Optional<? extends ModContainer> optional = modList.getModContainerById(modId);
             optional.ifPresent(modContainer -> {
                 List<ConfigHolder<?>> list = entry.getValue();
-                modContainer.registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
+                modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> {
                     if (list.size() == 1) {
                         return getConfigScreen(modId, screen);
                     }

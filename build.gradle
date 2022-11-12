@@ -9,13 +9,13 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
+
 plugins {
     id 'eclipse'
     id 'maven-publish'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
-
 
 version = "${configuration_version}"
 group = 'dev.toma.configuration'
@@ -24,7 +24,7 @@ archivesBaseName = "configuration-${mc_version}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: '1.19.2'
 
     runs {
         client {
@@ -67,10 +67,11 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.84'
+    minecraft 'net.minecraftforge:forge:1.19.2-43.1.52'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
+// Example for how to get properties into the manifest for reading at runtime.
 jar {
     manifest {
         attributes([

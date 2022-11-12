@@ -1,18 +1,11 @@
 package dev.toma.configuration.config.validate;
 
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 
-public final class ValidationResult {
+public record ValidationResult(NotificationSeverity severity, MutableComponent text) {
 
-    private static final ValidationResult OK = new ValidationResult(NotificationSeverity.INFO, (MutableComponent) TextComponent.EMPTY);
-    private final NotificationSeverity severity;
-    private final MutableComponent text;
-
-    public ValidationResult(NotificationSeverity severity, MutableComponent text) {
-        this.severity = severity;
-        this.text = text;
-    }
+    private static final ValidationResult OK = new ValidationResult(NotificationSeverity.INFO, (MutableComponent) CommonComponents.EMPTY);
 
     public static ValidationResult ok() {
         return OK;
@@ -28,13 +21,5 @@ public final class ValidationResult {
 
     public boolean isOk() {
         return this.severity.isOkStatus();
-    }
-
-    public NotificationSeverity getSeverity() {
-        return severity;
-    }
-
-    public MutableComponent getText() {
-        return text;
     }
 }

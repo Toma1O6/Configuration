@@ -3,7 +3,7 @@ package dev.toma.configuration.client.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.CommonComponents;
 
 import java.util.function.IntSupplier;
 
@@ -13,7 +13,7 @@ public final class ColorWidget extends AbstractWidget {
     private final IntSupplier colorSupplier;
 
     public ColorWidget(int x, int y, int width, int height, boolean argb, IntSupplier colorSupplier) {
-        super(x, y, width, height, TextComponent.EMPTY);
+        super(x, y, width, height, CommonComponents.EMPTY);
         this.argb = argb;
         this.colorSupplier = colorSupplier;
     }

@@ -12,8 +12,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.Arrays;
@@ -23,10 +21,10 @@ import java.util.stream.Collectors;
 
 public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
-    public static final Component EDIT = new TranslatableComponent("text.configuration.value.edit");
-    public static final Component BACK = new TranslatableComponent("text.configuration.value.back");
-    public static final Component REVERT_DEFAULTS = new TranslatableComponent("text.configuration.value.revert.default");
-    public static final Component REVERT_CHANGES = new TranslatableComponent("text.configuration.value.revert.changes");
+    public static final Component EDIT = Component.translatable("text.configuration.value.edit");
+    public static final Component BACK = Component.translatable("text.configuration.value.back");
+    public static final Component REVERT_DEFAULTS = Component.translatable("text.configuration.value.revert.default");
+    public static final Component REVERT_CHANGES = Component.translatable("text.configuration.value.revert.changes");
 
     private final String configId;
     private final List<Component> description;
@@ -37,9 +35,9 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     private long hoverTimeStart;
 
     public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, String configId) {
-        super(x, y, w, h, new TranslatableComponent("config." + configId + ".option." + value.getId()));
+        super(x, y, w, h, Component.translatable("config." + configId + ".option." + value.getId()));
         this.configId = configId;
-        this.description = Arrays.stream(value.getDescription()).map(text -> new TextComponent(text).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
+        this.description = Arrays.stream(value.getDescription()).map(text -> Component.literal(text).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
     }
 
     public void setDescriptionRenderer(IDescriptionRenderer renderer) {
@@ -62,8 +60,8 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {
-                NotificationSeverity severity = this.result.getSeverity();
-                MutableComponent textComponent = this.result.getText().withStyle(severity.getExtraFormatting());
+                NotificationSeverity severity = this.result.severity();
+                MutableComponent textComponent = this.result.text().withStyle(severity.getExtraFormatting());
                 List<Component> desc = isError ? Collections.singletonList(textComponent) : this.description;
                 List<FormattedCharSequence> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
                 renderer.drawDescription(stack, this, severity, split);
