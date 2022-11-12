@@ -78,8 +78,8 @@ public abstract class AbstractConfigScreen extends Screen {
 
     protected Screen getFirstNonConfigScreen() {
         Screen screen = last;
-        while (screen instanceof ConfigScreen) {
-            screen = ((ConfigScreen) screen).last;
+        while (screen instanceof ConfigScreen configScreen) {
+            screen = configScreen.last;
         }
         return screen;
     }
@@ -105,8 +105,7 @@ public abstract class AbstractConfigScreen extends Screen {
 
     private void revertToDefault(Collection<ConfigValue<?>> configValues) {
         configValues.forEach(val -> {
-            if (val instanceof ObjectValue) {
-                ObjectValue objVal = (ObjectValue) val;
+            if (val instanceof ObjectValue objVal) {
                 this.revertToDefault(objVal.get().values());
             } else {
                 val.useDefaultValue();

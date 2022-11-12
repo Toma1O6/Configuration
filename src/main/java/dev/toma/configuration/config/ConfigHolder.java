@@ -295,8 +295,8 @@ public final class ConfigHolder<CFG> {
 
     private void loadNetworkFields(Map<String, ConfigValue<?>> src, Map<String, ConfigValue<?>> dest) {
         src.values().forEach(value -> {
-            if (value instanceof ObjectValue) {
-                Map<String, ConfigValue<?>> data = ((ObjectValue) value).get();
+            if (value instanceof ObjectValue objValue) {
+                Map<String, ConfigValue<?>> data = objValue.get();
                 loadNetworkFields(data, dest);
             } else {
                 if (!value.shouldSynchronize())
