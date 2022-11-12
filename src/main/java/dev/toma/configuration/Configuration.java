@@ -38,7 +38,6 @@ public final class Configuration {
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
 
     public Configuration() {
-        registerConfig(TestingConfig.class, ConfigFormats.json());
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
