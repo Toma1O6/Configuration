@@ -17,7 +17,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = "${configuration_version}"
 group = 'dev.toma.configuration'
-archivesBaseName = "configuration-${mc_version}"
+archivesBaseName = "configuration-${mod_loader}-${mc_version}"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -80,11 +80,6 @@ jar {
     }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
-}
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
     from sourceSets.main.allJava
@@ -92,7 +87,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 artifacts {
     archives sourcesJar
-    archives javadocJar
 }
 
 test {
