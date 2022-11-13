@@ -11,6 +11,7 @@ version = project.configuration_version
 group = 'dev.toma.configuration'
 
 repositories {
+	maven { url = "https://maven.terraformersmc.com/releases" } // modmenu
 }
 
 dependencies {
@@ -18,6 +19,7 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
+	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
 }
 
 processResources {

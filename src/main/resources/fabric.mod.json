@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "dev.toma.configuration.Configuration"
+    ],
+    "modmenu": [
+      "dev.toma.configuration.integration.ModMenuIntegration"
     ]
   },
   "mixins": [
@@ -32,5 +35,12 @@
     "minecraft": "1.16.x"
   },
   "suggests": {
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ]
+    }
   }
 }
