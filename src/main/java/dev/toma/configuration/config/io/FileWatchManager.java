@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public final class FileWatchManager {
 
     public static final Marker MARKER = MarkerManager.getMarker("FileWatching");
-    private final Set<ConfigHolder<?>> trackedConfigs = new HashSet<>();
     private final Map<String, ConfigHolder<?>> configPaths = new HashMap<>();
     private final List<WatchKey> watchKeys = new ArrayList<>();
     @Nullable
@@ -48,12 +47,6 @@ public final class FileWatchManager {
             Configuration.LOGGER.error(MARKER, "Unable to start file watch service");
             return;
         }
-        this.trackedConfigs.forEach(holder -> {
-            Path path = Paths.get(holder.getFilename());
-            File file = path.toFile();
-            this.configPaths.put(file.getName(), holder);
-            Configuration.LOGGER.info(MARKER, "Registered {} config for auto-sync function", holder.getConfigId());
-        });
         Path configDir = Paths.get("./config");
         try {
             Files.walkFileTree(configDir, new SimpleFileVisitor<Path>() {
@@ -88,6 +81,9 @@ public final class FileWatchManager {
     }
 
     public void addTrackedConfig(ConfigHolder<?> holder) {
-        this.trackedConfigs.add(holder);
+        Path path = Paths.get(holder.getFilename());
+        File file = path.toFile();
+        this.configPaths.put(file.getName(), holder);
+        Configuration.LOGGER.info(MARKER, "Registered {} config for auto-sync function", holder.getConfigId());
     }
 }
