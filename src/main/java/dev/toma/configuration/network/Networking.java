@@ -38,9 +38,7 @@ public final class Networking {
 
     public static final class PacketRegistry {
 
-        private static int packetIndex;
-
-        public static void register() {
+        public static void registerClient() {
             registerServer2ClientReceiver(S2C_SendConfigData.class);
         }
 

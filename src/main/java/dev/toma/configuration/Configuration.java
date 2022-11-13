@@ -8,7 +8,6 @@ import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.network.Networking;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
@@ -33,7 +32,6 @@ public final class Configuration implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Networking.PacketRegistry.register();
         ConfigIO.FILE_WATCH_MANAGER.startService();
     }
 

@@ -21,6 +21,9 @@
     "main": [
       "dev.toma.configuration.Configuration"
     ],
+    "client": [
+      "dev.toma.configuration.client.ConfigurationClient"
+    ],
     "modmenu": [
       "dev.toma.configuration.integration.ModMenuIntegration"
     ]
