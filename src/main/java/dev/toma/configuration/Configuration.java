@@ -97,10 +97,9 @@ public final class Configuration implements ModInitializer {
     @Nullable
     @Environment(EnvType.CLIENT)
     public static Screen getConfigScreen(String configId, Screen previous) {
-        return ConfigHolder.getConfig(configId).map(holder -> {
-            Map<String, ConfigValue<?>> valueMap = holder.getValueMap();
-            return new ConfigScreen(configId, holder.getConfigId(), valueMap, previous);
-        }).orElse(null);
+        return ConfigHolder.getConfig(configId)
+                .map(holder -> getConfigScreenForHolder(holder, previous))
+                .orElse(null);
     }
 
     /**
@@ -120,7 +119,13 @@ public final class Configuration implements ModInitializer {
     }
 
     @Environment(EnvType.CLIENT)
-    private static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
+    public static Screen getConfigScreenForHolder(ConfigHolder<?> holder, Screen previous) {
+        Map<String, ConfigValue<?>> valueMap = holder.getValueMap();
+        return new ConfigScreen(holder.getConfigId(), holder.getConfigId(), valueMap, previous);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
         return new ConfigGroupScreen(previous, groupId, group);
     }
 }
