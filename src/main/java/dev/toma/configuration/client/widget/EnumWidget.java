@@ -1,17 +1,22 @@
 package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.config.value.EnumValue;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.TextComponent;
 
-public class EnumWidget<E extends Enum<E>> extends Widget {
+public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
 
     private final EnumValue<E> value;
 
     public EnumWidget(int x, int y, int w, int h, EnumValue<E> value) {
-        super(x, y, w, h, StringTextComponent.EMPTY);
+        super(x, y, w, h, TextComponent.EMPTY);
         this.value = value;
         this.updateText();
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
     }
 
     @Override
@@ -31,6 +36,6 @@ public class EnumWidget<E extends Enum<E>> extends Widget {
 
     private void updateText() {
         E e = this.value.get();
-        this.setMessage(new StringTextComponent(e.name()));
+        this.setMessage(new TextComponent(e.name()));
     }
 }

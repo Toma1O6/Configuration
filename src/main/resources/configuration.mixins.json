@@ -1,8 +1,7 @@
 {
   "required": true,
   "package": "dev.toma.configuration.mixin",
-  "refmap": "configuration.refmap.json",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8.4",
   "injectors": {
     "defaultRequire": 1

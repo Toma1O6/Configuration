@@ -5,7 +5,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -85,7 +85,7 @@ public class FloatArrayValue extends ConfigValue<float[]> implements ArrayValue 
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             float[] arr = (float[]) value.get();
             buffer.writeInt(arr.length);
             for (float v : arr) {
@@ -94,7 +94,7 @@ public class FloatArrayValue extends ConfigValue<float[]> implements ArrayValue 
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             float[] arr = new float[buffer.readInt()];
             for (int i = 0; i < arr.length; i++) {
                 arr[i] = buffer.readFloat();

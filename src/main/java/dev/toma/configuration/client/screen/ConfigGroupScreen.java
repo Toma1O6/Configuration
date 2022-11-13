@@ -1,15 +1,16 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ConfigGroupScreen extends Screen {
     protected int pageSize;
 
     public ConfigGroupScreen(Screen last, String groupId, List<ConfigHolder<?>> configHolders) {
-        super(new TranslationTextComponent("text.configuration.screen.select_config"));
+        super(new TranslatableComponent("text.configuration.screen.select_config"));
         this.last = last;
         this.groupId = groupId;
         this.configHolders = configHolders;
@@ -51,8 +52,8 @@ public class ConfigGroupScreen extends Screen {
             ConfigHolder<?> value = configHolders.get(i);
             int y = viewportMin + 10 + j * 25 + offset;
             String configId = value.getConfigId();
-            this.addButton(new LeftAlignedLabel(posX, y, componentWidth, 20, new TranslationTextComponent("config.screen." + configId), this.font));
-            this.addButton(new Button(DisplayAdapter.getValueX(posX, componentWidth), y, DisplayAdapter.getValueWidth(componentWidth), 20, ConfigEntryWidget.EDIT, btn -> {
+            this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, new TranslatableComponent("config.screen." + configId), this.font));
+            this.addRenderableWidget(new Button(DisplayAdapter.getValueX(posX, componentWidth), y, DisplayAdapter.getValueWidth(componentWidth), 20, ConfigEntryWidget.EDIT, btn -> {
                 ConfigScreen screen = new ConfigScreen(configId, configId, value.getValueMap(), this);
                 minecraft.setScreen(screen);
             }));
@@ -61,7 +62,7 @@ public class ConfigGroupScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(stack);
         // HEADER
         int titleWidth = this.font.width(this.title);
@@ -73,7 +74,7 @@ public class ConfigGroupScreen extends Screen {
 
     protected void initFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addButton(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, btn -> minecraft.setScreen(this.last)));
+        addRenderableWidget(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, btn -> minecraft.setScreen(this.last)));
     }
 
     protected void correctScrollingIndex(int count) {
@@ -94,17 +95,21 @@ public class ConfigGroupScreen extends Screen {
         return false;
     }
 
-    protected static final class LeftAlignedLabel extends Widget {
+    protected static final class LeftAlignedLabel extends AbstractWidget {
 
-        private final FontRenderer font;
+        private final Font font;
 
-        public LeftAlignedLabel(int x, int y, int width, int height, ITextComponent label, FontRenderer font) {
+        public LeftAlignedLabel(int x, int y, int width, int height, Component label, Font font) {
             super(x, y, width, height, label);
             this.font = font;
         }
 
         @Override
-        public void renderButton(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        }
+
+        @Override
+        public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             this.font.draw(stack, this.getMessage(), this.x, this.y + (this.height - this.font.lineHeight) / 2.0F, 0xAAAAAA);
         }
 

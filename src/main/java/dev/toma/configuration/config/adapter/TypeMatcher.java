@@ -1,7 +1,7 @@
 package dev.toma.configuration.config.adapter;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 import java.util.function.Predicate;

@@ -1,9 +1,9 @@
 package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
-import net.minecraft.network.PacketBuffer;
+import dev.toma.configuration.config.format.IConfigFormat;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
@@ -33,13 +33,13 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             buffer.writeEnum((E) value.get());
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             E e = (E) value.get();
             Class<E> eClass = e.getDeclaringClass();
             return buffer.readEnum(eClass);

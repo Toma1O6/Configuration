@@ -1,17 +1,13 @@
 package dev.toma.configuration.client;
 
-import dev.toma.configuration.config.validate.ValidationResult;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.ITextComponent;
-
-import javax.annotation.Nullable;
+import net.minecraft.client.gui.components.AbstractWidget;
 
 public interface WidgetAdder extends IValidationHandler {
 
-    <W extends Widget> W addConfigWidget(ToWidgetFunction<W> function);
+    <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function);
 
     @FunctionalInterface
-    interface ToWidgetFunction<W extends Widget> {
+    interface ToWidgetFunction<W extends AbstractWidget> {
 
         W asWidget(int x, int y, int width, int height, String configId);
     }

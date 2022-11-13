@@ -1,15 +1,20 @@
 package dev.toma.configuration.client.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.*;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,13 +23,13 @@ import java.util.stream.Collectors;
 
 public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
-    public static final ITextComponent EDIT = new TranslationTextComponent("text.configuration.value.edit");
-    public static final ITextComponent BACK = new TranslationTextComponent("text.configuration.value.back");
-    public static final ITextComponent REVERT_DEFAULTS = new TranslationTextComponent("text.configuration.value.revert.default");
-    public static final ITextComponent REVERT_CHANGES = new TranslationTextComponent("text.configuration.value.revert.changes");
+    public static final Component EDIT = new TranslatableComponent("text.configuration.value.edit");
+    public static final Component BACK = new TranslatableComponent("text.configuration.value.back");
+    public static final Component REVERT_DEFAULTS = new TranslatableComponent("text.configuration.value.revert.default");
+    public static final Component REVERT_CHANGES = new TranslatableComponent("text.configuration.value.revert.changes");
 
     private final String configId;
-    private final List<ITextComponent> description;
+    private final List<Component> description;
 
     private ValidationResult result = ValidationResult.ok();
     private IDescriptionRenderer renderer;
@@ -32,9 +37,9 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     private long hoverTimeStart;
 
     public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, String configId) {
-        super(x, y, w, h, new TranslationTextComponent("config." + configId + ".option." + value.getId()));
+        super(x, y, w, h, new TranslatableComponent("config." + configId + ".option." + value.getId()));
         this.configId = configId;
-        this.description = Arrays.stream(value.getDescription()).map(text -> new StringTextComponent(text).withStyle(TextFormatting.GRAY)).collect(Collectors.toList());
+        this.description = Arrays.stream(value.getDescription()).map(text -> new TextComponent(text).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
     }
 
     public void setDescriptionRenderer(IDescriptionRenderer renderer) {
@@ -42,8 +47,12 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public void renderButton(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-        FontRenderer font = Minecraft.getInstance().font;
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    }
+
+    @Override
+    public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        Font font = Minecraft.getInstance().font;
         if (!lastHoverState && isHovered) {
             hoverTimeStart = System.currentTimeMillis();
         }
@@ -53,10 +62,10 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {
-                NotificationSeverity severity = this.result.getSeverity();
-                IFormattableTextComponent textComponent = this.result.getText().withStyle(severity.getExtraFormatting());
-                List<ITextComponent> desc = isError ? Collections.singletonList(textComponent) : this.description;
-                List<IReorderingProcessor> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
+                NotificationSeverity severity = this.result.severity();
+                MutableComponent textComponent = this.result.text().withStyle(severity.getExtraFormatting());
+                List<Component> desc = isError ? Collections.singletonList(textComponent) : this.description;
+                List<FormattedCharSequence> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
                 renderer.drawDescription(stack, this, severity, split);
             }
         }
@@ -69,13 +78,13 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public <W extends Widget> W addConfigWidget(ToWidgetFunction<W> function) {
+    public <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function) {
         W widget = function.asWidget(this.x, this.y, this.width, this.height, this.configId);
-        return this.addWidget(widget);
+        return this.addRenderableWidget(widget);
     }
 
     @FunctionalInterface
     public interface IDescriptionRenderer {
-        void drawDescription(MatrixStack stack, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text);
+        void drawDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text);
     }
 }

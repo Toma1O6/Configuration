@@ -5,8 +5,8 @@ import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 

@@ -1,22 +1,27 @@
 package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.config.value.BooleanValue;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
-public class BooleanWidget extends Widget {
+public class BooleanWidget extends AbstractWidget {
 
-    public static final ITextComponent TRUE = new TranslationTextComponent("text.configuration.value.true").withStyle(TextFormatting.GREEN);
-    public static final ITextComponent FALSE = new TranslationTextComponent("text.configuration.value.false").withStyle(TextFormatting.RED);
+    public static final Component TRUE = new TranslatableComponent("text.configuration.value.true").withStyle(ChatFormatting.GREEN);
+    public static final Component FALSE = new TranslatableComponent("text.configuration.value.false").withStyle(ChatFormatting.RED);
     private final BooleanValue value;
 
     public BooleanWidget(int x, int y, int w, int h, BooleanValue value) {
-        super(x, y, w, h, StringTextComponent.EMPTY);
+        super(x, y, w, h, TextComponent.EMPTY);
         this.value = value;
         this.readState();
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
     }
 
     @Override

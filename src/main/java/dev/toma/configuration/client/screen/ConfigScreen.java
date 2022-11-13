@@ -1,6 +1,6 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.DisplayAdapterManager;
@@ -8,10 +8,10 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class ConfigScreen extends AbstractConfigScreen {
     private final Map<String, ConfigValue<?>> valueMap;
 
     public ConfigScreen(String ownerIdentifier, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
-        super(new TranslationTextComponent("config.screen." + ownerIdentifier), previous, configId);
+        super(new TranslatableComponent("config.screen." + ownerIdentifier), previous, configId);
         this.valueMap = valueMap;
     }
 
@@ -44,7 +44,7 @@ public class ConfigScreen extends AbstractConfigScreen {
             errorOffset -= correct;
             offset += correct;
             ConfigValue<?> value = values.get(i);
-            ConfigEntryWidget widget = addButton(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
+            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();
@@ -63,7 +63,7 @@ public class ConfigScreen extends AbstractConfigScreen {
         this.addFooter();
     }
 
-    private void renderEntryDescription(MatrixStack stack, Widget widget, NotificationSeverity severity, List<IReorderingProcessor> text) {
+    private void renderEntryDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
         int x = widget.x + 5;
         int y = widget.y + widget.getHeight() + 10;
         if (!severity.isOkStatus()) {
@@ -74,7 +74,7 @@ public class ConfigScreen extends AbstractConfigScreen {
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(stack);
         // HEADER
         int titleWidth = this.font.width(this.title);

@@ -1,29 +1,26 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +36,7 @@ public abstract class AbstractConfigScreen extends Screen {
     protected int index;
     protected int pageSize;
 
-    public AbstractConfigScreen(ITextComponent title, Screen previous, String configId) {
+    public AbstractConfigScreen(Component title, Screen previous, String configId) {
         super(title);
         this.last = previous;
         this.configId = configId;
@@ -51,12 +48,12 @@ public abstract class AbstractConfigScreen extends Screen {
         this.saveConfig(true);
     }
 
-    public static void renderScrollbar(MatrixStack stack, int x, int y, int width, int height, int index, int valueCount, int paging) {
+    public static void renderScrollbar(PoseStack stack, int x, int y, int width, int height, int index, int valueCount, int paging) {
         if (valueCount <= paging)
             return;
         double step = height / (double) valueCount;
-        int min = MathHelper.floor(index * step);
-        int max = MathHelper.ceil((index + paging) * step);
+        int min = Mth.floor(index * step);
+        int max = Mth.ceil((index + paging) * step);
         int y1 = y + min;
         int y2 = y + max;
         fill(stack, x, y, x + width, y + height, 0xFF << 24);
@@ -68,9 +65,9 @@ public abstract class AbstractConfigScreen extends Screen {
 
     protected void addFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addButton(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, this::buttonBackClicked));
-        addButton(new Button(75, centerY, 120, 20, ConfigEntryWidget.REVERT_DEFAULTS, this::buttonRevertToDefaultClicked));
-        addButton(new Button(200, centerY, 120, 20, ConfigEntryWidget.REVERT_CHANGES, this::buttonRevertChangesClicked));
+        addRenderableWidget(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, this::buttonBackClicked));
+        addRenderableWidget(new Button(75, centerY, 120, 20, ConfigEntryWidget.REVERT_DEFAULTS, this::buttonRevertToDefaultClicked));
+        addRenderableWidget(new Button(200, centerY, 120, 20, ConfigEntryWidget.REVERT_CHANGES, this::buttonRevertChangesClicked));
     }
 
     protected void correctScrollingIndex(int count) {
@@ -108,8 +105,7 @@ public abstract class AbstractConfigScreen extends Screen {
 
     private void revertToDefault(Collection<ConfigValue<?>> configValues) {
         configValues.forEach(val -> {
-            if (val instanceof ObjectValue) {
-                ObjectValue objVal = (ObjectValue) val;
+            if (val instanceof ObjectValue objVal) {
                 this.revertToDefault(objVal.get().values());
             } else {
                 val.useDefaultValue();
@@ -132,11 +128,11 @@ public abstract class AbstractConfigScreen extends Screen {
         }
     }
 
-    public void renderNotification(NotificationSeverity severity, MatrixStack stack, List<IReorderingProcessor> texts, int mouseX, int mouseY) {
+    public void renderNotification(NotificationSeverity severity, PoseStack stack, List<FormattedCharSequence> texts, int mouseX, int mouseY) {
         if (!texts.isEmpty()) {
             int maxTextWidth = 0;
             int iconOffset = 13;
-            for(IReorderingProcessor textComponent : texts) {
+            for(FormattedCharSequence textComponent : texts) {
                 int textWidth = this.font.width(textComponent);
                 if (!severity.isOkStatus()) {
                     textWidth += iconOffset;
@@ -166,9 +162,12 @@ public abstract class AbstractConfigScreen extends Screen {
             int fadeMin = severity.fadeMin;
             int fadeMax = severity.fadeMax;
             int zIndex = 400;
-            Tessellator tessellator = Tessellator.getInstance();
+            float blitBackup = this.itemRenderer.blitOffset;
+            this.itemRenderer.blitOffset = 400.0F;
+            Tesselator tessellator = Tesselator.getInstance();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             BufferBuilder bufferbuilder = tessellator.getBuilder();
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             Matrix4f matrix4f = stack.last().pose();
             fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
             fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
@@ -183,15 +182,15 @@ public abstract class AbstractConfigScreen extends Screen {
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.shadeModel(GL11.GL_SMOOTH);
             bufferbuilder.end();
-            WorldVertexBufferUploader.end(bufferbuilder);
-            RenderSystem.shadeModel(GL11.GL_FLAT);
+            BufferUploader.end(bufferbuilder);
             RenderSystem.enableTexture();
 
             if (!severity.isOkStatus()) {
-                minecraft.getTextureManager().bind(severity.getIcon());
-                bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+                ResourceLocation icon = severity.getIcon();
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, icon);
+                bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
                 float min = -0.5f;
                 float max = 8.5f;
                 bufferbuilder.vertex(matrix4f, startX + min, startY + min, zIndex).uv(0.0F, 0.0F).endVertex();
@@ -199,19 +198,19 @@ public abstract class AbstractConfigScreen extends Screen {
                 bufferbuilder.vertex(matrix4f, startX + max, startY + max, zIndex).uv(1.0F, 1.0F).endVertex();
                 bufferbuilder.vertex(matrix4f, startX + max, startY + min, zIndex).uv(1.0F, 0.0F).endVertex();
                 bufferbuilder.end();
-                WorldVertexBufferUploader.end(bufferbuilder);
+                BufferUploader.end(bufferbuilder);
             }
 
 
             RenderSystem.disableBlend();
-            IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
             stack.translate(0.0D, 0.0D, zIndex);
 
             int textOffset = severity.isOkStatus() ? 0 : iconOffset;
             for(int i = 0; i < texts.size(); i++) {
-                IReorderingProcessor textComponent = texts.get(i);
+                FormattedCharSequence textComponent = texts.get(i);
                 if (textComponent != null) {
-                    this.font.drawInBatch(textComponent, (float)startX + textOffset, (float)startY, -1, true, matrix4f, irendertypebuffer$impl, false, 0, 0xf000f0);
+                    this.font.drawInBatch(textComponent, (float)startX + textOffset, (float)startY, -1, true, matrix4f, bufferSource, false, 0, 0xf000f0);
                 }
 
                 if (i == 0) {
@@ -221,8 +220,9 @@ public abstract class AbstractConfigScreen extends Screen {
                 startY += 10;
             }
 
-            irendertypebuffer$impl.endBatch();
+            bufferSource.endBatch();
             stack.popPose();
+            this.itemRenderer.blitOffset = blitBackup;
         }
     }
 

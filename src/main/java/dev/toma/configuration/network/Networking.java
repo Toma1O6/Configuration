@@ -1,47 +1,62 @@
 package dev.toma.configuration.network;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.ReportedException;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import dev.toma.configuration.network.api.IClientPacket;
+import dev.toma.configuration.network.api.IPacket;
+import dev.toma.configuration.network.api.IPacketDecoder;
+import dev.toma.configuration.network.api.IPacketEncoder;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.BiConsumer;
 
 public final class Networking {
 
     public static final Marker MARKER = MarkerManager.getMarker("Network");
-    private static final String NETWORK_VERSION = "2.0.0";
-    private static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
-            .named(new ResourceLocation(Configuration.MODID, "network_channel"))
-            .networkProtocolVersion(() -> NETWORK_VERSION)
-            .clientAcceptedVersions(NETWORK_VERSION::equals)
-            .serverAcceptedVersions(NETWORK_VERSION::equals)
-            .simpleChannel();
 
-    public static void sendClientPacket(ServerPlayerEntity target, IPacket<?> packet) {
-        CHANNEL.sendTo(packet, target.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+    public static void sendClientPacket(ServerPlayer target, IClientPacket<?> packet) {
+        dispatch(packet, (packetId, buffer) -> ServerPlayNetworking.send(target, packetId, buffer));
+    }
+
+    private static <T> void dispatch(IPacket<T> packet, BiConsumer<ResourceLocation, FriendlyByteBuf> dispatcher) {
+        ResourceLocation packetId = packet.getPacketId();
+        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+        IPacketEncoder<T> encoder = packet.getEncoder();
+        T data = packet.getPacketData();
+        encoder.encode(data, buffer);
+        dispatcher.accept(packetId, buffer);
     }
 
     public static final class PacketRegistry {
 
-        private static int packetIndex;
-
-        public static void register() {
-            registerNetworkPacket(S2C_SendConfigData.class);
+        public static void registerClient() {
+            registerServer2ClientReceiver(S2C_SendConfigData.class);
         }
 
-        private static <P extends IPacket<P>> void registerNetworkPacket(Class<P> packetType) {
-            P packet;
+        @Environment(EnvType.CLIENT)
+        private static <T> void registerServer2ClientReceiver(Class<? extends IClientPacket<T>> clientPacketClass) {
             try {
-                packet = packetType.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new ReportedException(CrashReport.forThrowable(e, "Couldn't instantiate packet for registration. Make sure you have provided public constructor with no parameters."));
+                IClientPacket<T> packet = clientPacketClass.getDeclaredConstructor().newInstance();
+                ResourceLocation packetId = packet.getPacketId();
+                ClientPlayNetworking.registerGlobalReceiver(packetId, (client, handler, buffer, responseDispatcher) -> {
+                    IPacketDecoder<T> decoder = packet.getDecoder();
+                    T packetData = decoder.decode(buffer);
+                    client.execute(() -> packet.handleClientsidePacket(client, handler, packetData, responseDispatcher));
+                });
+            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                     IllegalAccessException exc) {
+                Configuration.LOGGER.fatal(MARKER, "Couldn't instantiate new client packet from class {}, make sure it declares public default constructor", clientPacketClass.getSimpleName());
+                throw new RuntimeException(exc);
             }
-            CHANNEL.registerMessage(packetIndex++, packetType, IPacket::encode, packet::decode, IPacket::handle);
         }
     }
 }

@@ -2,10 +2,9 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
+import dev.toma.configuration.config.format.IConfigFormat;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
@@ -45,12 +44,12 @@ public class LongValue extends IntegerValue<Long> {
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             buffer.writeLong((Long) value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, PacketBuffer buffer) {
+        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             return buffer.readLong();
         }
 
