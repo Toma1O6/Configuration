@@ -79,7 +79,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             offset += correct;
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
-            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.configId));
+            ConfigEntryWidget widget = addButton(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.configId));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
@@ -93,7 +93,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             }
             if (!fixedSize) {
                 final int elementIndex = i;
-                addRenderableWidget(new Button(this.width - 28, widget.y, 20, 20, new TextComponent("x"), btn -> {
+                addButton(new Button(this.width - 28, widget.y, 20, 20, new TextComponent("x"), btn -> {
                     this.removeHandler.removeElementAt(elementIndex, (index, src, dest) -> {
                         System.arraycopy(src, 0, dest, 0, index);
                         System.arraycopy(src, index + 1, dest, index, this.sizeSupplier.get() - 1 - index);
@@ -128,7 +128,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         super.addFooter();
         if (!this.fixedSize) {
             int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-            addRenderableWidget(new Button(width - 20 - 80, centerY, 80, 20, ADD_ELEMENT, btn -> {
+            addButton(new Button(width - 20 - 80, centerY, 80, 20, ADD_ELEMENT, btn -> {
                 this.addHandler.insertElement();
                 this.init(minecraft, width, height);
             }));

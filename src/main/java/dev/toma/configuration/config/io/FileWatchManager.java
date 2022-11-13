@@ -4,8 +4,8 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigHolder;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;

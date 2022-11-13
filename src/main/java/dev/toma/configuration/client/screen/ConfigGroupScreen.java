@@ -7,7 +7,6 @@ import dev.toma.configuration.config.ConfigHolder;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -52,8 +51,8 @@ public class ConfigGroupScreen extends Screen {
             ConfigHolder<?> value = configHolders.get(i);
             int y = viewportMin + 10 + j * 25 + offset;
             String configId = value.getConfigId();
-            this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, new TranslatableComponent("config.screen." + configId), this.font));
-            this.addRenderableWidget(new Button(DisplayAdapter.getValueX(posX, componentWidth), y, DisplayAdapter.getValueWidth(componentWidth), 20, ConfigEntryWidget.EDIT, btn -> {
+            this.addButton(new LeftAlignedLabel(posX, y, componentWidth, 20, new TranslatableComponent("config.screen." + configId), this.font));
+            this.addButton(new Button(DisplayAdapter.getValueX(posX, componentWidth), y, DisplayAdapter.getValueWidth(componentWidth), 20, ConfigEntryWidget.EDIT, btn -> {
                 ConfigScreen screen = new ConfigScreen(configId, configId, value.getValueMap(), this);
                 minecraft.setScreen(screen);
             }));
@@ -74,7 +73,7 @@ public class ConfigGroupScreen extends Screen {
 
     protected void initFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addRenderableWidget(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, btn -> minecraft.setScreen(this.last)));
+        addButton(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, btn -> minecraft.setScreen(this.last)));
     }
 
     protected void correctScrollingIndex(int count) {
@@ -112,10 +111,6 @@ public class ConfigGroupScreen extends Screen {
         @Override
         protected boolean isValidClickButton(int p_230987_1_) {
             return false;
-        }
-
-        @Override
-        public void updateNarration(NarrationElementOutput p_169152_) {
         }
     }
 }

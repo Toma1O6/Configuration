@@ -3,7 +3,6 @@ package dev.toma.configuration.client.widget;
 import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -23,10 +22,6 @@ public class BooleanWidget extends AbstractWidget {
     @Override
     public void onClick(double x, double y) {
         this.setState(!this.value.get());
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
     }
 
     private void readState() {

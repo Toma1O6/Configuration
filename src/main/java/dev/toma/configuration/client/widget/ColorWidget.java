@@ -2,7 +2,6 @@ package dev.toma.configuration.client.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.TextComponent;
 
 import java.util.function.IntSupplier;
@@ -31,9 +30,5 @@ public final class ColorWidget extends AbstractWidget {
     @Override
     protected boolean isValidClickButton(int button) {
         return false;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
     }
 }

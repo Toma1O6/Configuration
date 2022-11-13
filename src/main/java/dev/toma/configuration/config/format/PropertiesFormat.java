@@ -5,8 +5,8 @@ import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IDescriptionProvider;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
@@ -28,7 +28,7 @@ public final class PropertiesFormat implements IConfigFormat {
         this(prefix, bufferRef, new HashMap<>(), settings);
     }
 
-    private PropertiesFormat(String prefix, StringBuilder bufferRef, Map<String, String> parsed, Settings settings) {
+    private PropertiesFormat(@Nullable String prefix, StringBuilder bufferRef, Map<String, String> parsed, Settings settings) {
         this.prefix = prefix;
         this.buffer = bufferRef;
         this.parsed = parsed;

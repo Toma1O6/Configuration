@@ -3,11 +3,11 @@ package dev.toma.configuration.config;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -118,7 +118,7 @@ public final class ConfigUtils {
         return PRIMITIVE_MAPPINGS.getOrDefault(type, type);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static void adjustCharacterLimit(Field field, EditBox widget) {
         Configurable.Gui.CharacterLimit limit = field.getAnnotation(Configurable.Gui.CharacterLimit.class);
         if (limit != null) {

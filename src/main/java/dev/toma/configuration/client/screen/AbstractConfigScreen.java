@@ -13,7 +13,6 @@ import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +20,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,9 +65,9 @@ public abstract class AbstractConfigScreen extends Screen {
 
     protected void addFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addRenderableWidget(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, this::buttonBackClicked));
-        addRenderableWidget(new Button(75, centerY, 120, 20, ConfigEntryWidget.REVERT_DEFAULTS, this::buttonRevertToDefaultClicked));
-        addRenderableWidget(new Button(200, centerY, 120, 20, ConfigEntryWidget.REVERT_CHANGES, this::buttonRevertChangesClicked));
+        addButton(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, this::buttonBackClicked));
+        addButton(new Button(75, centerY, 120, 20, ConfigEntryWidget.REVERT_DEFAULTS, this::buttonRevertToDefaultClicked));
+        addButton(new Button(200, centerY, 120, 20, ConfigEntryWidget.REVERT_CHANGES, this::buttonRevertChangesClicked));
     }
 
     protected void correctScrollingIndex(int count) {
@@ -78,8 +78,8 @@ public abstract class AbstractConfigScreen extends Screen {
 
     protected Screen getFirstNonConfigScreen() {
         Screen screen = last;
-        while (screen instanceof ConfigScreen configScreen) {
-            screen = configScreen.last;
+        while (screen instanceof ConfigScreen) {
+            screen = ((ConfigScreen) screen).last;
         }
         return screen;
     }
@@ -105,8 +105,8 @@ public abstract class AbstractConfigScreen extends Screen {
 
     private void revertToDefault(Collection<ConfigValue<?>> configValues) {
         configValues.forEach(val -> {
-            if (val instanceof ObjectValue objVal) {
-                this.revertToDefault(objVal.get().values());
+            if (val instanceof ObjectValue) {
+                this.revertToDefault(((ObjectValue) val).get().values());
             } else {
                 val.useDefaultValue();
             }
@@ -165,9 +165,8 @@ public abstract class AbstractConfigScreen extends Screen {
             float blitBackup = this.itemRenderer.blitOffset;
             this.itemRenderer.blitOffset = 400.0F;
             Tesselator tessellator = Tesselator.getInstance();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             BufferBuilder bufferbuilder = tessellator.getBuilder();
-            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
             Matrix4f matrix4f = stack.last().pose();
             fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
             fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
@@ -188,9 +187,8 @@ public abstract class AbstractConfigScreen extends Screen {
 
             if (!severity.isOkStatus()) {
                 ResourceLocation icon = severity.getIcon();
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderTexture(0, icon);
-                bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                minecraft.getTextureManager().bind(icon);
+                bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
                 float min = -0.5f;
                 float max = 8.5f;
                 bufferbuilder.vertex(matrix4f, startX + min, startY + min, zIndex).uv(0.0F, 0.0F).endVertex();

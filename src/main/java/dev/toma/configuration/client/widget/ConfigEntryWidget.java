@@ -9,7 +9,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -44,10 +43,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     public void setDescriptionRenderer(IDescriptionRenderer renderer) {
         this.renderer = renderer;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
     }
 
     @Override

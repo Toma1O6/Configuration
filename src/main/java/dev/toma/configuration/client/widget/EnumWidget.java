@@ -2,7 +2,6 @@ package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.config.value.EnumValue;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.TextComponent;
 
 public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
@@ -19,10 +18,6 @@ public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
     public void onClick(double p_230982_1_, double p_230982_3_) {
         this.nextValue();
         this.updateText();
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
     }
 
     private void nextValue() {

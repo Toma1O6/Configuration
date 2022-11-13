@@ -9,38 +9,32 @@ import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.network.Networking;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ConfigGuiHandler;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-@Mod(Configuration.MODID)
-public final class Configuration {
+public final class Configuration implements ModInitializer {
 
     public static final String MODID = "configuration";
     public static final Logger LOGGER = LogManager.getLogger("Configuration");
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
 
     public Configuration() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(this::init);
-        modEventBus.addListener(this::clientInit);
+    }
+
+    @Override
+    public void onInitialize() {
+        Networking.PacketRegistry.register();
+        ConfigIO.FILE_WATCH_MANAGER.startService();
     }
 
     /**
@@ -83,7 +77,7 @@ public final class Configuration {
      * @return Either new config screen or {@code null} when no config exists for the provided class
      */
     @Nullable
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static Screen getConfigScreen(Class<?> configClass, Screen previous) {
         Config cfg = configClass.getAnnotation(Config.class);
         if (cfg == null) {
@@ -101,7 +95,7 @@ public final class Configuration {
      * @return Either new config screen or {@code null} when no config exists with the provided ID
      */
     @Nullable
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static Screen getConfigScreen(String configId, Screen previous) {
         return ConfigHolder.getConfig(configId).map(holder -> {
             Map<String, ConfigValue<?>> valueMap = holder.getValueMap();
@@ -117,7 +111,7 @@ public final class Configuration {
      * @param previous Previously open screen
      * @return Either new config group screen or null when no config exists under the provided group
      */
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public static Screen getConfigScreenByGroup(String group, Screen previous) {
         List<ConfigHolder<?>> list = ConfigHolder.getConfigsByGroup(group);
         if (list.isEmpty())
@@ -125,31 +119,8 @@ public final class Configuration {
         return getConfigScreenByGroup(list, group, previous);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     private static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
         return new ConfigGroupScreen(previous, groupId, group);
-    }
-
-    private void init(FMLCommonSetupEvent event) {
-        Networking.PacketRegistry.register();
-        ConfigIO.FILE_WATCH_MANAGER.startService();
-    }
-
-    private void clientInit(FMLClientSetupEvent event) {
-        Map<String, List<ConfigHolder<?>>> groups = ConfigHolder.getConfigGroupingByGroup();
-        ModList modList = ModList.get();
-        for (Map.Entry<String, List<ConfigHolder<?>>> entry : groups.entrySet()) {
-            String modId = entry.getKey();
-            Optional<? extends ModContainer> optional = modList.getModContainerById(modId);
-            optional.ifPresent(modContainer -> {
-                List<ConfigHolder<?>> list = entry.getValue();
-                modContainer.registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
-                    if (list.size() == 1) {
-                        return getConfigScreen(modId, screen);
-                    }
-                    return getConfigScreenByGroup(list, modId, screen);
-                }));
-            });
-        }
     }
 }
