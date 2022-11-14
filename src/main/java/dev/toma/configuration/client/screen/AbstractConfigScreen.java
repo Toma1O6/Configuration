@@ -78,8 +78,8 @@ public abstract class AbstractConfigScreen extends Screen {
 
     protected Screen getFirstNonConfigScreen() {
         Screen screen = last;
-        while (screen instanceof ConfigScreen) {
-            screen = ((ConfigScreen) screen).last;
+        while (screen instanceof ConfigScreen configScreen) {
+            screen = configScreen.last;
         }
         return screen;
     }
@@ -182,8 +182,7 @@ public abstract class AbstractConfigScreen extends Screen {
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            bufferbuilder.end();
-            BufferUploader.end(bufferbuilder);
+            BufferUploader.drawWithShader(bufferbuilder.end());
             RenderSystem.enableTexture();
 
             if (!severity.isOkStatus()) {
@@ -197,8 +196,7 @@ public abstract class AbstractConfigScreen extends Screen {
                 bufferbuilder.vertex(matrix4f, startX + min, startY + max, zIndex).uv(0.0F, 1.0F).endVertex();
                 bufferbuilder.vertex(matrix4f, startX + max, startY + max, zIndex).uv(1.0F, 1.0F).endVertex();
                 bufferbuilder.vertex(matrix4f, startX + max, startY + min, zIndex).uv(1.0F, 0.0F).endVertex();
-                bufferbuilder.end();
-                BufferUploader.end(bufferbuilder);
+                BufferUploader.drawWithShader(bufferbuilder.end());
             }
 
 

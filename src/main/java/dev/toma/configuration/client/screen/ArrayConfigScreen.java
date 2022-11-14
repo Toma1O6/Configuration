@@ -14,8 +14,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.lang.reflect.Field;
@@ -25,7 +23,7 @@ import java.util.function.Supplier;
 
 public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends AbstractConfigScreen {
 
-    public static final Component ADD_ELEMENT = new TranslatableComponent("text.configuration.value.add_element");
+    public static final Component ADD_ELEMENT = Component.translatable("text.configuration.value.add_element");
 
     public final C array;
     private final boolean fixedSize;
@@ -36,7 +34,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
     private ElementRemoveHandler<V> removeHandler;
 
     public ArrayConfigScreen(String ownerIdentifier, String configId, C array, Screen previous) {
-        super(new TranslatableComponent("config.screen." + ownerIdentifier), previous, configId);
+        super(Component.translatable("config.screen." + ownerIdentifier), previous, configId);
         this.array = array;
         this.fixedSize = array.isFixedSize();
     }
@@ -93,7 +91,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             }
             if (!fixedSize) {
                 final int elementIndex = i;
-                addRenderableWidget(new Button(this.width - 28, widget.y, 20, 20, new TextComponent("x"), btn -> {
+                addRenderableWidget(new Button(this.width - 28, widget.y, 20, 20, Component.literal("x"), btn -> {
                     this.removeHandler.removeElementAt(elementIndex, (index, src, dest) -> {
                         System.arraycopy(src, 0, dest, 0, index);
                         System.arraycopy(src, index + 1, dest, index, this.sizeSupplier.get() - 1 - index);

@@ -10,7 +10,7 @@ import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.lang.reflect.Field;
@@ -23,7 +23,7 @@ public class ConfigScreen extends AbstractConfigScreen {
     private final Map<String, ConfigValue<?>> valueMap;
 
     public ConfigScreen(String ownerIdentifier, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
-        super(new TranslatableComponent("config.screen." + ownerIdentifier), previous, configId);
+        super(Component.translatable("config.screen." + ownerIdentifier), previous, configId);
         this.valueMap = valueMap;
     }
 

@@ -4,7 +4,7 @@ import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.validate.ValidationResult;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -63,7 +63,7 @@ public final class TestingConfig {
 
     public void onUpdate(String[] value, IValidationHandler handler) {
         System.out.println(Arrays.toString(value));
-        handler.setValidationResult(ValidationResult.warn(new TextComponent("Generic warning")));
+        handler.setValidationResult(ValidationResult.warn(Component.literal("Generic warning")));
     }
 
     public static class NestedTest {
@@ -74,7 +74,7 @@ public final class TestingConfig {
 
         public void onUpdate(int value, IValidationHandler handler) {
             if (value == 0) {
-                handler.setValidationResult(ValidationResult.warn(new TextComponent("value is 0")));
+                handler.setValidationResult(ValidationResult.warn(Component.literal("value is 0")));
             }
         }
     }

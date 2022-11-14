@@ -3,14 +3,15 @@ package dev.toma.configuration.client.widget;
 import dev.toma.configuration.config.value.EnumValue;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 
 public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
 
     private final EnumValue<E> value;
 
     public EnumWidget(int x, int y, int w, int h, EnumValue<E> value) {
-        super(x, y, w, h, TextComponent.EMPTY);
+        super(x, y, w, h, CommonComponents.EMPTY);
         this.value = value;
         this.updateText();
     }
@@ -36,6 +37,6 @@ public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
 
     private void updateText() {
         E e = this.value.get();
-        this.setMessage(new TextComponent(e.name()));
+        this.setMessage(Component.literal(e.name()));
     }
 }

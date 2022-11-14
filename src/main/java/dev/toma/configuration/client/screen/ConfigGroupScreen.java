@@ -10,7 +10,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class ConfigGroupScreen extends Screen {
     protected int pageSize;
 
     public ConfigGroupScreen(Screen last, String groupId, List<ConfigHolder<?>> configHolders) {
-        super(new TranslatableComponent("text.configuration.screen.select_config"));
+        super(Component.translatable("text.configuration.screen.select_config"));
         this.last = last;
         this.groupId = groupId;
         this.configHolders = configHolders;
@@ -52,7 +51,7 @@ public class ConfigGroupScreen extends Screen {
             ConfigHolder<?> value = configHolders.get(i);
             int y = viewportMin + 10 + j * 25 + offset;
             String configId = value.getConfigId();
-            this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, new TranslatableComponent("config.screen." + configId), this.font));
+            this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, Component.translatable("config.screen." + configId), this.font));
             this.addRenderableWidget(new Button(DisplayAdapter.getValueX(posX, componentWidth), y, DisplayAdapter.getValueWidth(componentWidth), 20, ConfigEntryWidget.EDIT, btn -> {
                 ConfigScreen screen = new ConfigScreen(configId, configId, value.getValueMap(), this);
                 minecraft.setScreen(screen);
