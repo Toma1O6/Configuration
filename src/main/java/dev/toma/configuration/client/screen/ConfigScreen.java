@@ -11,6 +11,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.lang.reflect.Field;
@@ -23,7 +24,11 @@ public class ConfigScreen extends AbstractConfigScreen {
     private final Map<String, ConfigValue<?>> valueMap;
 
     public ConfigScreen(String ownerIdentifier, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
-        super(new TranslationTextComponent("config.screen." + ownerIdentifier), previous, configId);
+        this(new TranslationTextComponent("config.screen." + ownerIdentifier), configId, valueMap, previous);
+    }
+
+    public ConfigScreen(ITextComponent screenTitle, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
+        super(screenTitle, previous, configId);
         this.valueMap = valueMap;
     }
 

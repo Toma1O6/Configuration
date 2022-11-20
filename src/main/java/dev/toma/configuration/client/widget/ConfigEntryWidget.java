@@ -42,6 +42,11 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
+    public ITextComponent getComponentName() {
+        return this.getMessage();
+    }
+
+    @Override
     public void renderButton(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
         FontRenderer font = Minecraft.getInstance().font;
         if (!lastHoverState && isHovered) {

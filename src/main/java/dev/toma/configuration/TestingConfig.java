@@ -1,0 +1,81 @@
+package dev.toma.configuration;
+
+import dev.toma.configuration.client.IValidationHandler;
+import dev.toma.configuration.config.Config;
+import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.validate.ValidationResult;
+import net.minecraft.util.text.StringTextComponent;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
+@Config(id = Configuration.MODID)
+public final class TestingConfig {
+
+    @Configurable
+    public boolean bool = true;
+
+    @Configurable
+    @Configurable.Synchronized
+    public int number = 15;
+
+    @Configurable
+    public long longNumber = 16644564564561651L;
+
+    @Configurable
+    public float floatNumber = 151.3123F;
+
+    @Configurable
+    public double doubleNumber = 316.15646556D;
+
+    @Configurable
+    @Configurable.StringPattern(value = "[a-z\\s]+", flags = Pattern.CASE_INSENSITIVE)
+    public String string = "random text";
+
+    @Configurable
+    @Configurable.FixedSize
+    public boolean[] boolArray = {false, false, true, false};
+
+    @Configurable
+    @Configurable.Range(min = 50, max = 160)
+    public int[] intArray = {153, 123, 54};
+
+    @Configurable
+    public long[] longArray = {13, 56, 133};
+
+    @Configurable
+    @Configurable.DecimalRange(min = 500.0F)
+    public float[] floatArray = {135.32F, 1561.23F};
+
+    @Configurable
+    @Configurable.ValueUpdateCallback(method = "onUpdate")
+    public String[] stringArray = {"minecraft:test"};
+
+    @Configurable
+    public TestEnum testEnum = TestEnum.C;
+
+    @Configurable
+    public NestedTest nestedTest = new NestedTest();
+
+    public enum TestEnum {
+        A, B, C, D
+    }
+
+    public void onUpdate(String[] value, IValidationHandler handler) {
+        System.out.println(Arrays.toString(value));
+        handler.setValidationResult(ValidationResult.warn(new StringTextComponent("Generic warning")));
+    }
+
+    public static class NestedTest {
+
+        @Configurable
+        @Configurable.ValueUpdateCallback(method = "onUpdate")
+        public int testInt = 13;
+
+        public void onUpdate(int value, IValidationHandler handler) {
+            if (value == 0) {
+                handler.setValidationResult(ValidationResult.warn(new StringTextComponent("value is 0")));
+            }
+        }
+    }
+}

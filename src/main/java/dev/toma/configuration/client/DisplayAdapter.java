@@ -447,7 +447,7 @@ public interface DisplayAdapter {
             Button.IPressable pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen currentScreen = client.screen;
-                Screen nestedConfigScreen = new ConfigScreen(value.getId(), configId, valueMap, currentScreen);
+                Screen nestedConfigScreen = new ConfigScreen(container.getComponentName(), configId, valueMap, currentScreen);
                 client.setScreen(nestedConfigScreen);
             };
             return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
