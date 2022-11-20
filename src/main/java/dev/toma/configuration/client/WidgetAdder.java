@@ -1,10 +1,13 @@
 package dev.toma.configuration.client;
 
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
 
 public interface WidgetAdder extends IValidationHandler {
 
     <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function);
+
+    Component getComponentName();
 
     @FunctionalInterface
     interface ToWidgetFunction<W extends AbstractWidget> {
