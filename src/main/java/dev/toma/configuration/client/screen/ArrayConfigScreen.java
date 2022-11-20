@@ -34,7 +34,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
     private ElementRemoveHandler<V> removeHandler;
 
     public ArrayConfigScreen(String ownerIdentifier, String configId, C array, Screen previous) {
-        super(Component.translatable("config.screen." + ownerIdentifier), previous, configId);
+        super(Component.translatable("config.option." + ownerIdentifier), previous, configId);
         this.array = array;
         this.fixedSize = array.isFixedSize();
     }

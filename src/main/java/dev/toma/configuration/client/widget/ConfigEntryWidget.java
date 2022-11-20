@@ -45,6 +45,11 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
+    public Component getComponentName() {
+        return this.getMessage();
+    }
+
+    @Override
     public void updateNarration(NarrationElementOutput p_169152_) {
     }
 
