@@ -23,7 +23,11 @@ public class ConfigScreen extends AbstractConfigScreen {
     private final Map<String, ConfigValue<?>> valueMap;
 
     public ConfigScreen(String ownerIdentifier, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
-        super(Component.translatable("config.screen." + ownerIdentifier), previous, configId);
+        this(Component.translatable("config.screen." + ownerIdentifier), configId, valueMap, previous);
+    }
+
+    public ConfigScreen(Component screenTitle, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
+        super(screenTitle, previous, configId);
         this.valueMap = valueMap;
     }
 
