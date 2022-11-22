@@ -190,9 +190,9 @@ public interface DisplayAdapter {
     static DisplayAdapter stringValue() {
         return (value, field, container) -> {
             Configurable.Gui.ColorValue colorValue = field.getAnnotation(Configurable.Gui.ColorValue.class);
+            StringValue strValue = (StringValue) value;
             TextFieldWidget widget = container.addConfigWidget((x, y, width, height, configId) -> {
                 TextFieldWidget tfw = new TextFieldWidget(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, StringTextComponent.EMPTY);
-                StringValue strValue = (StringValue) value;
                 String val = strValue.get();
                 tfw.setValue(val);
                 tfw.setResponder(str -> {
@@ -212,19 +212,11 @@ public interface DisplayAdapter {
                 return tfw;
             });
             if (colorValue != null) {
-                boolean isArgb = colorValue.isARGB();
-                IntSupplier colorProvider = () -> {
-                    String rawColor = widget.getValue();
-                    try {
-                        long longClr = Long.decode(rawColor);
-                        return (int) longClr;
-                    } catch (NumberFormatException e) {
-                        return 0;
-                    }
-                };
                 container.addConfigWidget((x, y, width, height, configId) -> {
                     int left = getValueX(x, width) - 25;
-                    return new ColorWidget(left, y, 20, 20, isArgb, colorProvider);
+                    ColorWidget.GetSet<String> provider = ColorWidget.GetSet.of(widget::getValue, widget::setValue);
+                    Screen currentScreen = Minecraft.getInstance().screen;
+                    return new ColorWidget(left, y, 20, 20, colorValue, provider, currentScreen);
                 });
             }
         };

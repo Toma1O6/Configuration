@@ -33,6 +33,16 @@ public final class TestingConfig {
     public String string = "random text";
 
     @Configurable
+    @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,6}")
+    @Configurable.Gui.ColorValue
+    public String color = "#33AADD";
+
+    @Configurable
+    @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
+    @Configurable.Gui.ColorValue(isARGB = true)
+    public String color2 = "#66771166";
+
+    @Configurable
     @Configurable.FixedSize
     public boolean[] boolArray = {false, false, true, false};
 
