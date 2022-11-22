@@ -185,6 +185,8 @@ public @interface Configurable {
              * @return If your value supports alpha values, otherwise will always be rendered as solid color
              */
             boolean isARGB() default false;
+
+            String getGuiColorPrefix() default "#";
         }
 
         /**
