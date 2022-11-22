@@ -90,17 +90,25 @@ public abstract class AbstractConfigScreen extends Screen {
     }
 
     private void buttonRevertToDefaultClicked(Button button) {
-        Configuration.LOGGER.info(MARKER, "Reverting config {} to default values", this.configId);
-        ConfigHolder.getConfig(this.configId).ifPresent(holder -> {
-            revertToDefault(holder.values());
-            ConfigIO.saveClientValues(holder);
+        DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_DEFAULTS, new Component[] {ConfigEntryWidget.REVERT_DEFAULTS_DIALOG_TEXT}, this);
+        dialog.onConfirmed(screen -> {
+            Configuration.LOGGER.info(MARKER, "Reverting config {} to default values", this.configId);
+            ConfigHolder.getConfig(this.configId).ifPresent(holder -> {
+                revertToDefault(holder.values());
+                ConfigIO.saveClientValues(holder);
+            });
+            this.backToConfigList();
         });
-        this.backToConfigList();
+        minecraft.setScreen(dialog);
     }
 
     private void buttonRevertChangesClicked(Button button) {
-        ConfigHolder.getConfig(this.configId).ifPresent(ConfigIO::reloadClientValues);
-        this.backToConfigList();
+        DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_CHANGES, new Component[] {ConfigEntryWidget.REVERT_CHANGES_DIALOG_TEXT}, this);
+        dialog.onConfirmed(screen -> {
+            ConfigHolder.getConfig(this.configId).ifPresent(ConfigIO::reloadClientValues);
+            this.backToConfigList();
+        });
+        minecraft.setScreen(dialog);
     }
 
     private void revertToDefault(Collection<ConfigValue<?>> configValues) {
