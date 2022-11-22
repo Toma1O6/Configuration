@@ -26,7 +26,9 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     public static final Component EDIT = new TranslatableComponent("text.configuration.value.edit");
     public static final Component BACK = new TranslatableComponent("text.configuration.value.back");
     public static final Component REVERT_DEFAULTS = new TranslatableComponent("text.configuration.value.revert.default");
+    public static final Component REVERT_DEFAULTS_DIALOG_TEXT = new TranslatableComponent("text.configuration.value.revert.default.dialog");
     public static final Component REVERT_CHANGES = new TranslatableComponent("text.configuration.value.revert.changes");
+    public static final Component REVERT_CHANGES_DIALOG_TEXT = new TranslatableComponent("text.configuration.value.revert.changes.dialog");
 
     private final String configId;
     private final List<Component> description;
