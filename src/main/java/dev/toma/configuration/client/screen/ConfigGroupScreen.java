@@ -52,10 +52,10 @@ public class ConfigGroupScreen extends Screen {
             int y = viewportMin + 10 + j * 25 + offset;
             String configId = value.getConfigId();
             this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, Component.translatable("config.screen." + configId), this.font));
-            this.addRenderableWidget(new Button(DisplayAdapter.getValueX(posX, componentWidth), y, DisplayAdapter.getValueWidth(componentWidth), 20, ConfigEntryWidget.EDIT, btn -> {
+            this.addRenderableWidget(Button.builder(ConfigEntryWidget.EDIT, btn -> {
                 ConfigScreen screen = new ConfigScreen(configId, configId, value.getValueMap(), this);
                 minecraft.setScreen(screen);
-            }));
+            }).pos(DisplayAdapter.getValueX(posX, componentWidth), y).size(DisplayAdapter.getValueWidth(componentWidth), 20).build());
         }
         initFooter();
     }
@@ -73,7 +73,7 @@ public class ConfigGroupScreen extends Screen {
 
     protected void initFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addRenderableWidget(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, btn -> minecraft.setScreen(this.last)));
+        addRenderableWidget(Button.builder(ConfigEntryWidget.BACK, btn -> minecraft.setScreen(last)).pos(20, centerY).size(50, 20).build());
     }
 
     protected void correctScrollingIndex(int count) {
@@ -105,7 +105,7 @@ public class ConfigGroupScreen extends Screen {
 
         @Override
         public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-            this.font.draw(stack, this.getMessage(), this.x, this.y + (this.height - this.font.lineHeight) / 2.0F, 0xAAAAAA);
+            this.font.draw(stack, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2.0F, 0xAAAAAA);
         }
 
         @Override
@@ -114,7 +114,7 @@ public class ConfigGroupScreen extends Screen {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput p_169152_) {
+        protected void updateWidgetNarration(NarrationElementOutput output) {
         }
     }
 }

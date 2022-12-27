@@ -91,14 +91,14 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             }
             if (!fixedSize) {
                 final int elementIndex = i;
-                addRenderableWidget(new Button(this.width - 28, widget.y, 20, 20, Component.literal("x"), btn -> {
+                addRenderableWidget(Button.builder(Component.literal("x"), btn -> {
                     this.removeHandler.removeElementAt(elementIndex, (index, src, dest) -> {
                         System.arraycopy(src, 0, dest, 0, index);
                         System.arraycopy(src, index + 1, dest, index, this.sizeSupplier.get() - 1 - index);
                         return dest;
                     });
                     this.init(minecraft, width, height);
-                }));
+                }).pos(this.width - 28, widget.getY()).size(20, 20).build());
             }
         }
         addFooter();
@@ -106,7 +106,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
 
     private void renderEntryDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
         if (!severity.isOkStatus()) {
-            this.renderNotification(severity, stack, text, widget.x + 5, widget.y + widget.getHeight() + 10);
+            this.renderNotification(severity, stack, text, widget.getX() + 5, widget.getY() + widget.getHeight() + 10);
         }
     }
 
@@ -126,10 +126,10 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         super.addFooter();
         if (!this.fixedSize) {
             int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-            addRenderableWidget(new Button(width - 20 - 80, centerY, 80, 20, ADD_ELEMENT, btn -> {
+            addRenderableWidget(Button.builder(ADD_ELEMENT, btn -> {
                 this.addHandler.insertElement();
                 this.init(minecraft, width, height);
-            }));
+            }).pos(width - 100, centerY).size(80, 20).build());
         }
     }
 

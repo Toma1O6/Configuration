@@ -102,8 +102,8 @@ public class DialogScreen extends Screen {
         int confirmX = this.dialogLeft + this.dialogWidth - 5 - componentWidth;
         int componentY = this.dialogTop + this.dialogHeight - 25;
 
-        this.addRenderableWidget(new Button(cancelX, componentY, componentWidth, 20, TEXT_CANCEL, btn -> cancel()));
-        this.addRenderableWidget(new Button(confirmX, componentY, componentWidth, 20, TEXT_CONFIRM, btn -> confirm()));
+        this.addRenderableWidget(Button.builder(TEXT_CANCEL, btn -> cancel()).pos(cancelX, componentY).size(componentWidth, 20).build());
+        this.addRenderableWidget(Button.builder(TEXT_CONFIRM, btn -> confirm()).pos(confirmX, componentY).size(componentWidth, 20).build());
     }
 
     protected void confirm() {

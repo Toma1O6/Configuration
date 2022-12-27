@@ -49,9 +49,9 @@ public final class ColorWidget extends AbstractWidget {
         int borderColor = this.isFocused() ? 0xffffffff : 0xffa0a0a0;
         int providedColor = this.colorSupplier.getAsInt();
         int color = this.argb ? providedColor : (0xFF << 24) | providedColor;
-        fill(stack, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, borderColor);
-        fillGradient(stack, this.x, this.y, this.x + this.width, this.y + this.height, 0xFFFFFFFF, 0xFF888888);
-        fill(stack, this.x, this.y, this.x + this.width, this.y + this.height, color);
+        fill(stack, this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, borderColor);
+        fillGradient(stack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xFFFFFFFF, 0xFF888888);
+        fill(stack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, color);
     }
 
     @Override
@@ -72,7 +72,7 @@ public final class ColorWidget extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput elementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput elementOutput) {
     }
 
     public interface GetSet<T> {
@@ -162,9 +162,9 @@ public final class ColorWidget extends AbstractWidget {
                     color |= 0xFF << 24;
                 }
                 int borderColor = 0xffa0a0a0;
-                fill(stack, this.x, this.y, this.x + this.width, this.y + this.height, borderColor);
-                fillGradient(stack, this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, 0xFFFFFFFF, 0xFF888888);
-                fill(stack, this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, color);
+                fill(stack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, borderColor);
+                fillGradient(stack, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, 0xFFFFFFFF, 0xFF888888);
+                fill(stack, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, color);
             }
 
             @Override
@@ -173,7 +173,7 @@ public final class ColorWidget extends AbstractWidget {
             }
 
             @Override
-            public void updateNarration(NarrationElementOutput p_169152_) {
+            public void updateWidgetNarration(NarrationElementOutput p_169152_) {
             }
         }
 

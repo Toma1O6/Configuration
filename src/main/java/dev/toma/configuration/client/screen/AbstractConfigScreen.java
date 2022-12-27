@@ -2,7 +2,6 @@ package dev.toma.configuration.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
@@ -21,6 +20,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.joml.Matrix4f;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,9 +65,9 @@ public abstract class AbstractConfigScreen extends Screen {
 
     protected void addFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addRenderableWidget(new Button(20, centerY, 50, 20, ConfigEntryWidget.BACK, this::buttonBackClicked));
-        addRenderableWidget(new Button(75, centerY, 120, 20, ConfigEntryWidget.REVERT_DEFAULTS, this::buttonRevertToDefaultClicked));
-        addRenderableWidget(new Button(200, centerY, 120, 20, ConfigEntryWidget.REVERT_CHANGES, this::buttonRevertChangesClicked));
+        addRenderableWidget(Button.builder(ConfigEntryWidget.BACK, this::buttonBackClicked).pos(20, centerY).size(50, 20).build());
+        addRenderableWidget(Button.builder(ConfigEntryWidget.REVERT_DEFAULTS, this::buttonRevertToDefaultClicked).pos(75, centerY).size(120, 20).build());
+        addRenderableWidget(Button.builder(ConfigEntryWidget.REVERT_CHANGES, this::buttonRevertChangesClicked).pos(200, centerY).size(120, 20).build());
     }
 
     protected void correctScrollingIndex(int count) {

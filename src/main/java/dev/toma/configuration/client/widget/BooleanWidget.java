@@ -25,7 +25,7 @@ public class BooleanWidget extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
+    public void updateWidgetNarration(NarrationElementOutput p_169152_) {
     }
 
     private void readState() {

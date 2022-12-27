@@ -52,7 +52,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
+    public void updateWidgetNarration(NarrationElementOutput p_169152_) {
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
             hoverTimeStart = System.currentTimeMillis();
         }
         boolean isError = !this.result.isOk();
-        font.draw(stack, this.getMessage(), this.x, this.y + (this.height - font.lineHeight) / 2.0F, 0xAAAAAA);
+        font.draw(stack, this.getMessage(), this.getX(), this.getY() + (this.height - font.lineHeight) / 2.0F, 0xAAAAAA);
         super.renderButton(stack, mouseX, mouseY, partialTicks);
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
@@ -84,7 +84,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     @Override
     public <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function) {
-        W widget = function.asWidget(this.x, this.y, this.width, this.height, this.configId);
+        W widget = function.asWidget(this.getX(), this.getY(), this.width, this.height, this.configId);
         return this.addRenderableWidget(widget);
     }
 

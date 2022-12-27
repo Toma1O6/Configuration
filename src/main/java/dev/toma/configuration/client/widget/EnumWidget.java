@@ -23,7 +23,7 @@ public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput p_169152_) {
+    public void updateWidgetNarration(NarrationElementOutput p_169152_) {
     }
 
     private void nextValue() {
