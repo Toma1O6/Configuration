@@ -72,7 +72,6 @@ public final class TestingConfig {
     }
 
     public void onUpdate(String[] value, IValidationHandler handler) {
-        System.out.println(Arrays.toString(value));
         handler.setValidationResult(ValidationResult.warn(Component.literal("Generic warning")));
     }
 

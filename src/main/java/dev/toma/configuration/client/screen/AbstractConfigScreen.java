@@ -10,6 +10,7 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -170,8 +171,6 @@ public abstract class AbstractConfigScreen extends Screen {
             int fadeMin = severity.fadeMin;
             int fadeMax = severity.fadeMax;
             int zIndex = 400;
-            float blitBackup = this.itemRenderer.blitOffset;
-            this.itemRenderer.blitOffset = 400.0F;
             Tesselator tessellator = Tesselator.getInstance();
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             BufferBuilder bufferbuilder = tessellator.getBuilder();
@@ -187,11 +186,9 @@ public abstract class AbstractConfigScreen extends Screen {
             fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, zIndex, fadeMin, fadeMin);
             fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, fadeMax, fadeMax);
             RenderSystem.enableDepthTest();
-            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             BufferUploader.drawWithShader(bufferbuilder.end());
-            RenderSystem.enableTexture();
 
             if (!severity.isOkStatus()) {
                 ResourceLocation icon = severity.getIcon();
@@ -216,7 +213,7 @@ public abstract class AbstractConfigScreen extends Screen {
             for(int i = 0; i < texts.size(); i++) {
                 FormattedCharSequence textComponent = texts.get(i);
                 if (textComponent != null) {
-                    this.font.drawInBatch(textComponent, (float)startX + textOffset, (float)startY, -1, true, matrix4f, bufferSource, false, 0, 0xf000f0);
+                    this.font.drawInBatch(textComponent, (float)startX + textOffset, (float)startY, -1, true, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, 0xf000f0);
                 }
 
                 if (i == 0) {
@@ -228,7 +225,6 @@ public abstract class AbstractConfigScreen extends Screen {
 
             bufferSource.endBatch();
             stack.popPose();
-            this.itemRenderer.blitOffset = blitBackup;
         }
     }
 

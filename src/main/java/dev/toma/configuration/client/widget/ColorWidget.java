@@ -45,7 +45,7 @@ public final class ColorWidget extends AbstractWidget {
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialRenderTicks) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialRenderTicks) {
         int borderColor = this.isFocused() ? 0xffffffff : 0xffa0a0a0;
         int providedColor = this.colorSupplier.getAsInt();
         int color = this.argb ? providedColor : (0xFF << 24) | providedColor;
@@ -156,7 +156,7 @@ public final class ColorWidget extends AbstractWidget {
             }
 
             @Override
-            public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+            public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
                 int color = this.colorProvider.getAsInt();
                 if (!this.argb) {
                     color |= 0xFF << 24;

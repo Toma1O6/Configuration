@@ -56,14 +56,14 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         Font font = Minecraft.getInstance().font;
         if (!lastHoverState && isHovered) {
             hoverTimeStart = System.currentTimeMillis();
         }
         boolean isError = !this.result.isOk();
         font.draw(stack, this.getMessage(), this.getX(), this.getY() + (this.height - font.lineHeight) / 2.0F, 0xAAAAAA);
-        super.renderButton(stack, mouseX, mouseY, partialTicks);
+        super.renderWidget(stack, mouseX, mouseY, partialTicks);
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {

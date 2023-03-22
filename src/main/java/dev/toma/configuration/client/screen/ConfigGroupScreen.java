@@ -104,7 +104,7 @@ public class ConfigGroupScreen extends Screen {
         }
 
         @Override
-        public void renderButton(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             this.font.draw(stack, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2.0F, 0xAAAAAA);
         }
 

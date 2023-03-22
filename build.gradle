@@ -24,7 +24,7 @@ archivesBaseName = "configuration-${mod_loader}-${mc_version}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.19.3'
+    mappings channel: 'official', version: '1.19.4'
 
     runs {
         client {
@@ -67,7 +67,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.41'
+    minecraft 'net.minecraftforge:forge:1.19.4-45.0.22'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
