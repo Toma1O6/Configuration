@@ -41,8 +41,6 @@ public final class Configuration {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
-
-        registerConfig(TestingConfig.class, ConfigFormats.json());
     }
 
     /**
