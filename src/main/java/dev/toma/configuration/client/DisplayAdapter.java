@@ -18,11 +18,11 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.IntSupplier;
 import java.util.regex.Pattern;
 
 @FunctionalInterface
@@ -429,6 +429,43 @@ public interface DisplayAdapter {
     static DisplayAdapter enumValue() {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             return new EnumWidget<>(getValueX(x, width), y, getValueWidth(width), 20, (EnumValue<?>) value);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    static <E extends Enum<E>> DisplayAdapter enumArrayValue() {
+        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+            EnumArrayValue<E> enumArray = (EnumArrayValue<E>) value;
+            BiConsumer<E, Integer> setCallback = (val, i) -> {
+                E[] arr = enumArray.get();
+                arr[i] = val;
+                enumArray.set(arr);
+            };
+            Button.IPressable pressable = btn -> {
+                Minecraft client = Minecraft.getInstance();
+                Screen usedScreen = client.screen;
+                ArrayConfigScreen<E[], EnumArrayValue<E>> screen = new ArrayConfigScreen<>(value.getId(), configId, enumArray, usedScreen);
+                screen.fetchSize(() -> enumArray.get().length);
+                screen.valueFactory((id, i) -> {
+                    E[] arr = enumArray.get();
+                    return new EnumValue<>(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, (Class<E>) enumArray.getValueType().getComponentType(), setCallback, i)));
+                });
+                screen.addElement(() -> {
+                    E[] arr = enumArray.get();
+                    Class<E> type = (Class<E>) enumArray.getValueType().getComponentType();
+                    E[] expanded = (E[]) Array.newInstance(type, arr.length + 1);
+                    System.arraycopy(arr, 0, expanded, 0, arr.length);
+                    expanded[arr.length] = type.getEnumConstants()[0];
+                    enumArray.set(expanded);
+                });
+                screen.removeElement((i, trimmer) -> {
+                    E[] arr = enumArray.get();
+                    Class<E> type = (Class<E>) enumArray.getValueType().getComponentType();
+                    enumArray.set(trimmer.trim(i, arr, (E[]) Array.newInstance(type, arr.length - 1)));
+                });
+                client.setScreen(screen);
+            };
+            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
         });
     }
 

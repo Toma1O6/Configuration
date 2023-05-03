@@ -73,6 +73,10 @@ public interface IConfigFormat {
 
     <E extends Enum<E>> E readEnum(String field, Class<E> enumClass) throws ConfigValueMissingException;
 
+    <E extends Enum<E>> void writeEnumArray(String field, E[] value);
+
+    <E extends Enum<E>> E[] readEnumArray(String field, Class<E> enumClass) throws ConfigValueMissingException;
+
     void writeMap(String field, Map<String, ConfigValue<?>> value);
 
     void readMap(String field, Collection<ConfigValue<?>> values) throws ConfigValueMissingException;
