@@ -18,9 +18,7 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.useDefaultValue();
-        E en = this.get();
-        this.set(format.readEnum(this.getId(), en.getDeclaringClass()));
+        this.set(format.readEnum(this.getId(), getValueType()));
     }
 
     public static final class Adapter<E extends Enum<E>> extends TypeAdapter {
@@ -40,9 +38,8 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
         @SuppressWarnings("unchecked")
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            E e = (E) value.get();
-            Class<E> eClass = e.getDeclaringClass();
-            return buffer.readEnum(eClass);
+            Class<E> type = (Class<E>) value.getValueType();
+            return buffer.readEnum(type);
         }
     }
 }
