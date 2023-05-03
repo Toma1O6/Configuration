@@ -65,6 +65,9 @@ public final class TestingConfig {
     public TestEnum testEnum = TestEnum.C;
 
     @Configurable
+    public TestEnum[] testEnumArray = { TestEnum.A, TestEnum.C };
+
+    @Configurable
     public NestedTest nestedTest = new NestedTest();
 
     public enum TestEnum {
@@ -72,7 +75,6 @@ public final class TestingConfig {
     }
 
     public void onUpdate(String[] value, IValidationHandler handler) {
-        System.out.println(Arrays.toString(value));
         handler.setValidationResult(ValidationResult.warn(new TextComponent("Generic warning")));
     }
 
