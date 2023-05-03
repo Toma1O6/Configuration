@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -41,6 +42,10 @@ public final class Configuration {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
+
+        if (isDevelopmentEnvironment()) {
+            registerConfig(TestingConfig.class, ConfigFormats.yaml());
+        }
     }
 
     /**
@@ -151,5 +156,9 @@ public final class Configuration {
                 }));
             });
         }
+    }
+
+    private static boolean isDevelopmentEnvironment() {
+        return !FMLEnvironment.production;
     }
 }

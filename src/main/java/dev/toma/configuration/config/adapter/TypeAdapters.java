@@ -45,6 +45,7 @@ public final class TypeAdapters {
 
         // enums
         registerTypeAdapter(TypeMatcher.matchEnum(), new EnumValue.Adapter<>());
+        registerTypeAdapter(TypeMatcher.matchEnumArray(), new EnumArrayValue.Adapter<>());
 
         // objects
         registerTypeAdapter(TypeMatcher.matchObject(), new ObjectValue.Adapter());
