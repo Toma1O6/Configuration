@@ -65,6 +65,9 @@ public final class TestingConfig {
     public TestEnum testEnum = TestEnum.C;
 
     @Configurable
+    public TestEnum[] testEnumArray = { TestEnum.A, TestEnum.C };
+
+    @Configurable
     public NestedTest nestedTest = new NestedTest();
 
     public enum TestEnum {

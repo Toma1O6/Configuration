@@ -7,6 +7,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IDescriptionProvider;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -244,6 +245,23 @@ public class YamlFormat implements IConfigFormat {
     public <E extends Enum<E>> E readEnum(String field, Class<E> enumClass) throws ConfigValueMissingException {
         String name = this.readString(field);
         return ConfigUtils.getEnumConstant(name, enumClass);
+    }
+
+    @Override
+    public <E extends Enum<E>> void writeEnumArray(String field, E[] value) {
+        String[] strings = Arrays.stream(value).map(Enum::name).toArray(String[]::new);
+        writeStringArray(field, strings);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <E extends Enum<E>> E[] readEnumArray(String field, Class<E> enumClass) throws ConfigValueMissingException {
+        String[] strings = readStringArray(field);
+        E[] arr = (E[]) Array.newInstance(enumClass, strings.length);
+        for (int i = 0; i < strings.length; i++) {
+            arr[i] = ConfigUtils.getEnumConstant(strings[i], enumClass);
+        }
+        return arr;
     }
 
     @Override

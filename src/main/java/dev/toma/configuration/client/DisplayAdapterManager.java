@@ -40,6 +40,7 @@ public final class DisplayAdapterManager {
         registerDisplayAdapter(TypeMatcher.matchDoubleArray(), DisplayAdapter.doubleArrayValue());
         registerDisplayAdapter(TypeMatcher.matchStringArray(), DisplayAdapter.stringArrayValue());
         registerDisplayAdapter(TypeMatcher.matchEnum(), DisplayAdapter.enumValue());
+        registerDisplayAdapter(TypeMatcher.matchEnumArray(), DisplayAdapter.enumArrayValue());
         registerDisplayAdapter(TypeMatcher.matchObject(), DisplayAdapter.objectValue());
     }
 }

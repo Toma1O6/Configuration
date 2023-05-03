@@ -11,6 +11,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +29,9 @@ public final class Configuration implements ModInitializer {
     public static final Marker MAIN_MARKER = MarkerManager.getMarker("main");
 
     public Configuration() {
+        if (isDevelopmentEnvironment()) {
+            registerConfig(TestingConfig.class, ConfigFormats.yaml());
+        }
     }
 
     @Override
@@ -125,5 +129,9 @@ public final class Configuration implements ModInitializer {
     @Environment(EnvType.CLIENT)
     public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
         return new ConfigGroupScreen(previous, groupId, group);
+    }
+
+    private static boolean isDevelopmentEnvironment() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 }
