@@ -251,7 +251,7 @@ public interface DisplayAdapter {
                 });
                 client.setScreen(screen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -285,7 +285,7 @@ public interface DisplayAdapter {
                 });
                 client.setScreen(screen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -319,7 +319,7 @@ public interface DisplayAdapter {
                 });
                 client.setScreen(screen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -353,7 +353,7 @@ public interface DisplayAdapter {
                 });
                 client.setScreen(screen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -387,7 +387,7 @@ public interface DisplayAdapter {
                 });
                 client.setScreen(screen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -421,7 +421,7 @@ public interface DisplayAdapter {
                 });
                 client.setScreen(screen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -441,7 +441,7 @@ public interface DisplayAdapter {
                 Screen nestedConfigScreen = new ConfigScreen(container.getComponentName(), configId, valueMap, currentScreen);
                 client.setScreen(nestedConfigScreen);
             };
-            return new Button(getValueX(x, width), y, getValueWidth(width), 20, ConfigEntryWidget.EDIT, pressable);
+            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 

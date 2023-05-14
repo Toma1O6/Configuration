@@ -68,8 +68,8 @@ public class ConfigScreen extends AbstractConfigScreen {
     }
 
     private void renderEntryDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
-        int x = widget.x + 5;
-        int y = widget.y + widget.getHeight() + 10;
+        int x = widget.getX() + 5;
+        int y = widget.getY() + widget.getHeight() + 10;
         if (!severity.isOkStatus()) {
             this.renderNotification(severity, stack, text, x, y);
         } else {

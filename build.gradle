@@ -23,7 +23,7 @@ dependencies {
 
 	mappings loom.layered {
 		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-${project.mc_version}:${project.parchment_version}@zip")
+		parchment("org.parchmentmc.data:parchment-1.19.3:${project.parchment_version}@zip")
 	}
 }
 
