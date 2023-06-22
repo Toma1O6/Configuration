@@ -1,10 +1,10 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -61,14 +61,14 @@ public class ConfigGroupScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(stack);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(graphics);
         // HEADER
         int titleWidth = this.font.width(this.title);
-        font.draw(stack, this.title, (this.width - titleWidth) / 2.0F, (HEADER_HEIGHT - this.font.lineHeight) / 2.0F, 0xFFFFFF);
-        fill(stack, 0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
-        AbstractConfigScreen.renderScrollbar(stack, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, configHolders.size(), pageSize);
-        super.render(stack, mouseX, mouseY, partialTicks);
+        graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
+        graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
+        AbstractConfigScreen.renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, configHolders.size(), pageSize);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     protected void initFooter() {
@@ -104,8 +104,8 @@ public class ConfigGroupScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-            this.font.draw(stack, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2.0F, 0xAAAAAA);
+        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            graphics.drawString(font, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2, 0xAAAAAA);
         }
 
         @Override

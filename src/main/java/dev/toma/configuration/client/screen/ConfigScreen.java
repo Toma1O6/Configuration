@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.DisplayAdapter;
 import dev.toma.configuration.client.DisplayAdapterManager;
@@ -8,6 +7,7 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -49,7 +49,7 @@ public class ConfigScreen extends AbstractConfigScreen {
             offset += correct;
             ConfigValue<?> value = values.get(i);
             ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
-            widget.setDescriptionRenderer(this::renderEntryDescription);
+            widget.setDescriptionRenderer((graphics, widget1, severity, text) -> renderEntryDescription(graphics, widget1, severity, text));
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();
             DisplayAdapter adapter = DisplayAdapterManager.forType(field.getType());
@@ -67,25 +67,25 @@ public class ConfigScreen extends AbstractConfigScreen {
         this.addFooter();
     }
 
-    private void renderEntryDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
+    private void renderEntryDescription(GuiGraphics graphics, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
         int x = widget.getX() + 5;
         int y = widget.getY() + widget.getHeight() + 10;
         if (!severity.isOkStatus()) {
-            this.renderNotification(severity, stack, text, x, y);
+            this.renderNotification(severity, graphics, text, x, y);
         } else {
-            this.renderNotification(NotificationSeverity.INFO, stack, text, x, y);
+            this.renderNotification(NotificationSeverity.INFO, graphics, text, x, y);
         }
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(stack);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(graphics);
         // HEADER
         int titleWidth = this.font.width(this.title);
-        font.draw(stack, this.title, (this.width - titleWidth) / 2.0F, (HEADER_HEIGHT - this.font.lineHeight) / 2.0F, 0xFFFFFF);
-        fill(stack, 0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
-        renderScrollbar(stack, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, valueMap.size(), pageSize);
-        super.render(stack, mouseX, mouseY, partialTicks);
+        graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF, true);
+        graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
+        renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, valueMap.size(), pageSize);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

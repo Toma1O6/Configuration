@@ -1,9 +1,9 @@
 package dev.toma.configuration.client.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.client.screen.DialogScreen;
 import dev.toma.configuration.config.Configurable;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -45,13 +45,13 @@ public final class ColorWidget extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialRenderTicks) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialRenderTicks) {
         int borderColor = this.isFocused() ? 0xffffffff : 0xffa0a0a0;
         int providedColor = this.colorSupplier.getAsInt();
         int color = this.argb ? providedColor : (0xFF << 24) | providedColor;
-        fill(stack, this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, borderColor);
-        fillGradient(stack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xFFFFFFFF, 0xFF888888);
-        fill(stack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, color);
+        graphics.fill(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, borderColor);
+        graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xFFFFFFFF, 0xFF888888);
+        graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, color);
     }
 
     @Override
@@ -156,15 +156,15 @@ public final class ColorWidget extends AbstractWidget {
             }
 
             @Override
-            public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+            public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 int color = this.colorProvider.getAsInt();
                 if (!this.argb) {
                     color |= 0xFF << 24;
                 }
                 int borderColor = 0xffa0a0a0;
-                fill(stack, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, borderColor);
-                fillGradient(stack, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, 0xFFFFFFFF, 0xFF888888);
-                fill(stack, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, color);
+                graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, borderColor);
+                graphics.fillGradient(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, 0xFFFFFFFF, 0xFF888888);
+                graphics.fill(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, color);
             }
 
             @Override

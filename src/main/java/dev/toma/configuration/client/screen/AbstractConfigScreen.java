@@ -11,6 +11,7 @@ import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -49,7 +50,7 @@ public abstract class AbstractConfigScreen extends Screen {
         this.saveConfig(true);
     }
 
-    public static void renderScrollbar(PoseStack stack, int x, int y, int width, int height, int index, int valueCount, int paging) {
+    public static void renderScrollbar(GuiGraphics graphics, int x, int y, int width, int height, int index, int valueCount, int paging) {
         if (valueCount <= paging)
             return;
         double step = height / (double) valueCount;
@@ -57,11 +58,11 @@ public abstract class AbstractConfigScreen extends Screen {
         int max = Mth.ceil((index + paging) * step);
         int y1 = y + min;
         int y2 = y + max;
-        fill(stack, x, y, x + width, y + height, 0xFF << 24);
+        graphics.fill(x, y, x + width, y + height, 0xFF << 24);
 
-        fill(stack, x, y1, x + width, y2, 0xFF888888);
-        fill(stack, x, y1, x + width - 1, y2 - 1, 0xFFEEEEEE);
-        fill(stack, x + 1, y1 + 1, x + width - 1, y2 - 1, 0xFFCCCCCC);
+        graphics.fill(x, y1, x + width, y2, 0xFF888888);
+        graphics.fill(x, y1, x + width - 1, y2 - 1, 0xFFEEEEEE);
+        graphics.fill(x + 1, y1 + 1, x + width - 1, y2 - 1, 0xFFCCCCCC);
     }
 
     protected void addFooter() {
@@ -137,7 +138,7 @@ public abstract class AbstractConfigScreen extends Screen {
         }
     }
 
-    public void renderNotification(NotificationSeverity severity, PoseStack stack, List<FormattedCharSequence> texts, int mouseX, int mouseY) {
+    public void renderNotification(NotificationSeverity severity, GuiGraphics graphics, List<FormattedCharSequence> texts, int mouseX, int mouseY) {
         if (!texts.isEmpty()) {
             int maxTextWidth = 0;
             int iconOffset = 13;
@@ -166,6 +167,7 @@ public abstract class AbstractConfigScreen extends Screen {
                 startY = this.height - heightOffset - 6;
             }
 
+            PoseStack stack = graphics.pose();
             stack.pushPose();
             int background = severity.background;
             int fadeMin = severity.fadeMin;
@@ -176,15 +178,15 @@ public abstract class AbstractConfigScreen extends Screen {
             BufferBuilder bufferbuilder = tessellator.getBuilder();
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             Matrix4f matrix4f = stack.last().pose();
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, background, background);
-            fillGradient(matrix4f, bufferbuilder, startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, zIndex, background, background);
-            fillGradient(matrix4f, bufferbuilder, startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, zIndex, background, background);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
-            fillGradient(matrix4f, bufferbuilder, startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, zIndex, fadeMin, fadeMin);
-            fillGradient(matrix4f, bufferbuilder, startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, fadeMax, fadeMax);
+            graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
+            graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
+            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, background, background);
+            graphics.fillGradient(startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, zIndex, background, background);
+            graphics.fillGradient(startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, zIndex, background, background);
+            graphics.fillGradient(startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
+            graphics.fillGradient(startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
+            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, zIndex, fadeMin, fadeMin);
+            graphics.fillGradient(startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, fadeMax, fadeMax);
             RenderSystem.enableDepthTest();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();

@@ -1,6 +1,6 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -61,13 +61,13 @@ public class DialogScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int backgroundColor = 0xFF << 24;
-        this.background.render(stack, mouseX, mouseY, partialTicks);
-        this.fillGradient(stack, this.dialogLeft - 1, this.dialogTop - 1, this.dialogLeft + this.dialogWidth + 1, this.dialogTop + this.dialogHeight + 1, 0xFFFFFFFF, 0xFFFFFFFF);
-        this.fillGradient(stack, this.dialogLeft, this.dialogTop, this.dialogLeft + this.dialogWidth, this.dialogTop + this.dialogHeight, backgroundColor, backgroundColor);
-        this.renderForeground(stack, mouseX, mouseY, partialTicks);
-        super.render(stack, mouseX, mouseY, partialTicks);
+        this.background.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.fillGradient(this.dialogLeft - 1, this.dialogTop - 1, this.dialogLeft + this.dialogWidth + 1, this.dialogTop + this.dialogHeight + 1, 0xFFFFFFFF, 0xFFFFFFFF);
+        graphics.fillGradient(this.dialogLeft, this.dialogTop, this.dialogLeft + this.dialogWidth, this.dialogTop + this.dialogHeight, backgroundColor, backgroundColor);
+        this.renderForeground(graphics, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -85,12 +85,12 @@ public class DialogScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    protected void renderForeground(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    protected void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int headerWidth = this.font.width(this.title);
-        this.font.draw(stack, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2.0F, this.dialogTop + 5, 0xFFFFFF);
+        graphics.drawString(font, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2, this.dialogTop + 5, 0xFFFFFF);
         int line = 0;
         for (FormattedCharSequence textLine : this.splitText) {
-            this.font.draw(stack, textLine, this.dialogLeft + 5, this.dialogTop + 20 + line * 10, 0xFFFFFF);
+            graphics.drawString(font, textLine, this.dialogLeft + 5, this.dialogTop + 20 + line * 10, 0xFFFFFF);
             ++line;
         }
     }

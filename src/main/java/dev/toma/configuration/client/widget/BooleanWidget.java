@@ -1,11 +1,11 @@
 package dev.toma.configuration.client.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.CommonComponents;
@@ -25,16 +25,15 @@ public class BooleanWidget extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        blitNineSliced(stack, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+        graphics.blitNineSliced(WIDGETS_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = getFGColor();
-        this.renderString(stack, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+        this.renderString(graphics, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 
     private int getTextureY() {
@@ -47,8 +46,8 @@ public class BooleanWidget extends AbstractWidget {
         return 46 + i * 20;
     }
 
-    private void renderString(PoseStack stack, Font font, int color) {
-        this.renderScrollingString(stack, font, 2, color);
+    private void renderString(GuiGraphics graphics, Font font, int color) {
+        this.renderScrollingString(graphics, font, 2, color);
     }
 
     @Override

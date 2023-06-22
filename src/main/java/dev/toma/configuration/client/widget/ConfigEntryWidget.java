@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.validate.ValidationResult;
@@ -8,6 +7,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -56,14 +56,14 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public void renderWidget(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Font font = Minecraft.getInstance().font;
         if (!lastHoverState && isHovered) {
             hoverTimeStart = System.currentTimeMillis();
         }
         boolean isError = !this.result.isOk();
-        font.draw(stack, this.getMessage(), this.getX(), this.getY() + (this.height - font.lineHeight) / 2.0F, 0xAAAAAA);
-        super.renderWidget(stack, mouseX, mouseY, partialTicks);
+        graphics.drawString(font, this.getMessage(), this.getX(), this.getY() + (this.height - font.lineHeight) / 2, 0xAAAAAA);
+        super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {
@@ -71,7 +71,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
                 MutableComponent textComponent = this.result.text().withStyle(severity.getExtraFormatting());
                 List<Component> desc = isError ? Collections.singletonList(textComponent) : this.description;
                 List<FormattedCharSequence> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
-                renderer.drawDescription(stack, this, severity, split);
+                renderer.drawDescription(graphics, this, severity, split);
             }
         }
         this.lastHoverState = isHovered;
@@ -90,6 +90,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     @FunctionalInterface
     public interface IDescriptionRenderer {
-        void drawDescription(PoseStack stack, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text);
+        void drawDescription(GuiGraphics graphics, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text);
     }
 }
