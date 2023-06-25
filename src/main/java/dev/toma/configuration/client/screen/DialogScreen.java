@@ -64,10 +64,13 @@ public class DialogScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int backgroundColor = 0xFF << 24;
         this.background.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 400);
         graphics.fillGradient(this.dialogLeft - 1, this.dialogTop - 1, this.dialogLeft + this.dialogWidth + 1, this.dialogTop + this.dialogHeight + 1, 0xFFFFFFFF, 0xFFFFFFFF);
         graphics.fillGradient(this.dialogLeft, this.dialogTop, this.dialogLeft + this.dialogWidth, this.dialogTop + this.dialogHeight, backgroundColor, backgroundColor);
         this.renderForeground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.pose().popPose();
     }
 
     @Override

@@ -52,7 +52,11 @@ public abstract class ContainerWidget extends AbstractWidget implements Containe
 
     @Override
     public boolean mouseClicked(double p_231044_1_, double p_231044_3_, int p_231044_5_) {
-        return ContainerEventHandler.super.mouseClicked(p_231044_1_, p_231044_3_, p_231044_5_);
+        boolean result = ContainerEventHandler.super.mouseClicked(p_231044_1_, p_231044_3_, p_231044_5_);
+        if (!result && this.focused != null) {
+            this.setFocused(null);
+        }
+        return result;
     }
 
     @Override
@@ -107,6 +111,12 @@ public abstract class ContainerWidget extends AbstractWidget implements Containe
 
     @Override
     public void setFocused(GuiEventListener focused) {
+        if (this.focused != null) {
+            this.focused.setFocused(false);
+        }
+        if (focused != null) {
+            focused.setFocused(true);
+        }
         this.focused = focused;
     }
 }
