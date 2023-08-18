@@ -150,7 +150,7 @@ public final class Configuration {
                 List<ConfigHolder<?>> list = entry.getValue();
                 modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> {
                     if (list.size() == 1) {
-                        return getConfigScreen(modId, screen);
+                        return getConfigScreen(list.get(0).getConfigId(), screen);
                     }
                     return getConfigScreenByGroup(list, modId, screen);
                 }));
