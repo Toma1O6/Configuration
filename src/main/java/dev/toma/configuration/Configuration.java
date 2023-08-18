@@ -150,7 +150,7 @@ public final class Configuration {
                 List<ConfigHolder<?>> list = entry.getValue();
                 modContainer.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (client, previousScreen) -> {
                     if (list.size() == 1) {
-                        return getConfigScreen(modId, previousScreen);
+                        return getConfigScreen(list.get(0).getConfigId(), previousScreen);
                     }
                     return getConfigScreenByGroup(list, modId, previousScreen);
                 });
