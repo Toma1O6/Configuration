@@ -1,6 +1,7 @@
 package dev.toma.configuration.client.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -30,20 +31,10 @@ public class BooleanWidget extends AbstractWidget {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        graphics.blitNineSliced(WIDGETS_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+        graphics.blitSprite(AbstractConfigScreen.BUTTON_SPRITES.get(active, isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = getFGColor();
         this.renderString(graphics, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
-    }
-
-    private int getTextureY() {
-        int i = 1;
-        if (!this.active) {
-            i = 0;
-        } else if (this.isHoveredOrFocused()) {
-            i = 2;
-        }
-        return 46 + i * 20;
     }
 
     private void renderString(GuiGraphics graphics, Font font, int color) {

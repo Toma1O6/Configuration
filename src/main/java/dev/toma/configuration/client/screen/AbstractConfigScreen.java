@@ -13,6 +13,7 @@ import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -31,6 +32,11 @@ public abstract class AbstractConfigScreen extends Screen {
 
     public static final int HEADER_HEIGHT = 35;
     public static final int FOOTER_HEIGHT = 30;
+    public static final WidgetSprites BUTTON_SPRITES = new WidgetSprites(
+            new ResourceLocation("widget/button"),
+            new ResourceLocation("widget/button_disabled"),
+            new ResourceLocation("widget/button_highlighted")
+    );
     public static final Marker MARKER = MarkerManager.getMarker("Screen");
     protected final Screen last;
     protected final String configId;

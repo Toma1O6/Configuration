@@ -5,10 +5,9 @@ import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class S2C_SendConfigData implements IPacket<S2C_SendConfigData> {
 
@@ -58,8 +57,8 @@ public class S2C_SendConfigData implements IPacket<S2C_SendConfigData> {
     }
 
     @Override
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        supplier.get().setPacketHandled(true);
+    public void handle(CustomPayloadEvent.Context context) {
+        context.setPacketHandled(true);
     }
 
     @SuppressWarnings("unchecked")

@@ -5,30 +5,28 @@ import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.SimpleChannel;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 public final class Networking {
 
     public static final Marker MARKER = MarkerManager.getMarker("Network");
-    private static final String NETWORK_VERSION = "2.0.0";
-    private static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
+    private static final int NETWORK_VERSION = 2;
+    private static final SimpleChannel CHANNEL = ChannelBuilder
             .named(new ResourceLocation(Configuration.MODID, "network_channel"))
-            .networkProtocolVersion(() -> NETWORK_VERSION)
-            .clientAcceptedVersions(NETWORK_VERSION::equals)
-            .serverAcceptedVersions(NETWORK_VERSION::equals)
+            .networkProtocolVersion(NETWORK_VERSION)
+            .clientAcceptedVersions((status, version) -> version == NETWORK_VERSION)
+            .serverAcceptedVersions((status, version) -> version == NETWORK_VERSION)
             .simpleChannel();
 
     public static void sendClientPacket(ServerPlayer target, IPacket<?> packet) {
-        CHANNEL.sendTo(packet, target.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        CHANNEL.send(packet, PacketDistributor.PLAYER.with(target));
     }
 
     public static final class PacketRegistry {
-
-        private static int packetIndex;
 
         public static void register() {
             registerNetworkPacket(S2C_SendConfigData.class);
@@ -41,7 +39,11 @@ public final class Networking {
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new ReportedException(CrashReport.forThrowable(e, "Couldn't instantiate packet for registration. Make sure you have provided public constructor with no parameters."));
             }
-            CHANNEL.registerMessage(packetIndex++, packetType, IPacket::encode, packet::decode, IPacket::handle);
+            CHANNEL.messageBuilder(packetType)
+                    .encoder(IPacket::encode)
+                    .decoder(packet::decode)
+                    .consumerMainThread(IPacket::handle)
+                    .add();
         }
     }
 }

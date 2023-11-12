@@ -88,6 +88,10 @@ public class DialogScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    @Override
+    public void renderBackground(GuiGraphics p_283688_, int p_299421_, int p_298679_, float p_297268_) {
+    }
+
     protected void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int headerWidth = this.font.width(this.title);
         graphics.drawString(font, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2, this.dialogTop + 5, 0xFFFFFF);

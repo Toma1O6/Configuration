@@ -20,7 +20,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
         super(p_i50401_1_);
     }
 
-    @Inject(method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V"))
+    @Inject(method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V"))
     private void configuration_reloadClientConfigs(Screen screen, CallbackInfo ci) {
         ConfigHolder.getSynchronizedConfigs().stream()
                 .map(ConfigHolder::getConfig)
