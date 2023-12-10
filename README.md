@@ -1,4 +1,4 @@
-# Configuration ![](https://img.shields.io/badge/Author-Toma-orange.svg) ![](https://img.shields.io/badge/API-v2-blue.svg) ![](https://img.shields.io/badge/Latest_Version-2.0.0-green.svg)
+# Configuration ![](https://img.shields.io/badge/Author-Toma-orange.svg) ![](https://img.shields.io/badge/API-v2-blue.svg) ![](https://img.shields.io/badge/Latest_Version-2.2.2-green.svg)
 Introduces annotation based configs which can use various file formats such as yaml, json or properties. This API also supports automatic synchronization of server properties to client, all you have to do is to annotate your config field by @Configurable.Synchronized and you're done.
 
 ## User setup
