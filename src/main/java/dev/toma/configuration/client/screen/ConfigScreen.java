@@ -10,6 +10,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -83,9 +84,10 @@ public class ConfigScreen extends AbstractConfigScreen {
         // HEADER
         int titleWidth = this.font.width(this.title);
         graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF, true);
+        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
         renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, valueMap.size(), pageSize);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override

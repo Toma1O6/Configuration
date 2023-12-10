@@ -68,7 +68,7 @@ public class ConfigGroupScreen extends Screen {
         graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
         graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
         AbstractConfigScreen.renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, configHolders.size(), pageSize);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
     }
 
     protected void initFooter() {

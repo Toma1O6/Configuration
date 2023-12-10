@@ -12,6 +12,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -118,7 +119,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
         graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x99 << 24);
         renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, sizeSupplier.get(), pageSize);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
