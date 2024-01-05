@@ -11,8 +11,10 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.server.dedicated.DedicatedServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -32,6 +34,11 @@ public final class Configuration implements ModInitializer {
         if (isDevelopmentEnvironment()) {
             registerConfig(TestingConfig.class, ConfigFormats.yaml());
         }
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            if (server instanceof DedicatedServer) {
+                cleanUp();
+            }
+        });
     }
 
     @Override
@@ -129,6 +136,10 @@ public final class Configuration implements ModInitializer {
     @Environment(EnvType.CLIENT)
     public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
         return new ConfigGroupScreen(previous, groupId, group);
+    }
+
+    public void cleanUp() {
+        ConfigIO.FILE_WATCH_MANAGER.stop();
     }
 
     private static boolean isDevelopmentEnvironment() {
