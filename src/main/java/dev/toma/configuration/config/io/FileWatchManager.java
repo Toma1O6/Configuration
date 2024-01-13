@@ -80,6 +80,15 @@ public final class FileWatchManager {
         }
     }
 
+    public void stop() {
+        try {
+            executorService.shutdown();
+            service.close();
+        } catch (IOException e) {
+            throw new IllegalStateException("Error while stopping FileWatch service", e);
+        }
+    }
+
     public void addTrackedConfig(ConfigHolder<?> holder) {
         Path path = Paths.get(holder.getFilename());
         File file = path.toFile();
