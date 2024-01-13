@@ -13,6 +13,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
@@ -21,6 +23,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraft.server.dedicated.DedicatedServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -42,6 +45,7 @@ public final class Configuration {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::init);
         modEventBus.addListener(this::clientInit);
+        MinecraftForge.EVENT_BUS.addListener(this::cleanUp);
 
         if (isDevelopmentEnvironment()) {
             registerConfig(TestingConfig.class, ConfigFormats.yaml());
@@ -138,6 +142,12 @@ public final class Configuration {
     private void init(FMLCommonSetupEvent event) {
         Networking.PacketRegistry.register();
         ConfigIO.FILE_WATCH_MANAGER.startService();
+    }
+
+    private void cleanUp(ServerStoppingEvent event) {
+        if (event.getServer() instanceof DedicatedServer) {
+            ConfigIO.FILE_WATCH_MANAGER.stop();
+        }
     }
 
     private void clientInit(FMLClientSetupEvent event) {
