@@ -7,22 +7,22 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapters;
 import dev.toma.configuration.config.validate.NotificationSeverity;
-import dev.toma.configuration.config.value.ArrayValue;
+import dev.toma.configuration.config.value.AbstractArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends AbstractConfigScreen {
+public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends AbstractConfigScreen {
 
     public static final Component ADD_ELEMENT = Component.translatable("text.configuration.value.add_element");
 
@@ -32,7 +32,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
     private Supplier<Integer> sizeSupplier = () -> 0;
     private DummyConfigValueFactory valueFactory;
     private ElementAddHandler addHandler;
-    private ElementRemoveHandler<V> removeHandler;
+    private ElementRemoveHandler<V[]> removeHandler;
 
     public ArrayConfigScreen(String ownerIdentifier, String configId, C array, Screen previous) {
         super(Component.translatable(String.format("config.%s.option.%s", configId, ownerIdentifier)), previous, configId);
@@ -52,7 +52,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         this.addHandler = handler;
     }
 
-    public void removeElement(ElementRemoveHandler<V> handler) {
+    public void removeElement(ElementRemoveHandler<V[]> handler) {
         this.removeHandler = handler;
     }
 
@@ -79,7 +79,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
             ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.configId));
-            widget.setDescriptionRenderer((graphics, widget1, severity, text) -> renderEntryDescription(graphics, widget1, severity, text));
+            widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
                 continue;
@@ -88,7 +88,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
                 adapter.placeWidgets(dummy, owner, widget);
                 initializeGuiValue(dummy, widget);
             } catch (ClassCastException e) {
-                Configuration.LOGGER.error(MARKER, "Unable to create config field for {} type due to error {}", compType.getSimpleName(), e);
+                Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", compType.getSimpleName()), e);
             }
             if (!fixedSize) {
                 final int elementIndex = i;
@@ -180,7 +180,7 @@ public class ArrayConfigScreen<V, C extends ConfigValue<V> & ArrayValue> extends
         private final int index;
 
         private DummyCallbackAdapter(Class<V> type, Field parentField, BiConsumer<V, Integer> setCallback, int index) {
-            this.typeAdapter = TypeAdapters.forType(type);
+            this.typeAdapter = TypeAdapters.forType(type).adapter();
             this.parentField = parentField;
             this.setCallback = setCallback;
             this.index = index;

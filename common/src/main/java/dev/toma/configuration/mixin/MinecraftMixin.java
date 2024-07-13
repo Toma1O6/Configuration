@@ -1,6 +1,7 @@
 package dev.toma.configuration.mixin;
 
 import com.mojang.blaze3d.platform.WindowEventHandler;
+import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
 import net.minecraft.client.Minecraft;
@@ -22,13 +23,35 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
 
     @Inject(
             method = "clearClientLevel",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V")
+            at = @At("RETURN")
     )
     private void configuration$reloadClientConfigs(Screen screen, CallbackInfo ci) {
+        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.MENU);
         ConfigHolder.getSynchronizedConfigs().stream()
                 .map(ConfigHolder::getConfig)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(ConfigIO::reloadClientValues);
+    }
+
+    @Inject(
+            method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V",
+            at = @At("RETURN")
+    )
+    private void configuration$disconnect(Screen screen, boolean canceled, CallbackInfo ci) {
+        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.MENU);
+        ConfigHolder.getSynchronizedConfigs().stream()
+                .map(ConfigHolder::getConfig)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(ConfigIO::reloadClientValues);
+    }
+
+    @Inject(
+            method = "onGameLoadFinished",
+            at = @At("RETURN")
+    )
+    private void configuration$onGameLoadFinished(CallbackInfo ci) {
+        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.MENU);
     }
 }

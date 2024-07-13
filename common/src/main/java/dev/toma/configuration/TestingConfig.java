@@ -3,10 +3,10 @@ package dev.toma.configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.UpdateRestrictions;
 import dev.toma.configuration.config.validate.ValidationResult;
 import net.minecraft.network.chat.Component;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 @Config(id = Configuration.MODID)
@@ -20,6 +20,7 @@ public final class TestingConfig {
     public int number = 15;
 
     @Configurable
+    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     public long longNumber = 16644564564561651L;
 
     @Configurable

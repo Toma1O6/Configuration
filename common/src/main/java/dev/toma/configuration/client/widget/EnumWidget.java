@@ -54,7 +54,7 @@ public class EnumWidget<E extends Enum<E>> extends AbstractWidget {
         int i = e.ordinal();
         int j = (i + 1) % values.length;
         E next = values[j];
-        this.value.set(next);
+        this.value.setValue(next);
     }
 
     private void updateText() {

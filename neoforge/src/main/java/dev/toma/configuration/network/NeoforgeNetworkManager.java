@@ -15,7 +15,7 @@ public final class NeoforgeNetworkManager implements NetworkManager {
     public void registerMessages(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(Configuration.MODID);
 
-        registrar.playToClient(S2C_SendConfigDataMessage.TYPE, S2C_SendConfigDataMessage.CODEC, (msg, ctx) -> {});
+        registrar.playToClient(S2C_SendConfigDataMessage.TYPE, S2C_SendConfigDataMessage.CODEC, (msg, ctx) -> msg.receive());
     }
 
     @Override

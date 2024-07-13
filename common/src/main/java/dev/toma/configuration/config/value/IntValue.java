@@ -8,14 +8,14 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public final class IntValue extends IntegerValue<Integer> {
+public class IntValue extends IntegerValue<Integer> {
 
     public IntValue(ValueData<Integer> valueData) {
         super(valueData, Range.unboundedInt());
     }
 
     @Override
-    public Integer getCorrectedValue(Integer in) {
+    public Integer validateValue(Integer in) {
         if (this.range == null)
             return in;
         if (!this.range.isWithin(in)) {
@@ -33,7 +33,7 @@ public final class IntValue extends IntegerValue<Integer> {
 
     @Override
     public void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readInt(this.getId()));
+        this.setValue(format.readInt(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {

@@ -10,9 +10,9 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class ConfigScreen extends AbstractConfigScreen {
                 adapter.placeWidgets(value, field, widget);
                 initializeGuiValue(value, widget);
             } catch (ClassCastException e) {
-                Configuration.LOGGER.error(MARKER, "Unable to create config field for {} type due to error {}", field.getType().getSimpleName(), e);
+                Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", field.getType().getSimpleName()), e);
             }
         }
         this.addFooter();

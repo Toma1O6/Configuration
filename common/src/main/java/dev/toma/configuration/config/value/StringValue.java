@@ -37,7 +37,7 @@ public class StringValue extends ConfigValue<String> {
     }
 
     @Override
-    protected String getCorrectedValue(String in) {
+    protected String validateValue(String in) {
         if (this.pattern != null) {
             if (!this.pattern.matcher(in).matches()) {
                 String defaultValue = this.valueData.getDefaultValue();
@@ -58,7 +58,7 @@ public class StringValue extends ConfigValue<String> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readString(this.getId()));
+        this.setValue(format.readString(this.getId()));
     }
 
     public Pattern getPattern() {

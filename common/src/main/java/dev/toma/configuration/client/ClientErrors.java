@@ -36,6 +36,6 @@ public final class ClientErrors {
     }
 
     public static MutableComponent invalidText(String text, Pattern pattern) {
-        return Component.translatable(KEY_MISMATCHED_PATTERN, text, pattern);
+        return Component.translatable(KEY_MISMATCHED_PATTERN, text, pattern.pattern());
     }
 }

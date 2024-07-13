@@ -15,7 +15,7 @@ public class FloatValue extends DecimalValue<Float> {
     }
 
     @Override
-    public Float getCorrectedValue(Float in) {
+    public Float validateValue(Float in) {
         if (this.range == null)
             return in;
         if (!this.range.isWithin(in)) {
@@ -33,7 +33,7 @@ public class FloatValue extends DecimalValue<Float> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readFloat(this.getId()));
+        this.setValue(format.readFloat(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {

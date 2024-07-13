@@ -1,25 +1,27 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 
-public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E[]> {
-
-    private boolean fixedSize;
+public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
 
     public EnumArrayValue(ValueData<E[]> value) {
         super(value);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean isFixedSize() {
-        return fixedSize;
+    public E createElementInstance() {
+        Class<E> enumType = (Class<E>) this.valueData.getValueType().getComponentType();
+        E[] constants = enumType.getEnumConstants();
+        if (constants.length == 0) {
+            throw new IllegalArgumentException("Enum does not define any constants");
+        }
+        return constants[0];
     }
 
     @Override
@@ -31,12 +33,7 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E[]> {
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
         Class<E> type = (Class<E>) getValueType().getComponentType();
-        set(format.readEnumArray(getId(), type));
-    }
-
-    @Override
-    protected void readFieldData(Field field) {
-        this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+        setValue(format.readEnumArray(getId(), type));
     }
 
     public static final class Adapter<E extends Enum<E>> extends TypeAdapter {

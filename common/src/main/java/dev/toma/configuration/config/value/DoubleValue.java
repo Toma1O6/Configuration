@@ -15,7 +15,7 @@ public class DoubleValue extends DecimalValue<Double> {
     }
 
     @Override
-    public Double getCorrectedValue(Double in) {
+    public Double validateValue(Double in) {
         if (this.range == null)
             return in;
         if (!this.range.isWithin(in)) {
@@ -33,7 +33,7 @@ public class DoubleValue extends DecimalValue<Double> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readDouble(this.getId()));
+        this.setValue(format.readDouble(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {

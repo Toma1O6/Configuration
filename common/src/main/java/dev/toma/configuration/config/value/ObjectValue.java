@@ -19,8 +19,27 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
+    public void save() {
+        for (ConfigValue<?> child : this.get().values()) {
+            child.save();
+        }
+        super.save();
+    }
+
+    @Override
     public void serialize(IConfigFormat format) {
         format.writeMap(this.getId(), this.get());
+    }
+
+    @Override
+    public boolean isChanged() {
+        Map<String, ConfigValue<?>> map = this.get();
+        for (ConfigValue<?> value : map.values()) {
+            if (value.isChanged()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -18,22 +18,21 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public final class GsonFormat implements IConfigFormat {
 
-    private final Gson gson;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
     private final JsonObject root;
 
-    public GsonFormat(Settings settings) {
-        this.gson = settings.builder.create();
+    public GsonFormat() {
         this.root = new JsonObject();
     }
 
     private GsonFormat(JsonObject root) {
         this.root = root;
-        this.gson = null; // no need to propagate
     }
 
     @Override
@@ -107,74 +106,53 @@ public final class GsonFormat implements IConfigFormat {
     }
 
     @Override
-    public void writeBoolArray(String field, boolean[] values) {
-        JsonArray array = new JsonArray();
-        for (boolean b : values) {
-            array.add(b);
-        }
-        this.root.add(field, array);
-    }
-
-    // I love Java primitive types (:
-    @Override
-    public boolean[] readBoolArray(String field) throws ConfigValueMissingException {
-        return ConfigUtils.unboxArray(this.readArray(field, Boolean[]::new, JsonElement::getAsBoolean));
+    public void writeBoolArray(String field, Boolean[] values) {
+        writeArray(field, values, JsonArray::add);
     }
 
     @Override
-    public void writeIntArray(String field, int[] values) {
-        JsonArray array = new JsonArray();
-        for (int i : values) {
-            array.add(i);
-        }
-        this.root.add(field, array);
+    public Boolean[] readBoolArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Boolean[]::new, JsonElement::getAsBoolean);
     }
 
     @Override
-    public int[] readIntArray(String field) throws ConfigValueMissingException {
-        return ConfigUtils.unboxArray(this.readArray(field, Integer[]::new, JsonElement::getAsInt));
+    public void writeIntArray(String field, Integer[] values) {
+        writeArray(field, values, JsonArray::add);
     }
 
     @Override
-    public void writeLongArray(String field, long[] values) {
-        JsonArray array = new JsonArray();
-        for (long i : values) {
-            array.add(i);
-        }
-        this.root.add(field, array);
+    public Integer[] readIntArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Integer[]::new, JsonElement::getAsInt);
     }
 
     @Override
-    public long[] readLongArray(String field) throws ConfigValueMissingException {
-        return ConfigUtils.unboxArray(this.readArray(field, Long[]::new, JsonElement::getAsLong));
+    public void writeLongArray(String field, Long[] values) {
+        writeArray(field, values, JsonArray::add);
     }
 
     @Override
-    public void writeFloatArray(String field, float[] values) {
-        JsonArray array = new JsonArray();
-        for (float i : values) {
-            array.add(i);
-        }
-        this.root.add(field, array);
+    public Long[] readLongArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Long[]::new, JsonElement::getAsLong);
     }
 
     @Override
-    public float[] readFloatArray(String field) throws ConfigValueMissingException {
-        return ConfigUtils.unboxArray(this.readArray(field, Float[]::new, JsonElement::getAsFloat));
+    public void writeFloatArray(String field, Float[] values) {
+        writeArray(field, values, JsonArray::add);
     }
 
     @Override
-    public void writeDoubleArray(String field, double[] values) {
-        JsonArray array = new JsonArray();
-        for (double i : values) {
-            array.add(i);
-        }
-        this.root.add(field, array);
+    public Float[] readFloatArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Float[]::new, JsonElement::getAsFloat);
     }
 
     @Override
-    public double[] readDoubleArray(String field) throws ConfigValueMissingException {
-        return ConfigUtils.unboxArray(this.readArray(field, Double[]::new, JsonElement::getAsDouble));
+    public void writeDoubleArray(String field, Double[] values) {
+        writeArray(field, values, JsonArray::add);
+    }
+
+    @Override
+    public Double[] readDoubleArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Double[]::new, JsonElement::getAsDouble);
     }
 
     @Override
@@ -217,7 +195,7 @@ public final class GsonFormat implements IConfigFormat {
 
     @Override
     public void writeMap(String field, Map<String, ConfigValue<?>> value) {
-        GsonFormat config = new GsonFormat(new Settings());
+        GsonFormat config = new GsonFormat();
         value.values().forEach(val -> val.serializeValue(config));
         this.root.add(field, config.root);
     }
@@ -237,16 +215,15 @@ public final class GsonFormat implements IConfigFormat {
     @Override
     public void writeFile(File file) throws IOException {
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write(gson.toJson(this.root));
+            writer.write(GSON.toJson(this.root));
         }
     }
 
     @Override
     public void readFile(File file) throws IOException, ConfigReadException {
         try (FileReader reader = new FileReader(file)) {
-            JsonParser parser = new JsonParser();
             try {
-                JsonElement element = parser.parse(reader);
+                JsonElement element = JsonParser.parseReader(reader);
                 if (!element.isJsonObject()) {
                     throw new ConfigReadException("Gson config must contain JsonObject as root element!");
                 }
@@ -286,7 +263,7 @@ public final class GsonFormat implements IConfigFormat {
         }
     }
 
-    private <T> T[] readArray(String field, Function<Integer, T[]> arrayFactory, Function<JsonElement, T> function) throws ConfigValueMissingException {
+    private <T> T[] readArray(String field, IntFunction<T[]> arrayFactory, Function<JsonElement, T> function) throws ConfigValueMissingException {
         JsonElement element = this.root.get(field);
         if (element == null || !element.isJsonArray()) {
             throw new ConfigValueMissingException("Missing value: " + field);
@@ -302,31 +279,6 @@ public final class GsonFormat implements IConfigFormat {
         } catch (Exception e) {
             Configuration.LOGGER.error(ConfigIO.MARKER, "Error loading value for field {} - {}", field, e);
             throw new ConfigValueMissingException("Invalid value");
-        }
-    }
-
-    /**
-     * Settings holder for JSON configs
-     *
-     * @author Toma
-     */
-    public static final class Settings {
-
-        private final GsonBuilder builder = new GsonBuilder();
-
-        /**
-         * Default settings constructor
-         */
-        public Settings() {
-            this.builder.setPrettyPrinting().disableHtmlEscaping();
-        }
-
-        /**
-         * Constructs new settings and allows you to customize {@link GsonBuilder} object
-         * @param consumer Consumer of {@link GsonBuilder} for this settings object
-         */
-        public Settings(Consumer<GsonBuilder> consumer) {
-            consumer.accept(builder);
         }
     }
 }

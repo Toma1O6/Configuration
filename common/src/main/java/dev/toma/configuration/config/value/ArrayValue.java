@@ -1,10 +1,8 @@
 package dev.toma.configuration.config.value;
 
-public interface ArrayValue extends HierarchicalConfigValue {
+public interface ArrayValue<T> extends HierarchicalConfigValue {
 
     boolean isFixedSize();
 
-    default String elementToString(Object element) {
-        return element.toString();
-    }
+    T createElementInstance();
 }

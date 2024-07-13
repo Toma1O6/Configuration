@@ -1,6 +1,5 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
@@ -8,49 +7,24 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
-public class LongArrayValue extends AbstractArrayValue<long[]> {
+public class LongArrayValue extends NumericArrayValue<Long> {
 
-    private boolean fixedSize;
-    private IntegerValue.Range range;
-
-    public LongArrayValue(ValueData<long[]> valueData) {
-        super(valueData);
+    public LongArrayValue(ValueData<Long[]> valueData) {
+        super(valueData, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     @Override
-    public boolean isFixedSize() {
-        return fixedSize;
+    public ValueRange<Long> getValueRange(Field field, Long typeMin, Long typeMax) {
+        Configurable.Range range = field.getAnnotation(Configurable.Range.class);
+        return range != null
+                ? new ValueRange<>(range.min(), range.max())
+                : new ValueRange<>(typeMin, typeMax);
     }
 
     @Override
-    protected void readFieldData(Field field) {
-        this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
-        Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
-        this.range = intRange != null ? IntegerValue.Range.newBoundedRange(intRange.min(), intRange.max()) : IntegerValue.Range.unboundedLong();
-    }
-
-    @Override
-    protected long[] getCorrectedValue(long[] in) {
-        if (this.fixedSize) {
-            long[] defaultArray = this.valueData.getDefaultValue();
-            if (in.length != defaultArray.length) {
-                ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
-                in = defaultArray;
-            }
-        }
-        if (this.range == null)
-            return in;
-        for (int i = 0; i < in.length; i++) {
-            long value = in[i];
-            if (!this.range.isWithin(value)) {
-                long corrected = this.range.clamp(value);
-                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", value, corrected);
-                in[i] = corrected;
-            }
-        }
-        return in;
+    public Long createElementInstance() {
+        return 0L;
     }
 
     @Override
@@ -60,51 +34,24 @@ public class LongArrayValue extends AbstractArrayValue<long[]> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readLongArray(this.getId()));
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
-        long[] longs = this.get();
-        for (int i = 0; i < longs.length; i++) {
-            builder.append(this.elementToString(longs[i]));
-            if (i < longs.length - 1) {
-                builder.append(",");
-            }
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-
-    public IntegerValue.Range getRange() {
-        return range;
+        this.setValue(format.readLongArray(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            long[] arr = (long[]) value.get();
-            buffer.writeInt(arr.length);
-            for (long v : arr) {
-                buffer.writeLong(v);
-            }
+            saveToBuffer((Long[]) value.get(), buffer, FriendlyByteBuf::writeLong);
         }
 
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            long[] arr = new long[buffer.readInt()];
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = buffer.readLong();
-            }
-            return arr;
+            return readFromBuffer(buffer, Long[]::new, FriendlyByteBuf::readLong);
         }
 
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new LongArrayValue(ValueData.of(name, (long[]) value, context, comments));
+            return new LongArrayValue(ValueData.of(name, (Long[]) value, context, comments));
         }
     }
 }

@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  * Only public instance fields are allowed.
  *
  * @author Toma
+ * @since 2.0
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -39,6 +40,16 @@ public @interface Configurable {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface Synchronized {
+    }
+
+    /**
+     * Allows you to add update restrictions/warnings, as some values may for example require
+     * game restart or leaving current server.
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface UpdateRestriction {
+        UpdateRestrictions value() default UpdateRestrictions.NONE;
     }
 
     /**
@@ -134,6 +145,7 @@ public @interface Configurable {
      */
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
+    @Deprecated
     @interface ValueUpdateCallback {
 
         /**

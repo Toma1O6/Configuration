@@ -52,7 +52,7 @@ public class ConfigGroupScreen extends Screen {
             int y = viewportMin + 10 + j * 25 + offset;
             String configId = value.getConfigId();
             this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, Component.translatable("config.screen." + configId), this.font));
-            this.addRenderableWidget(Button.builder(ConfigEntryWidget.EDIT, btn -> {
+            this.addRenderableWidget(Button.builder(ConfigEntryWidget.OPEN, btn -> {
                 ConfigScreen screen = new ConfigScreen(configId, configId, value.getValueMap(), this);
                 minecraft.setScreen(screen);
             }).pos(DisplayAdapter.getValueX(posX, componentWidth), y).size(DisplayAdapter.getValueWidth(componentWidth), 20).build());

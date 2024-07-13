@@ -112,18 +112,18 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void writeBoolArray(String field, boolean[] values) {
+    public void writeBoolArray(String field, Boolean[] values) {
         writeKey(field);
-        for (boolean value : values) {
+        for (Boolean value : values) {
             writeArrayEntry(String.valueOf(value));
         }
         newLine();
     }
 
     @Override
-    public boolean[] readBoolArray(String field) throws ConfigValueMissingException {
+    public Boolean[] readBoolArray(String field) throws ConfigValueMissingException {
         String[] arr = this.getValueArray(field);
-        boolean[] res = new boolean[arr.length];
+        Boolean[] res = new Boolean[arr.length];
         for (int i = 0; i < arr.length; i++) {
             res[i] = Boolean.parseBoolean(arr[i]);
         }
@@ -131,18 +131,18 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void writeIntArray(String field, int[] values) {
+    public void writeIntArray(String field, Integer[] values) {
         writeKey(field);
-        for (int value : values) {
+        for (Integer value : values) {
             writeArrayEntry(String.valueOf(value));
         }
         newLine();
     }
 
     @Override
-    public int[] readIntArray(String field) throws ConfigValueMissingException {
+    public Integer[] readIntArray(String field) throws ConfigValueMissingException {
         String[] arr = this.getValueArray(field);
-        int[] res = new int[arr.length];
+        Integer[] res = new Integer[arr.length];
         for (int i = 0; i < arr.length; i++) {
             try {
                 res[i] = Integer.parseInt(arr[i]);
@@ -154,18 +154,18 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void writeLongArray(String field, long[] values) {
+    public void writeLongArray(String field, Long[] values) {
         writeKey(field);
-        for (long value : values) {
+        for (Long value : values) {
             writeArrayEntry(String.valueOf(value));
         }
         newLine();
     }
 
     @Override
-    public long[] readLongArray(String field) throws ConfigValueMissingException {
+    public Long[] readLongArray(String field) throws ConfigValueMissingException {
         String[] arr = this.getValueArray(field);
-        long[] res = new long[arr.length];
+        Long[] res = new Long[arr.length];
         for (int i = 0; i < arr.length; i++) {
             try {
                 res[i] = Long.parseLong(arr[i]);
@@ -177,18 +177,18 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void writeFloatArray(String field, float[] values) {
+    public void writeFloatArray(String field, Float[] values) {
         writeKey(field);
-        for (float value : values) {
+        for (Float value : values) {
             writeArrayEntry(String.valueOf(value));
         }
         newLine();
     }
 
     @Override
-    public float[] readFloatArray(String field) throws ConfigValueMissingException {
+    public Float[] readFloatArray(String field) throws ConfigValueMissingException {
         String[] arr = this.getValueArray(field);
-        float[] res = new float[arr.length];
+        Float[] res = new Float[arr.length];
         for (int i = 0; i < arr.length; i++) {
             try {
                 res[i] = Float.parseFloat(arr[i]);
@@ -200,18 +200,18 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void writeDoubleArray(String field, double[] values) {
+    public void writeDoubleArray(String field, Double[] values) {
         writeKey(field);
-        for (double value : values) {
+        for (Double value : values) {
             writeArrayEntry(String.valueOf(value));
         }
         newLine();
     }
 
     @Override
-    public double[] readDoubleArray(String field) throws ConfigValueMissingException {
+    public Double[] readDoubleArray(String field) throws ConfigValueMissingException {
         String[] arr = this.getValueArray(field);
-        double[] res = new double[arr.length];
+        Double[] res = new Double[arr.length];
         for (int i = 0; i < arr.length; i++) {
             try {
                 res[i] = Double.parseDouble(arr[i]);
@@ -372,11 +372,9 @@ public class YamlFormat implements IConfigFormat {
     @Override
     public void addComments(IDescriptionProvider provider) {
         String[] comments = provider.getDescription();
-        if (comments.length > 0) {
-            for (String comment : comments) {
-                spaces();
-                buffer.append("# ").append(comment).append("\n");
-            }
+        for (String comment : comments) {
+            spaces();
+            buffer.append("# ").append(comment).append("\n");
         }
     }
 
@@ -386,9 +384,7 @@ public class YamlFormat implements IConfigFormat {
 
     private void spaces(int nestIndex) {
         if (nestIndex > 0) {
-            for (int i = 0; i < nestIndex * 2; i++) {
-                buffer.append(" ");
-            }
+            buffer.append(" ".repeat(Math.max(0, nestIndex * 2)));
         }
     }
 

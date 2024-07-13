@@ -15,7 +15,7 @@ public class LongValue extends IntegerValue<Long> {
     }
 
     @Override
-    public Long getCorrectedValue(Long in) {
+    public Long validateValue(Long in) {
         if (this.range == null)
             return in;
         if (!this.range.isWithin(in)) {
@@ -33,7 +33,7 @@ public class LongValue extends IntegerValue<Long> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readLong(this.getId()));
+        this.setValue(format.readLong(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {

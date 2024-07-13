@@ -13,6 +13,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class ConfigurationNeoforge {
         eventBus.addListener(this::clientInit);
         eventBus.addListener(NeoforgeNetworkManager.INSTANCE::registerMessages);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
+        NeoForge.EVENT_BUS.addListener(this::serverStarted);
     }
 
     private void clientInit(FMLClientSetupEvent event) {
@@ -54,7 +56,12 @@ public class ConfigurationNeoforge {
         ConfigIO.FILE_WATCH_MANAGER.startService();
     }
 
+    private void serverStarted(ServerStartedEvent event) {
+        ConfigIO.serverStarted();
+    }
+
     private void serverStopping(ServerStoppingEvent event) {
         ConfigIO.FILE_WATCH_MANAGER.stop();
+        ConfigIO.serverStopping();
     }
 }

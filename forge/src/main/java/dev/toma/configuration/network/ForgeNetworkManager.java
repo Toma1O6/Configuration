@@ -19,7 +19,7 @@ public class ForgeNetworkManager implements NetworkManager {
     public static void registerMessages() {
         CHANNEL.messageBuilder(S2C_SendConfigDataMessage.class)
                 .codec(S2C_SendConfigDataMessage.CODEC)
-                .consumerMainThread((s2CSendConfigDataMessage, context) -> {})
+                .consumerMainThread((s2CSendConfigDataMessage, context) -> s2CSendConfigDataMessage.receive())
                 .add();
     }
 

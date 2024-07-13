@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public final class BooleanValue extends ConfigValue<Boolean> {
+public class BooleanValue extends ConfigValue<Boolean> {
 
     public BooleanValue(ValueData<Boolean> valueData) {
         super(valueData);
@@ -22,7 +22,7 @@ public final class BooleanValue extends ConfigValue<Boolean> {
     @Override
     public void deserialize(IConfigFormat format) throws ConfigValueMissingException {
         String field = this.getId();
-        this.set(format.readBoolean(field));
+        this.setValue(format.readBoolean(field));
     }
 
     public static class Adapter extends TypeAdapter {

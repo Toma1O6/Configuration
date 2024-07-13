@@ -9,6 +9,7 @@ import java.util.function.Supplier;
  * in for JSON configs or spacing/separators for Properties configs.
  *
  * @author Toma
+ * @since 2.0
  */
 public final class ConfigFormats {
 
@@ -17,71 +18,31 @@ public final class ConfigFormats {
     private static final String EXT_YAML = "yaml";
     private static final String EXT_PROPERTIES = "properties";
 
-    /**
-     * Creates new JSON config format handler with customized format settings.
-     *
-     * @param settings Settings to be used by this format
-     * @return new instance of config format handler for JSON configs
-     */
-    public static IConfigFormatHandler json(GsonFormat.Settings settings) {
-        return new SimpleFormatImpl(EXT_JSON, () -> new GsonFormat(settings));
-    }
+    // Formats
+    public static final IConfigFormatHandler JSON = new SimpleFormatImpl(EXT_JSON, GsonFormat::new);
+    public static final IConfigFormatHandler YAML = new SimpleFormatImpl(EXT_YAML, YamlFormat::new);
+    public static final IConfigFormatHandler PROPERTIES = new SimpleFormatImpl(EXT_PROPERTIES, PropertiesFormat::new);
 
-    /**
-     * Creates new JSON config format handler with default format settings.
-     *
-     * @return new instance of config format handler for JSON configs
-     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public static IConfigFormatHandler json() {
-        return json(new GsonFormat.Settings());
+        return JSON;
     }
 
-    /**
-     * Creates new YAML config format handler with default format settings
-     *
-     * @return new instance of config format handler for YAML configs
-     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public static IConfigFormatHandler yaml() {
-        return new SimpleFormatImpl(EXT_YAML, YamlFormat::new);
+        return YAML;
     }
 
-    /**
-     * Creates new Properties based config format handler with customized format settings
-     *
-     * @param settings Settings to be used by this format
-     * @return new instance of config format handler for Properties configs
-     */
-    public static IConfigFormatHandler properties(PropertiesFormat.Settings settings) {
-        return new SimpleFormatImpl(EXT_PROPERTIES, () -> new PropertiesFormat(settings));
-    }
-
-    /**
-     * Creates new Properties based config format handler with default format settings
-
-     * @return new instance of config format handler for Properties configs
-     */
+    @Deprecated(since = "3.0", forRemoval = true)
     public static IConfigFormatHandler properties() {
-        return properties(new PropertiesFormat.Settings());
+        return PROPERTIES;
     }
 
-    private static final class SimpleFormatImpl implements IConfigFormatHandler {
-
-        private final String extension;
-        private final Supplier<IConfigFormat> factory;
-
-        public SimpleFormatImpl(String extension, Supplier<IConfigFormat> factory) {
-            this.extension = extension;
-            this.factory = factory;
-        }
+    private record SimpleFormatImpl(String fileExt, Supplier<IConfigFormat> factory) implements IConfigFormatHandler {
 
         @Override
         public IConfigFormat createFormat() {
             return factory.get();
-        }
-
-        @Override
-        public String fileExt() {
-            return extension;
         }
     }
 }

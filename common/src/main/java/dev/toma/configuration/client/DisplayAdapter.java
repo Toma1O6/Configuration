@@ -226,33 +226,33 @@ public interface DisplayAdapter {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             BooleanArrayValue arrayValue = (BooleanArrayValue) value;
             BiConsumer<Boolean, Integer> setCallback = (val, i) -> {
-                boolean[] arr = arrayValue.get();
+                Boolean[] arr = arrayValue.get();
                 arr[i] = val;
-                arrayValue.set(arr);
+                arrayValue.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<boolean[], BooleanArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Boolean, BooleanArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
-                    boolean[] arr = arrayValue.get();
+                    Boolean[] arr = arrayValue.get();
                     return new BooleanValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Boolean.TYPE, setCallback, i)));
                 });
                 screen.addElement(() -> {
-                    boolean[] arr = arrayValue.get();
-                    boolean[] expanded = new boolean[arr.length + 1];
+                    Boolean[] arr = arrayValue.get();
+                    Boolean[] expanded = new Boolean[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
                     expanded[arr.length] = false;
-                    arrayValue.set(expanded);
+                    arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
-                    boolean[] arr = arrayValue.get();
-                    arrayValue.set(trimmer.trim(i, arr, new boolean[arr.length - 1]));
+                    Boolean[] arr = arrayValue.get();
+                    arrayValue.setValue(trimmer.trim(i, arr, new Boolean[arr.length - 1]));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -260,33 +260,33 @@ public interface DisplayAdapter {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             IntArrayValue arrayValue = (IntArrayValue) value;
             BiConsumer<Integer, Integer> setCallback = (val, i) -> {
-                int[] arr = arrayValue.get();
+                Integer[] arr = arrayValue.get();
                 arr[i] = val;
-                arrayValue.set(arr);
+                arrayValue.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<int[], IntArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Integer, IntArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
-                    int[] arr = arrayValue.get();
+                    Integer[] arr = arrayValue.get();
                     return new IntValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Integer.TYPE, setCallback, i)));
                 });
                 screen.addElement(() -> {
-                    int[] arr = arrayValue.get();
-                    int[] expanded = new int[arr.length + 1];
+                    Integer[] arr = arrayValue.get();
+                    Integer[] expanded = new Integer[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
                     expanded[arr.length] = Math.max((int) arrayValue.getRange().min(), 0);
-                    arrayValue.set(expanded);
+                    arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
-                    int[] arr = arrayValue.get();
-                    arrayValue.set(trimmer.trim(i, arr, new int[arr.length - 1]));
+                    Integer[] arr = arrayValue.get();
+                    arrayValue.setValue(trimmer.trim(i, arr, new Integer[arr.length - 1]));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -294,33 +294,33 @@ public interface DisplayAdapter {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             LongArrayValue arrayValue = (LongArrayValue) value;
             BiConsumer<Long, Integer> setCallback = (val, i) -> {
-                long[] arr = arrayValue.get();
+                Long[] arr = arrayValue.get();
                 arr[i] = val;
-                arrayValue.set(arr);
+                arrayValue.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<long[], LongArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Long, LongArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
-                    long[] arr = arrayValue.get();
+                    Long[] arr = arrayValue.get();
                     return new LongValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Long.TYPE, setCallback, i)));
                 });
                 screen.addElement(() -> {
-                    long[] arr = arrayValue.get();
-                    long[] expanded = new long[arr.length + 1];
+                    Long[] arr = arrayValue.get();
+                    Long[] expanded = new Long[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
                     expanded[arr.length] = Math.max(arrayValue.getRange().min(), 0);
-                    arrayValue.set(expanded);
+                    arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
-                    long[] arr = arrayValue.get();
-                    arrayValue.set(trimmer.trim(i, arr, new long[arr.length - 1]));
+                    Long[] arr = arrayValue.get();
+                    arrayValue.setValue(trimmer.trim(i, arr, new Long[arr.length - 1]));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -328,33 +328,33 @@ public interface DisplayAdapter {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             FloatArrayValue arrayValue = (FloatArrayValue) value;
             BiConsumer<Float, Integer> setCallback = (val, i) -> {
-                float[] arr = arrayValue.get();
+                Float[] arr = arrayValue.get();
                 arr[i] = val;
-                arrayValue.set(arr);
+                arrayValue.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<float[], FloatArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Float, FloatArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
-                    float[] arr = arrayValue.get();
+                    Float[] arr = arrayValue.get();
                     return new FloatValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Float.TYPE, setCallback, i)));
                 });
                 screen.addElement(() -> {
-                    float[] arr = arrayValue.get();
-                    float[] expanded = new float[arr.length + 1];
+                    Float[] arr = arrayValue.get();
+                    Float[] expanded = new Float[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
                     expanded[arr.length] = Math.max((float) arrayValue.getRange().min(), 0);
-                    arrayValue.set(expanded);
+                    arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
-                    float[] arr = arrayValue.get();
-                    arrayValue.set(trimmer.trim(i, arr, new float[arr.length - 1]));
+                    Float[] arr = arrayValue.get();
+                    arrayValue.setValue(trimmer.trim(i, arr, new Float[arr.length - 1]));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -362,33 +362,33 @@ public interface DisplayAdapter {
         return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             DoubleArrayValue arrayValue = (DoubleArrayValue) value;
             BiConsumer<Double, Integer> setCallback = (val, i) -> {
-                double[] arr = arrayValue.get();
+                Double[] arr = arrayValue.get();
                 arr[i] = val;
-                arrayValue.set(arr);
+                arrayValue.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<double[], DoubleArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Double, DoubleArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
-                    double[] arr = arrayValue.get();
+                    Double[] arr = arrayValue.get();
                     return new DoubleValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Double.TYPE, setCallback, i)));
                 });
                 screen.addElement(() -> {
-                    double[] arr = arrayValue.get();
-                    double[] expanded = new double[arr.length + 1];
+                    Double[] arr = arrayValue.get();
+                    Double[] expanded = new Double[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
                     expanded[arr.length] = Math.max(arrayValue.getRange().min(), 0);
-                    arrayValue.set(expanded);
+                    arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
-                    double[] arr = arrayValue.get();
-                    arrayValue.set(trimmer.trim(i, arr, new double[arr.length - 1]));
+                    Double[] arr = arrayValue.get();
+                    arrayValue.setValue(trimmer.trim(i, arr, new Double[arr.length - 1]));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -398,12 +398,12 @@ public interface DisplayAdapter {
             BiConsumer<String, Integer> setCallback = (val, i) -> {
                 String[] arr = arrayValue.get();
                 arr[i] = val;
-                arrayValue.set(arr);
+                arrayValue.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<String[], StringArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<String, StringArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     String[] arr = arrayValue.get();
@@ -413,16 +413,16 @@ public interface DisplayAdapter {
                     String[] arr = arrayValue.get();
                     String[] expanded = new String[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
-                    expanded[arr.length] = arrayValue.getDefaultElementValue();
-                    arrayValue.set(expanded);
+                    expanded[arr.length] = arrayValue.createElementInstance();
+                    arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
                     String[] arr = arrayValue.get();
-                    arrayValue.set(trimmer.trim(i, arr, new String[arr.length - 1]));
+                    arrayValue.setValue(trimmer.trim(i, arr, new String[arr.length - 1]));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -439,12 +439,12 @@ public interface DisplayAdapter {
             BiConsumer<E, Integer> setCallback = (val, i) -> {
                 E[] arr = enumArray.get();
                 arr[i] = val;
-                enumArray.set(arr);
+                enumArray.setValue(arr);
             };
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<E[], EnumArrayValue<E>> screen = new ArrayConfigScreen<>(value.getId(), configId, enumArray, usedScreen);
+                ArrayConfigScreen<E, EnumArrayValue<E>> screen = new ArrayConfigScreen<>(value.getId(), configId, enumArray, usedScreen);
                 screen.fetchSize(() -> enumArray.get().length);
                 screen.valueFactory((id, i) -> {
                     E[] arr = enumArray.get();
@@ -456,16 +456,16 @@ public interface DisplayAdapter {
                     E[] expanded = (E[]) Array.newInstance(type, arr.length + 1);
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
                     expanded[arr.length] = type.getEnumConstants()[0];
-                    enumArray.set(expanded);
+                    enumArray.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
                     E[] arr = enumArray.get();
                     Class<E> type = (Class<E>) enumArray.getValueType().getComponentType();
-                    enumArray.set(trimmer.trim(i, arr, (E[]) Array.newInstance(type, arr.length - 1)));
+                    enumArray.setValue(trimmer.trim(i, arr, (E[]) Array.newInstance(type, arr.length - 1)));
                 });
                 client.setScreen(screen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 
@@ -479,7 +479,7 @@ public interface DisplayAdapter {
                 Screen nestedConfigScreen = new ConfigScreen(container.getComponentName(), configId, valueMap, currentScreen);
                 client.setScreen(nestedConfigScreen);
             };
-            return Button.builder(ConfigEntryWidget.EDIT, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
+            return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();
         });
     }
 

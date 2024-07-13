@@ -6,232 +6,146 @@ import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IDescriptionProvider;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.IntFunction;
 
 public final class PropertiesFormat implements IConfigFormat {
 
-    private final Settings settings;
-    private final StringBuilder buffer;
-    private final String prefix;
-    private final Map<String, String> parsed;
+    public static final String DELIMITER = ",";
 
-    public PropertiesFormat(Settings settings) {
-        this(null, new StringBuilder(), settings);
-    }
-
-    private PropertiesFormat(String prefix, StringBuilder bufferRef, Settings settings) {
-        this(prefix, bufferRef, new HashMap<>(), settings);
-    }
-
-    private PropertiesFormat(String prefix, StringBuilder bufferRef, Map<String, String> parsed, Settings settings) {
-        this.prefix = prefix;
-        this.buffer = bufferRef;
-        this.parsed = parsed;
-        this.settings = settings;
-    }
+    private final Properties properties = new Properties();
+    private LinkedList<String> prefixes = new LinkedList<>();
+    private int nestingLevel;
 
     @Override
     public void writeBoolean(String field, boolean value) {
-        this.writePair(field, String.valueOf(value));
+        this.write(field, String.valueOf(value));
     }
 
     @Override
     public boolean readBoolean(String field) throws ConfigValueMissingException {
-        return this.parse(field, Boolean::parseBoolean);
+        return this.read(field, Boolean::parseBoolean);
     }
 
     @Override
     public void writeChar(String field, char value) {
-        this.writePair(field, String.valueOf(value));
+        this.write(field, String.valueOf(value));
     }
 
     @Override
     public char readChar(String field) throws ConfigValueMissingException {
-        return this.parse(field, s -> s.charAt(0));
+        return this.read(field, s -> s.charAt(0));
     }
 
     @Override
     public void writeInt(String field, int value) {
-        this.writePair(field, String.valueOf(value));
+        this.write(field, String.valueOf(value));
     }
 
     @Override
     public int readInt(String field) throws ConfigValueMissingException {
-        return this.parse(field, Integer::parseInt);
+        return this.read(field, Integer::parseInt);
     }
 
     @Override
     public void writeLong(String field, long value) {
-        this.writePair(field, String.valueOf(value));
+        this.write(field, String.valueOf(value));
     }
 
     @Override
     public long readLong(String field) throws ConfigValueMissingException {
-        return this.parse(field, Long::parseLong);
+        return this.read(field, Long::parseLong);
     }
 
     @Override
     public void writeFloat(String field, float value) {
-        this.writePair(field, String.valueOf(value));
+        this.write(field, String.valueOf(value));
     }
 
     @Override
     public float readFloat(String field) throws ConfigValueMissingException {
-        return this.parse(field, Float::parseFloat);
+        return this.read(field, Float::parseFloat);
     }
 
     @Override
     public void writeDouble(String field, double value) {
-        this.writePair(field, String.valueOf(value));
+        this.write(field, String.valueOf(value));
     }
 
     @Override
     public double readDouble(String field) throws ConfigValueMissingException {
-        return this.parse(field, Double::parseDouble);
+        return this.read(field, Double::parseDouble);
     }
 
     @Override
     public void writeString(String field, String value) {
-        this.writePair(field, value);
+        this.write(field, value);
     }
 
     @Override
     public String readString(String field) throws ConfigValueMissingException {
-        return this.parse(field, Function.identity());
+        return this.read(field, Function.identity());
     }
 
     @Override
-    public void writeBoolArray(String field, boolean[] values) {
-        String[] strings = new String[values.length];
-        int i = 0;
-        for (boolean value : values) {
-            strings[i++] = String.valueOf(value);
-        }
-        this.writePair(field, String.join(settings.arraySeparator, strings));
+    public void writeBoolArray(String field, Boolean[] values) {
+        this.writeArray(field, values);
     }
 
     @Override
-    public boolean[] readBoolArray(String field) throws ConfigValueMissingException {
-        String[] strings = this.getStringArray(field);
-        boolean[] values = new boolean[strings.length];
-        int i = 0;
-        for (String string : strings) {
-            try {
-                values[i++] = Boolean.parseBoolean(string);
-            } catch (Exception e) {
-                throw new ConfigValueMissingException("Invalid value: " + string);
-            }
-        }
-        return values;
+    public Boolean[] readBoolArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Boolean[]::new, IConfigFormat::parseBoolean);
     }
 
     @Override
-    public void writeIntArray(String field, int[] values) {
-        String[] strings = new String[values.length];
-        int i = 0;
-        for (int value : values) {
-            strings[i++] = String.valueOf(value);
-        }
-        this.writePair(field, String.join(settings.arraySeparator, strings));
+    public void writeIntArray(String field, Integer[] values) {
+        this.writeArray(field, values);
     }
 
     @Override
-    public int[] readIntArray(String field) throws ConfigValueMissingException {
-        String[] strings = this.getStringArray(field);
-        int[] values = new int[strings.length];
-        int i = 0;
-        for (String string : strings) {
-            try {
-                values[i++] = Integer.parseInt(string);
-            } catch (Exception e) {
-                throw new ConfigValueMissingException("Invalid value: " + string);
-            }
-        }
-        return values;
+    public Integer[] readIntArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Integer[]::new, IConfigFormat::parseInteger);
     }
 
     @Override
-    public void writeLongArray(String field, long[] values) {
-        String[] strings = new String[values.length];
-        int i = 0;
-        for (long value : values) {
-            strings[i++] = String.valueOf(value);
-        }
-        this.writePair(field, String.join(settings.arraySeparator, strings));
+    public void writeLongArray(String field, Long[] values) {
+        this.writeArray(field, values);
     }
 
     @Override
-    public long[] readLongArray(String field) throws ConfigValueMissingException {
-        String[] strings = this.getStringArray(field);
-        long[] values = new long[strings.length];
-        int i = 0;
-        for (String string : strings) {
-            try {
-                values[i++] = Long.parseLong(string);
-            } catch (Exception e) {
-                throw new ConfigValueMissingException("Invalid value: " + string);
-            }
-        }
-        return values;
+    public Long[] readLongArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Long[]::new, IConfigFormat::parseLong);
     }
 
     @Override
-    public void writeFloatArray(String field, float[] values) {
-        String[] strings = new String[values.length];
-        int i = 0;
-        for (float value : values) {
-            strings[i++] = String.valueOf(value);
-        }
-        this.writePair(field, String.join(settings.arraySeparator, strings));
+    public void writeFloatArray(String field, Float[] values) {
+        this.writeArray(field, values);
     }
 
     @Override
-    public float[] readFloatArray(String field) throws ConfigValueMissingException {
-        String[] strings = this.getStringArray(field);
-        float[] values = new float[strings.length];
-        int i = 0;
-        for (String string : strings) {
-            try {
-                values[i++] = Float.parseFloat(string);
-            } catch (Exception e) {
-                throw new ConfigValueMissingException("Invalid value: " + string);
-            }
-        }
-        return values;
+    public Float[] readFloatArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Float[]::new, IConfigFormat::parseFloat);
     }
 
     @Override
-    public void writeDoubleArray(String field, double[] values) {
-        String[] strings = new String[values.length];
-        int i = 0;
-        for (double value : values) {
-            strings[i++] = String.valueOf(value);
-        }
-        this.writePair(field, String.join(settings.arraySeparator, strings));
+    public void writeDoubleArray(String field, Double[] values) {
+        this.writeArray(field, values);
     }
 
     @Override
-    public double[] readDoubleArray(String field) throws ConfigValueMissingException {
-        String[] strings = this.getStringArray(field);
-        double[] values = new double[strings.length];
-        int i = 0;
-        for (String string : strings) {
-            try {
-                values[i++] = Double.parseDouble(string);
-            } catch (Exception e) {
-                throw new ConfigValueMissingException("Invalid value: " + string);
-            }
-        }
-        return values;
+    public Double[] readDoubleArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Double[]::new, IConfigFormat::parseDouble);
     }
 
     @Override
     public void writeStringArray(String field, String[] values) {
-        this.writePair(field, String.join(settings.arraySeparator, values));
+        this.writeArray(field, values);
     }
 
     @Override
@@ -241,109 +155,86 @@ public final class PropertiesFormat implements IConfigFormat {
 
     @Override
     public <E extends Enum<E>> void writeEnum(String field, E value) {
-        this.writePair(field, value.name());
+        this.write(field, value.name());
     }
 
     @Override
     public <E extends Enum<E>> E readEnum(String field, Class<E> enumClass) throws ConfigValueMissingException {
-        return ConfigUtils.getEnumConstant(this.getValue(field), enumClass);
+        return ConfigUtils.getEnumConstant(this.readString(field), enumClass);
     }
 
     @Override
     public <E extends Enum<E>> void writeEnumArray(String field, E[] value) {
         String[] strings = Arrays.stream(value).map(Enum::name).toArray(String[]::new);
-        writeStringArray(field, strings);
+        this.writeArray(field, strings);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <E extends Enum<E>> E[] readEnumArray(String field, Class<E> enumClass) throws ConfigValueMissingException {
-        String[] strings = readStringArray(field);
-        E[] arr = (E[]) Array.newInstance(enumClass, strings.length);
-        for (int i = 0; i < strings.length; i++) {
-            arr[i] = ConfigUtils.getEnumConstant(strings[i], enumClass);
-        }
-        return arr;
+        return this.readArray(field, len -> (E[]) Array.newInstance(enumClass, len), name -> ConfigUtils.getEnumConstant(name, enumClass));
     }
 
     @Override
     public void writeMap(String field, Map<String, ConfigValue<?>> value) {
-        String prefix = this.prefix != null ? this.prefix + "." + field : field;
-        PropertiesFormat format = new PropertiesFormat(prefix, this.buffer, this.settings);
-        value.values().forEach(val -> val.serializeValue(format));
+        this.push(field);
+        for (Map.Entry<String, ConfigValue<?>> entry : value.entrySet()) {
+            entry.getValue().serializeValue(this);
+        }
+        this.pop();
     }
 
     @Override
     public void readMap(String field, Collection<ConfigValue<?>> values) throws ConfigValueMissingException {
-        Set<String> validElements = this.parsed.keySet()
-                .stream()
-                .filter(key -> {
-                    String[] strings = key.split("\\.", 2);
-                    if (strings.length < 2) {
-                        return false;
-                    }
-                    String prefix = strings[0];
-                    return prefix.equals(field);
-                })
-                .collect(Collectors.toSet());
-        Map<String, String> parsed = new HashMap<>();
-        for (String key : validElements) {
-            String s = key.split("\\.", 2)[1];
-            parsed.put(s, this.getValue(key));
-        }
-        PropertiesFormat format = new PropertiesFormat(this.prefix, this.buffer, parsed, this.settings);
+        this.push(field);
         for (ConfigValue<?> value : values) {
-            value.deserializeValue(format);
+            value.deserializeValue(this);
         }
+        this.pop();
     }
 
     @Override
     public void readFile(File file) throws IOException, ConfigReadException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String filtered = line.replaceAll("#.+$", "");
-                boolean isPair = filtered.contains("=");
-                String[] components = filtered.split("=");
-                if (components.length != 2) {
-                    if (isPair) {
-                        parsed.put(components[0], "");
-                    }
-                    continue;
-                }
-                parsed.put(components[0], components[1]);
-            }
+        try (FileReader reader = new FileReader(file)) {
+            this.properties.load(reader);
         }
     }
 
     @Override
     public void writeFile(File file) throws IOException {
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(this.buffer.toString());
-        }
+        this.properties.store(new FileOutputStream(file), null);
     }
 
     @Override
     public void addComments(IDescriptionProvider provider) {
-        String[] comments = provider.getDescription();
-        if (comments.length == 0) {
-            return;
-        }
-        for (String string : comments) {
-            this.buffer.append("# ").append(string).append("\n");
-        }
     }
 
-    private String getValue(String field) throws ConfigValueMissingException {
-        String res = this.parsed.get(field);
-        if (res == null) {
-            throw new ConfigValueMissingException("Missing value " + field);
-        }
-        return res;
+    private String getKey(String field) {
+        String prefix = this.getPrefix();
+        return prefix + field;
     }
 
-    private <T> T parse(String s, Function<String, T> parser) throws ConfigValueMissingException {
-        String val = this.getValue(s);
+    private String getPrefix() {
+        if (this.prefixes.isEmpty()) {
+            return "";
+        }
+        return String.join(".", this.prefixes) + ".";
+    }
+
+    private void push(String field) {
+        this.prefixes.addLast(field);
+    }
+
+    private void pop() {
+        this.prefixes.removeLast();
+    }
+
+    private <T> T read(String s, Function<String, T> parser) throws ConfigValueMissingException {
+        String key = this.getKey(s);
+        String val = this.properties.getProperty(key);
+        if (val == null) {
+            throw new ConfigValueMissingException("Missing value " + key);
+        }
         try {
             return parser.apply(val);
         } catch (Exception e) {
@@ -351,51 +242,31 @@ public final class PropertiesFormat implements IConfigFormat {
         }
     }
 
-    private void writePair(String field, String value) {
-        if (this.prefix != null) {
-            this.buffer.append(this.prefix).append(".");
+    private void write(String field, String value) {
+        String key = this.getKey(field);
+        this.properties.setProperty(key, value);
+    }
+
+    private <T> void writeArray(String field, T[] values) {
+        String[] asString = Arrays.stream(values).map(String::valueOf).toArray(String[]::new);
+        this.writeArray(field, asString);
+    }
+
+    private void writeArray(String field, String[] values) {
+        this.write(field, String.join(DELIMITER, values));
+    }
+
+    private <T> T[] readArray(String field, IntFunction<T[]> factory, IConfigFormat.ValueDecoder<T> decoder) throws ConfigValueMissingException {
+        String[] strings = this.getStringArray(field);
+        T[] values = factory.apply(strings.length);
+        for (int i = 0; i < strings.length; i++) {
+            values[i] = decoder.decode(strings[i]);
         }
-        this.buffer.append(field).append("=").append(value);
-        for (int i = 0; i < settings.newlines; i++) {
-            this.buffer.append("\n");
-        }
+        return values;
     }
 
     private String[] getStringArray(String field) throws ConfigValueMissingException {
-        String value = this.getValue(field);
-        return value.split(this.settings.arraySeparator);
-    }
-
-    /**
-     * Settings holder for JSON configs
-     *
-     * @author Toma
-     */
-    public static final class Settings {
-
-        private String arraySeparator = ";";
-        private int newlines = 1;
-
-        /**
-         * Allows you to configure custom separator used for arrays in case the default
-         * one is causing issues
-         *
-         * @param arraySeparator Nonnull separator to be used
-         * @return This instance
-         */
-        public Settings arraySeparator(String arraySeparator) {
-            this.arraySeparator = Objects.requireNonNull(arraySeparator);
-            return this;
-        }
-
-        /**
-         * Specifies amount of newlines after each value (Not comments)
-         * @param count Count of newlines
-         * @return This instance
-         */
-        public Settings newlines(int count) {
-            this.newlines = Math.max(1, count);
-            return this;
-        }
+        String value = this.read(field, Function.identity());
+        return value.split(DELIMITER);
     }
 }

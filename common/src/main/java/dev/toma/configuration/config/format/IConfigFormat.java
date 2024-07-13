@@ -45,25 +45,25 @@ public interface IConfigFormat {
 
     String readString(String field) throws ConfigValueMissingException;
 
-    void writeBoolArray(String field, boolean[] values);
+    void writeBoolArray(String field, Boolean[] values);
 
-    boolean[] readBoolArray(String field) throws ConfigValueMissingException;
+    Boolean[] readBoolArray(String field) throws ConfigValueMissingException;
 
-    void writeIntArray(String field, int[] values);
+    void writeIntArray(String field, Integer[] values);
 
-    int[] readIntArray(String field) throws ConfigValueMissingException;
+    Integer[] readIntArray(String field) throws ConfigValueMissingException;
 
-    void writeLongArray(String field, long[] values);
+    void writeLongArray(String field, Long[] values);
 
-    long[] readLongArray(String field) throws ConfigValueMissingException;
+    Long[] readLongArray(String field) throws ConfigValueMissingException;
 
-    void writeFloatArray(String field, float[] values);
+    void writeFloatArray(String field, Float[] values);
 
-    float[] readFloatArray(String field) throws ConfigValueMissingException;
+    Float[] readFloatArray(String field) throws ConfigValueMissingException;
 
-    void writeDoubleArray(String field, double[] values);
+    void writeDoubleArray(String field, Double[] values);
 
-    double[] readDoubleArray(String field) throws ConfigValueMissingException;
+    Double[] readDoubleArray(String field) throws ConfigValueMissingException;
 
     void writeStringArray(String field, String[] values);
 
@@ -86,4 +86,65 @@ public interface IConfigFormat {
     void writeFile(File file) throws IOException;
 
     void addComments(IDescriptionProvider provider);
+
+    static Boolean parseBoolean(String string) throws ConfigValueMissingException {
+        try {
+            return Boolean.parseBoolean(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException(string);
+        }
+    }
+
+    static Byte parseByte(String string) throws ConfigValueMissingException {
+        try {
+            return Byte.parseByte(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException(string);
+        }
+    }
+
+    static Short parseShort(String string) throws ConfigValueMissingException {
+        try {
+            return Short.parseShort(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException(string);
+        }
+    }
+
+    static Integer parseInteger(String string) throws ConfigValueMissingException {
+        try {
+            return Integer.parseInt(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException(string);
+        }
+    }
+
+    static Long parseLong(String string) throws ConfigValueMissingException {
+        try {
+            return Long.parseLong(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException(string);
+        }
+    }
+
+    static Float parseFloat(String string) throws ConfigValueMissingException {
+        try {
+            return Float.parseFloat(string);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException(string);
+        }
+    }
+
+    static Double parseDouble(String value) throws ConfigValueMissingException {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            throw new ConfigValueMissingException("Could not parse double value: " + value);
+        }
+    }
+
+    @FunctionalInterface
+    interface ValueDecoder<T> {
+        T decode(String field) throws ConfigValueMissingException;
+    }
 }

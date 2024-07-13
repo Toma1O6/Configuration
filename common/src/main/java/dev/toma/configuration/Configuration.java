@@ -1,28 +1,51 @@
 package dev.toma.configuration;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.service.ServiceHelper;
 import dev.toma.configuration.service.services.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
 
 public final class Configuration {
 
-    public static final String MODID = "configuration";
+    @ApiStatus.Internal
     public static final Logger LOGGER = LogManager.getLogger("Configuration");
+    @ApiStatus.Internal
     public static final Platform PLATFORM = ServiceHelper.loadService(Platform.class);
+    public static final String MODID = "configuration";
 
+    @ApiStatus.Internal
     public static void setup() {
         if (PLATFORM.isDevelopmentEnvironment()) {
-            registerConfig(TestingConfig.class, ConfigFormats.yaml());
+            registerConfig(TestingConfig.class, ConfigFormats.YAML);
         }
+    }
+
+    /**
+     * Codec for obtaining config holder by config ID. Could be useful for datapack config value reading for example.
+     * @since 3.0
+     */
+    public static final Codec<ConfigHolder<?>> BY_ID_CODEC = Codec.STRING.comapFlatMap(
+            id -> {
+                Optional<ConfigHolder<Object>> optional = getConfig(id);
+                return optional.map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Unknown config ID '" + id + "'"));
+            },
+            ConfigHolder::getConfigId
+    );
+
+    public static <T> Codec<IConfigValue<T>> fieldCodec(Class<T> type) {
+        throw new UnsupportedOperationException("Not implemented"); // TODO
     }
 
     /**

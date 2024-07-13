@@ -17,6 +17,7 @@ public final class ConfigIO {
 
     public static final Marker MARKER = MarkerManager.getMarker("IO");
     public static final FileWatchManager FILE_WATCH_MANAGER = new FileWatchManager();
+    private static ConfigEnvironment environment = ConfigEnvironment.LOADING;
 
     public static void processConfig(ConfigHolder<?> holder) {
         Configuration.LOGGER.debug(MARKER, "Starting processing of config {}", holder.getConfigId());
@@ -52,6 +53,7 @@ public final class ConfigIO {
     public static void saveClientValues(ConfigHolder<?> configHolder) {
         processSafely(configHolder, () -> {
             try {
+                configHolder.save();
                 writeConfig(configHolder);
             } catch (IOException e) {
                 Configuration.LOGGER.error(MARKER, "Failed to write config file {}", configHolder.getConfigId());
@@ -79,6 +81,7 @@ public final class ConfigIO {
         try {
             format.readFile(file);
             holder.values().forEach(value -> value.deserializeValue(format));
+            holder.save();
         } catch (ConfigReadException e) {
             Configuration.LOGGER.error(MARKER, "Config read failed, using default values", e);
         }
@@ -106,5 +109,28 @@ public final class ConfigIO {
         IConfigFormatHandler handler = holder.getFormat();
         String filename = holder.getFilename();
         return new File("./config/" + filename + "." + handler.fileExt());
+    }
+
+    public static void serverStarted() {
+        setEnvironment(ConfigEnvironment.PLAYING);
+    }
+
+    public static void serverStopping() {
+        setEnvironment(ConfigEnvironment.MENU);
+    }
+
+    public static ConfigEnvironment getEnvironment() {
+        return environment;
+    }
+
+    public static void setEnvironment(ConfigEnvironment environment) {
+        ConfigIO.environment = environment;
+        Configuration.LOGGER.debug(MARKER, "Setting configuration environment to {}", environment);
+    }
+
+    public enum ConfigEnvironment {
+        LOADING,
+        MENU,
+        PLAYING
     }
 }

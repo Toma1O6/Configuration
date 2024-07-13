@@ -1,52 +1,98 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.UpdateRestrictions;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.io.ConfigIO;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
-public abstract class ConfigValue<T> implements Supplier<T> {
+public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     protected final ValueData<T> valueData;
-    private T value;
+    private T pendingValue;
+    private T activeValue;
     private boolean synchronizeToClient;
+    private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
     private SetValueCallback<T> setValueCallback;
 
     public ConfigValue(ValueData<T> valueData) {
         this.valueData = valueData;
-        this.useDefaultValue();
+        this.forceSetValue(this.valueData.getDefaultValue());
     }
 
     @Override
-    public final T get() {
-        return value;
+    public T get(Mode mode) {
+        if (this.pendingValue == null) {
+            return this.activeValue;
+        }
+        return mode == Mode.SAVED ? this.activeValue : this.pendingValue;
+    }
+
+    @Override
+    public boolean isChanged() {
+        return this.pendingValue != null && this.isChanged(this.activeValue, this.pendingValue);
+    }
+
+    @Override
+    public boolean isChangedFromDefault() {
+        T t = this.get();
+        return this.isChanged(t, this.valueData.getDefaultValue());
+    }
+
+    @Override
+    public void save() {
+        ConfigIO.ConfigEnvironment environment = ConfigIO.getEnvironment();
+        if (this.pendingValue != null && this.updateRestriction.canApplyChangeInEnvironment(environment)) {
+            this.forceSetValue(this.pendingValue);
+            this.pendingValue = null;
+        }
     }
 
     public final boolean shouldSynchronize() {
         return synchronizeToClient;
     }
 
-    public final void set(T value) {
-        T corrected = this.getCorrectedValue(value);
-        if (corrected == null) {
-            this.useDefaultValue();
-            corrected = this.get();
-        }
-        this.value = corrected;
+    @Override
+    public final void setValue(T value) {
+        this.pendingValue = value;
+    }
+
+    @Override
+    public final boolean isEditable() {
+        ConfigIO.ConfigEnvironment environment = ConfigIO.getEnvironment();
+        return this.updateRestriction.isEditableInEnvironment(environment);
+    }
+
+    public final void forceSetValue(T value) {
+        T corrected = this.validateType(value);
+        this.activeValue = corrected;
         this.valueData.setValueToMemory(corrected);
+    }
+
+    public final void forceSetDefaultValue() {
+        this.forceSetValue(this.valueData.getDefaultValue());
+    }
+
+    public final T validateType(T in) {
+        T corrected = this.validateValue(in);
+        if (corrected == null) {
+            corrected = this.valueData.getDefaultValue();
+        }
+        return corrected;
     }
 
     public final void setWithValidationHandler(T value, IValidationHandler handler) {
         this.invokeValueValidator(value, handler);
-        this.set(value);
+        this.setValue(value);
     }
 
     public final String getId() {
@@ -58,20 +104,30 @@ public abstract class ConfigValue<T> implements Supplier<T> {
     }
 
     public final void processFieldData(Field field) {
-        this.synchronizeToClient = field.getAnnotation(Configurable.Synchronized.class) != null;
+        this.synchronizeToClient = field.isAnnotationPresent(Configurable.Synchronized.class);
+        Configurable.UpdateRestriction restriction = field.getAnnotation(Configurable.UpdateRestriction.class);
+        if (restriction != null) {
+            this.updateRestriction = restriction.value();
+            if (this.updateRestriction == UpdateRestrictions.GAME_RESTART && this.synchronizeToClient) {
+                throw new IllegalArgumentException("Config value which can be updated only on game restart cannot be synchronized!");
+            }
+        }
+        if (this.synchronizeToClient) {
+            this.updateRestriction = UpdateRestrictions.MAIN_MENU;
+        }
         this.readFieldData(field);
+    }
+
+    protected boolean isChanged(T saved, T pending) {
+        return !saved.equals(pending);
     }
 
     protected void readFieldData(Field field) {
 
     }
 
-    protected T getCorrectedValue(T in) {
+    protected T validateValue(T in) {
         return in;
-    }
-
-    public final void useDefaultValue() {
-        this.set(this.valueData.getDefaultValue());
     }
 
     public void setValueValidator(SetValueCallback<T> callback) {
@@ -101,7 +157,7 @@ public abstract class ConfigValue<T> implements Supplier<T> {
         try {
             this.deserialize(format);
         } catch (ConfigValueMissingException e) {
-            this.useDefaultValue();
+            this.forceSetValue(this.valueData.getDefaultValue());
             ConfigUtils.logCorrectedMessage(this.getId(), null, this.get());
         }
     }
@@ -126,12 +182,12 @@ public abstract class ConfigValue<T> implements Supplier<T> {
             paths.add(parent.getId());
         }
         Collections.reverse(paths);
-        return paths.stream().reduce("$", (a, b) -> a + "." + b);
+        return paths.stream().reduce("", (a, b) -> a + "." + b);
     }
 
     @Override
     public String toString() {
-        return this.value.toString();
+        return this.activeValue.toString();
     }
 
     @FunctionalInterface

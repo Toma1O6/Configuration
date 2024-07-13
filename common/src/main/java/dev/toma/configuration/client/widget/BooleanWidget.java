@@ -56,7 +56,7 @@ public class BooleanWidget extends AbstractWidget {
     }
 
     private void setState(boolean state) {
-        this.value.set(state);
+        this.value.setValue(state);
         this.readState();
     }
 }

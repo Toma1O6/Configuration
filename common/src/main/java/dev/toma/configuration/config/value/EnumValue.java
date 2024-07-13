@@ -18,7 +18,7 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readEnum(this.getId(), getValueType()));
+        this.setValue(format.readEnum(this.getId(), getValueType()));
     }
 
     public static final class Adapter<E extends Enum<E>> extends TypeAdapter {

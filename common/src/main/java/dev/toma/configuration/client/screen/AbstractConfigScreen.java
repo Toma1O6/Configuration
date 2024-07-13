@@ -125,7 +125,7 @@ public abstract class AbstractConfigScreen extends Screen {
             if (val instanceof ObjectValue objVal) {
                 this.revertToDefault(objVal.get().values());
             } else {
-                val.useDefaultValue();
+                val.forceSetDefaultValue(); // TODO revise
             }
         });
     }

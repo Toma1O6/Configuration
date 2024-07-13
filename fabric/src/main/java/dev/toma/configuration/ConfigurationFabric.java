@@ -14,7 +14,9 @@ public class ConfigurationFabric implements ModInitializer {
             if (server instanceof DedicatedServer) {
                 ConfigIO.FILE_WATCH_MANAGER.stop();
             }
+            ConfigIO.serverStopping();
         });
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> ConfigIO.serverStarted());
     }
 
     @Override

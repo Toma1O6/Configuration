@@ -6,6 +6,7 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.network.ForgeNetworkManager;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
@@ -31,6 +32,7 @@ public class ConfigurationForge {
 
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
         eventBus.addListener(this::serverStopping);
+        eventBus.addListener(this::serverStarting);
     }
 
     private void init(FMLCommonSetupEvent event) {
@@ -38,8 +40,13 @@ public class ConfigurationForge {
         ForgeNetworkManager.registerMessages();
     }
 
+    private void serverStarting(ServerStartedEvent event) {
+        ConfigIO.serverStarted();
+    }
+
     private void serverStopping(ServerStoppingEvent event) {
         ConfigIO.FILE_WATCH_MANAGER.stop();
+        ConfigIO.serverStopping();
     }
 
     private void clientInit(FMLClientSetupEvent event) {

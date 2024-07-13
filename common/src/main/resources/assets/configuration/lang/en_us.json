@@ -1,7 +1,7 @@
 {
-  "text.configuration.value.true": "True",
-  "text.configuration.value.false": "False",
-  "text.configuration.value.edit": "Edit",
+  "text.configuration.value.true": "Enabled",
+  "text.configuration.value.false": "Disabled",
+  "text.configuration.value.open": "Open",
   "text.configuration.value.back": "Back",
   "text.configuration.value.revert.default": "Use default config",
   "text.configuration.value.revert.default.dialog": "Are you sure you want to reset config back to default values?",

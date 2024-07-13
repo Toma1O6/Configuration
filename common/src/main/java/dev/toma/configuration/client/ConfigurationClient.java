@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigurationClient {
+public final class ConfigurationClient {
 
     /**
      * You can obtain default config screen based on provided config class.

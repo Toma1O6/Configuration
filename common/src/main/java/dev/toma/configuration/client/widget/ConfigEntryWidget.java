@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
-    public static final Component EDIT = Component.translatable("text.configuration.value.edit");
+    public static final Component OPEN = Component.translatable("text.configuration.value.open");
     public static final Component BACK = Component.translatable("text.configuration.value.back");
     public static final Component REVERT_DEFAULTS = Component.translatable("text.configuration.value.revert.default");
     public static final Component REVERT_DEFAULTS_DIALOG_TEXT = Component.translatable("text.configuration.value.revert.default.dialog");
@@ -29,6 +29,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     public static final Component REVERT_CHANGES_DIALOG_TEXT = Component.translatable("text.configuration.value.revert.changes.dialog");
 
     private final String configId;
+    private final ConfigValue<?> configValue;
     private final List<Component> description;
 
     private ValidationResult result = ValidationResult.ok();
@@ -38,6 +39,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, String configId) {
         super(x, y, w, h, Component.translatable("config." + configId + ".option." + value.getId()));
+        this.configValue = value;
         this.configId = configId;
         this.description = Arrays.stream(value.getDescription()).map(text -> Component.literal(text).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
     }
@@ -62,7 +64,11 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
             hoverTimeStart = System.currentTimeMillis();
         }
         boolean isError = !this.result.isOk();
-        graphics.drawString(font, this.getMessage(), this.getX(), this.getY() + (this.height - font.lineHeight) / 2, 0xAAAAAA);
+        MutableComponent label = Component.literal(this.getMessage().getString()).withStyle(this.getMessage().getStyle());
+        if (this.configValue.isChanged()) {
+            label.withStyle(ChatFormatting.ITALIC);
+        }
+        graphics.drawString(font, label, this.getX(), this.getY() + (this.height - font.lineHeight) / 2, 0xFFFFFF);
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
@@ -85,6 +91,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     @Override
     public <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function) {
         W widget = function.asWidget(this.getX(), this.getY(), this.width, this.height, this.configId);
+        widget.active = this.configValue.isEditable();
         return this.addRenderableWidget(widget);
     }
 

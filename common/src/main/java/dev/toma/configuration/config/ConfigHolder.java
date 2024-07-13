@@ -4,9 +4,12 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapters;
+import dev.toma.configuration.config.adapter.TypeAttributes;
+import dev.toma.configuration.config.adapter.TypeMapper;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,11 +26,12 @@ import java.util.stream.Collectors;
  *
  * @param <CFG> Your config type
  * @author Toma
+ * @since 2.0
  */
 public final class ConfigHolder<CFG> {
 
     // Map of all registered configs
-    private static final Map<String, ConfigHolder<?>> REGISTERED_CONFIGS = new HashMap<>();
+    private static final Map<String, ConfigHolder<?>> REGISTERED_CONFIGS = new LinkedHashMap<>();
     // Unique config ID
     private final String configId;
     // Config filename without extension
@@ -43,7 +47,7 @@ public final class ConfigHolder<CFG> {
     // Mapping of all config values
     private final Map<String, ConfigValue<?>> valueMap = new LinkedHashMap<>();
     // Map of fields which will be synced to client upon login
-    private final Map<String, ConfigValue<?>> networkSerializedFields = new HashMap<>();
+    private final Map<String, ConfigValue<?>> networkSerializedFields = new LinkedHashMap<>();
     // Set of file refresh listeners
     private final Set<IFileRefreshListener<CFG>> fileRefreshListeners = new HashSet<>();
     // Lock for async operations
@@ -122,9 +126,13 @@ public final class ConfigHolder<CFG> {
     public static Set<String> getSynchronizedConfigs() {
         return REGISTERED_CONFIGS.entrySet()
                 .stream()
-                .filter(e -> e.getValue().networkSerializedFields.size() > 0)
+                .filter(e -> !e.getValue().networkSerializedFields.isEmpty())
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public void save() {
+        this.values().forEach(ConfigValue::save);
     }
 
     /**
@@ -234,7 +242,8 @@ public final class ConfigHolder<CFG> {
         return lock;
     }
 
-    private Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
+    @SuppressWarnings("unchecked")
+    private <T> Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
         Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
         Field[] fields = type.getFields();
         for (Field field : fields) {
@@ -246,7 +255,8 @@ public final class ConfigHolder<CFG> {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping config field {}, only instance non-final types are supported", field);
                 continue;
             }
-            TypeAdapter adapter = TypeAdapters.forType(field.getType());
+            TypeAttributes<T> attributes = (TypeAttributes<T>) TypeAdapters.forType(field.getType());
+            TypeAdapter adapter = attributes.adapter();
             if (adapter == null) {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());
                 continue;
@@ -257,7 +267,10 @@ public final class ConfigHolder<CFG> {
                 comments = comment.value();
             }
             field.setAccessible(true);
-            ConfigValue<?> cfgValue = adapter.serialize(field.getName(), comments, field.get(instance), (type1, instance1) -> serializeType(type1, instance1, false), new TypeAdapter.AdapterContext() {
+            Object fieldValue = field.get(instance);
+            TypeMapper<T, Object> mapper = attributes.mapper();
+            Object migratedField = mapper.migrate((T) fieldValue);
+            ConfigValue<?> cfgValue = adapter.serialize(field.getName(), comments, migratedField, (type1, instance1) -> serializeType(type1, instance1, false), new TypeAdapter.AdapterContext() {
                 @Override
                 public TypeAdapter getAdapter() {
                     return adapter;
@@ -272,7 +285,8 @@ public final class ConfigHolder<CFG> {
                 public void setFieldValue(Object value) {
                     field.setAccessible(true);
                     try {
-                        adapter.setFieldValue(field, instance, value);
+                        Object remapped = mapper.rollback(value);
+                        adapter.setFieldValue(field, instance, remapped);
                     } catch (IllegalAccessException e) {
                         Configuration.LOGGER.error(ConfigIO.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, value, e);
                     }
@@ -324,7 +338,7 @@ public final class ConfigHolder<CFG> {
     private void loadNetworkFields(Map<String, ConfigValue<?>> src, Map<String, ConfigValue<?>> dest) {
         src.values().forEach(value -> {
             if (value instanceof ObjectValue objValue) {
-                Map<String, ConfigValue<?>> data = objValue.get();
+                Map<String, ConfigValue<?>> data = objValue.get(IConfigValue.Mode.SAVED);
                 loadNetworkFields(data, dest);
             } else {
                 if (!value.shouldSynchronize())

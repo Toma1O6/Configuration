@@ -7,7 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public final class CharValue extends ConfigValue<Character> {
+public class CharValue extends ConfigValue<Character> {
 
     public CharValue(ValueData<Character> valueData) {
         super(valueData);
@@ -20,7 +20,7 @@ public final class CharValue extends ConfigValue<Character> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readChar(this.getId()));
+        this.setValue(format.readChar(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {

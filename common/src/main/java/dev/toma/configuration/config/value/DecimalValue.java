@@ -24,7 +24,7 @@ public abstract class DecimalValue<N extends Number> extends ConfigValue<N> {
     }
 
     @Override
-    public abstract N getCorrectedValue(N in);
+    public abstract N validateValue(N in);
 
     public Range getRange() {
         return range;

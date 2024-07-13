@@ -8,11 +8,13 @@ import java.util.Map;
 
 public final class DisplayAdapterManager {
 
+    private static final Map<Class<?>, Class<?>> TYPE_MAPPERS = new HashMap<>();
     private static final Map<TypeMatcher, DisplayAdapter> ADAPTER_MAP = new HashMap<>();
 
     public static DisplayAdapter forType(Class<?> type) {
+        Class<?> mappedType = TYPE_MAPPERS.getOrDefault(type, type);
         return ADAPTER_MAP.entrySet().stream()
-                .filter(entry -> entry.getKey().test(type))
+                .filter(entry -> entry.getKey().test(mappedType))
                 .sorted(Comparator.comparingInt(value -> value.getKey().priority()))
                 .map(Map.Entry::getValue)
                 .findFirst()
@@ -25,7 +27,20 @@ public final class DisplayAdapterManager {
         }
     }
 
+    public static void registerTypeMapper(Class<?> from, Class<?> to) {
+        TYPE_MAPPERS.put(from, to);
+    }
+
     static {
+        registerTypeMapper(Boolean.class, Boolean.TYPE);
+        registerTypeMapper(Character.class, Character.TYPE);
+        registerTypeMapper(Byte.class, Byte.TYPE);
+        registerTypeMapper(Short.class, Short.TYPE);
+        registerTypeMapper(Integer.class, Integer.TYPE);
+        registerTypeMapper(Long.class, Long.TYPE);
+        registerTypeMapper(Float.class, Float.TYPE);
+        registerTypeMapper(Double.class, Double.TYPE);
+
         registerDisplayAdapter(TypeMatcher.matchBoolean(), DisplayAdapter.booleanValue());
         registerDisplayAdapter(TypeMatcher.matchCharacter(), DisplayAdapter.characterValue());
         registerDisplayAdapter(TypeMatcher.matchInteger(), DisplayAdapter.integerValue());

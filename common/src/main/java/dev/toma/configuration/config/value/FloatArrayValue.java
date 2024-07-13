@@ -1,6 +1,5 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
@@ -8,49 +7,24 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
-public class FloatArrayValue extends AbstractArrayValue<float[]> {
+public class FloatArrayValue extends NumericArrayValue<Float> {
 
-    private boolean fixedSize;
-    private DecimalValue.Range range;
-
-    public FloatArrayValue(ValueData<float[]> valueData) {
-        super(valueData);
+    public FloatArrayValue(ValueData<Float[]> valueData) {
+        super(valueData, -Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
     @Override
-    public boolean isFixedSize() {
-        return fixedSize;
-    }
-
-    @Override
-    protected void readFieldData(Field field) {
-        this.fixedSize = field.getAnnotation(Configurable.FixedSize.class) != null;
+    public ValueRange<Float> getValueRange(Field field, Float typeMin, Float typeMax) {
         Configurable.DecimalRange decimalRange = field.getAnnotation(Configurable.DecimalRange.class);
-        this.range = decimalRange != null ? DecimalValue.Range.newBoundedRange(decimalRange.min(), decimalRange.max()) : DecimalValue.Range.unboundedFloat();
+        return decimalRange != null
+                ? new ValueRange<>((float) decimalRange.min(), (float) decimalRange.max())
+                : new ValueRange<>(typeMin, typeMax);
     }
 
     @Override
-    protected float[] getCorrectedValue(float[] in) {
-        if (this.fixedSize) {
-            float[] defaultArray = this.valueData.getDefaultValue();
-            if (in.length != defaultArray.length) {
-                ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
-                in = defaultArray;
-            }
-        }
-        if (this.range == null)
-            return in;
-        for (int i = 0; i < in.length; i++) {
-            float value = in[i];
-            if (!this.range.isWithin(value)) {
-                float corrected = this.range.clamp(value);
-                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", value, corrected);
-                in[i] = corrected;
-            }
-        }
-        return in;
+    public Float createElementInstance() {
+        return 0.0F;
     }
 
     @Override
@@ -60,51 +34,24 @@ public class FloatArrayValue extends AbstractArrayValue<float[]> {
 
     @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
-        this.set(format.readFloatArray(this.getId()));
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[");
-        float[] floats = this.get();
-        for (int i = 0; i < floats.length; i++) {
-            builder.append(this.elementToString(floats[i]));
-            if (i < floats.length - 1) {
-                builder.append(",");
-            }
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-
-    public DecimalValue.Range getRange() {
-        return range;
+        this.setValue(format.readFloatArray(this.getId()));
     }
 
     public static final class Adapter extends TypeAdapter {
 
         @Override
         public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            float[] arr = (float[]) value.get();
-            buffer.writeInt(arr.length);
-            for (float v : arr) {
-                buffer.writeFloat(v);
-            }
+            saveToBuffer((Float[]) value.get(), buffer, FriendlyByteBuf::writeFloat);
         }
 
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            float[] arr = new float[buffer.readInt()];
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = buffer.readFloat();
-            }
-            return arr;
+            return readFromBuffer(buffer, Float[]::new, FriendlyByteBuf::readFloat);
         }
 
         @Override
         public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new FloatArrayValue(ValueData.of(name, (float[]) value, context, comments));
+            return new FloatArrayValue(ValueData.of(name, (Float[]) value, context, comments));
         }
     }
 }
