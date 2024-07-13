@@ -2,45 +2,37 @@ package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.adapter.TypeAdapter;
 
-import java.util.Objects;
-
 public final class ValueData<T> implements IDescriptionProvider {
 
-    private final String id;
-    private final String[] tooltip;
-    private final T defaultValue;
-    private final TypeAdapter.AdapterContext context;
+    private final TypeAdapter.TypeAttributes<T> attributes;
     private final Class<T> valueType;
     private ConfigValue<?> parent;
 
     @SuppressWarnings("unchecked")
-    private ValueData(String id, String[] tooltip, T defaultValue, TypeAdapter.AdapterContext context) {
-        this.id = id;
-        this.tooltip = tooltip;
-        this.defaultValue = defaultValue;
-        this.context = context;
-        this.valueType = (Class<T>) defaultValue.getClass();
+    private ValueData(TypeAdapter.TypeAttributes<T> attributes) {
+        this.attributes = attributes;
+        this.valueType = (Class<T>) attributes.value().getClass();
     }
 
-    public static <V> ValueData<V> of(String id, V value, TypeAdapter.AdapterContext setter, String... comments) {
-        return new ValueData<>(id, comments, Objects.requireNonNull(value), setter);
+    public static <V> ValueData<V> of(TypeAdapter.TypeAttributes<V> attributes) {
+        return new ValueData<>(attributes);
     }
 
     public String getId() {
-        return id;
+        return this.attributes.id();
     }
 
     @Override
     public String[] getDescription() {
-        return tooltip;
+        return this.attributes.fileComments();
     }
 
     public T getDefaultValue() {
-        return defaultValue;
+        return this.attributes.value();
     }
 
     public void setValueToMemory(Object value) {
-        this.context.setFieldValue(value);
+        this.attributes.context().setFieldValue(value);
     }
 
     public void setParent(ConfigValue<?> parent) {
@@ -48,14 +40,18 @@ public final class ValueData<T> implements IDescriptionProvider {
     }
 
     public ConfigValue<?> getParent() {
-        return parent;
+        return this.parent;
     }
 
     public TypeAdapter.AdapterContext getContext() {
-        return context;
+        return this.attributes.context();
     }
 
     public Class<T> getValueType() {
-        return valueType;
+        return this.valueType;
+    }
+
+    public TypeAdapter.TypeAttributes<T> getAttributes() {
+        return this.attributes;
     }
 }

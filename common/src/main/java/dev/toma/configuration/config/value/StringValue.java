@@ -69,6 +69,7 @@ public class StringValue extends ConfigValue<String> {
         return descriptor;
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
@@ -82,8 +83,8 @@ public class StringValue extends ConfigValue<String> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new StringValue(ValueData.of(name, (String) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new StringValue(ValueData.of((TypeAttributes<String>) attributes));
         }
     }
 }

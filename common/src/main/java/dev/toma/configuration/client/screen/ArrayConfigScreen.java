@@ -201,5 +201,11 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         public void setFieldValue(Object value) {
             this.setCallback.accept((V) value, this.index);
         }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void setValue(Object value) {
+            this.setCallback.accept((V) value, this.index);
+        }
     }
 }

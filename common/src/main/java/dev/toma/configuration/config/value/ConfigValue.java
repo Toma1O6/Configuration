@@ -64,6 +64,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     @Override
     public final void setValue(T value) {
         this.pendingValue = value;
+        this.valueData.getContext().setValue(value);
     }
 
     @Override
@@ -172,6 +173,10 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     public final Class<T> getValueType() {
         return this.valueData.getValueType();
+    }
+
+    public final ValueData<T> getValueData() {
+        return this.valueData;
     }
 
     public final String getFieldPath() {

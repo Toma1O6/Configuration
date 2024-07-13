@@ -26,11 +26,12 @@ public class BooleanArrayValue extends AbstractArrayValue<Boolean> {
         this.setValue(format.readBoolArray(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new BooleanArrayValue(ValueData.of(name, (Boolean[]) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new BooleanArrayValue(ValueData.of((TypeAttributes<Boolean[]>) attributes));
         }
 
         @Override

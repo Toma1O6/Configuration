@@ -70,6 +70,7 @@ public class StringArrayValue extends AbstractArrayValue<String> {
         this.setValue(format.readStringArray(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
@@ -83,8 +84,8 @@ public class StringArrayValue extends AbstractArrayValue<String> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new StringArrayValue(ValueData.of(name, (String[]) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new StringArrayValue(ValueData.of((TypeAttributes<String[]>) attributes));
         }
     }
 }

@@ -1,14 +1,15 @@
 package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.validate.NumberRange;
 
 import java.lang.reflect.Field;
 
-public abstract class NumericArrayValue<T extends Number & Comparable<T>> extends AbstractArrayValue<T> {
+public abstract class NumericArrayValue<T extends Number & Comparable<T>> extends AbstractArrayValue<T> implements INumericValue<T> {
 
     private final T minValue;
     private final T maxValue;
-    private ValueRange<T> range;
+    private NumberRange<T> range;
 
     public NumericArrayValue(ValueData<T[]> valueData, T minValue, T maxValue) {
         super(valueData);
@@ -16,12 +17,12 @@ public abstract class NumericArrayValue<T extends Number & Comparable<T>> extend
         this.maxValue = maxValue;
     }
 
-    public abstract ValueRange<T> getValueRange(Field field, T typeMin, T typeMax);
+    public abstract NumberRange<T> getValueRange(Field field);
 
     @Override
     protected void readFieldData(Field field) {
         super.readFieldData(field);
-        this.range = this.getValueRange(field, this.minValue, this.maxValue);
+        this.range = this.getValueRange(field);
     }
 
     @Override
@@ -38,28 +39,18 @@ public abstract class NumericArrayValue<T extends Number & Comparable<T>> extend
         return updatedArray;
     }
 
-    public ValueRange<T> getRange() {
-        return range;
+    @Override
+    public final T min() {
+        return this.minValue;
     }
 
-    public record ValueRange<T extends Number & Comparable<T>>(T min, T max) {
+    @Override
+    public final T max() {
+        return this.maxValue;
+    }
 
-        public boolean isWithinRange(T t) {
-            int minBoundCompare = t.compareTo(this.min());
-            if (minBoundCompare < 0) {
-                return false;
-            }
-            int maxBoundCompare = t.compareTo(this.max());
-            return maxBoundCompare <= 0;
-        }
-
-        public T clamp(T t) {
-            int minBound = t.compareTo(this.min());
-            if (minBound < 0) {
-                return min();
-            }
-            int maxBound = t.compareTo(this.max());
-            return maxBound > 0 ? max() : t;
-        }
+    @Override
+    public final NumberRange<T> getRange() {
+        return this.range;
     }
 }

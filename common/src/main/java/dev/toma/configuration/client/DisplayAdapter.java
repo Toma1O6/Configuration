@@ -8,6 +8,8 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.EnumWidget;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.adapter.TypeAdapter;
+import dev.toma.configuration.config.validate.NumberRange;
 import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.*;
 import net.minecraft.client.Minecraft;
@@ -44,7 +46,7 @@ public interface DisplayAdapter {
             widget.setValue(String.valueOf(character));
             widget.setFilter(str -> str.length() <= 1);
             widget.setResponder(str -> {
-                if (str.length() > 0) {
+                if (!str.isEmpty()) {
                     container.setOkStatus();
                     char toSet = str.charAt(0);
                     charValue.setWithValidationHandler(toSet, container);
@@ -76,9 +78,9 @@ public interface DisplayAdapter {
                     container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
-                IntegerValue.Range range = intValue.getRange();
-                if (!range.isWithin(n)) {
-                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
+                NumberRange<Integer> range = intValue.getRange();
+                if (!range.isWithinRange(n)) {
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBoundsInt(n, range)));
                     return;
                 }
                 container.setOkStatus();
@@ -108,9 +110,9 @@ public interface DisplayAdapter {
                     container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
-                IntegerValue.Range range = longValue.getRange();
-                if (!range.isWithin(n)) {
-                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
+                NumberRange<Long> range = longValue.getRange();
+                if (!range.isWithinRange(n)) {
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBoundsInt(n, range)));
                     return;
                 }
                 container.setOkStatus();
@@ -141,9 +143,9 @@ public interface DisplayAdapter {
                     container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
-                DecimalValue.Range range = floatValue.getRange();
-                if (!range.isWithin(n)) {
-                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
+                NumberRange<Float> range = floatValue.getRange();
+                if (!range.isWithinRange(n)) {
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBoundsDecimal(n, range)));
                     return;
                 }
                 container.setOkStatus();
@@ -174,9 +176,9 @@ public interface DisplayAdapter {
                     container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(str)));
                     return;
                 }
-                DecimalValue.Range range = doubleValue.getRange();
-                if (!range.isWithin(n)) {
-                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(n, range)));
+                NumberRange<Double> range = doubleValue.getRange();
+                if (!range.isWithinRange(n)) {
+                    container.setValidationResult(ValidationResult.error(ClientErrors.outOfBoundsDecimal(n, range)));
                     return;
                 }
                 container.setOkStatus();
@@ -237,7 +239,9 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Boolean[] arr = arrayValue.get();
-                    return new BooleanValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Boolean.TYPE, setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = value.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<Boolean> typeAttributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, Boolean.TYPE, setCallback, i));
+                    return new BooleanValue(ValueData.of(typeAttributes));
                 });
                 screen.addElement(() -> {
                     Boolean[] arr = arrayValue.get();
@@ -271,13 +275,15 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Integer[] arr = arrayValue.get();
-                    return new IntValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Integer.TYPE, setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = arrayValue.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<Integer> attributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, Integer.TYPE, setCallback, i));
+                    return new IntValue(ValueData.of(attributes));
                 });
                 screen.addElement(() -> {
                     Integer[] arr = arrayValue.get();
                     Integer[] expanded = new Integer[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
-                    expanded[arr.length] = Math.max((int) arrayValue.getRange().min(), 0);
+                    expanded[arr.length] = Math.max(arrayValue.getRange().min(), 0);
                     arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
@@ -305,7 +311,9 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Long[] arr = arrayValue.get();
-                    return new LongValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Long.TYPE, setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = arrayValue.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<Long> attributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, Long.TYPE, setCallback, i));
+                    return new LongValue(ValueData.of(attributes));
                 });
                 screen.addElement(() -> {
                     Long[] arr = arrayValue.get();
@@ -339,13 +347,15 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Float[] arr = arrayValue.get();
-                    return new FloatValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Float.TYPE, setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = arrayValue.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<Float> attributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, Float.TYPE, setCallback, i));
+                    return new FloatValue(ValueData.of(attributes));
                 });
                 screen.addElement(() -> {
                     Float[] arr = arrayValue.get();
                     Float[] expanded = new Float[arr.length + 1];
                     System.arraycopy(arr, 0, expanded, 0, arr.length);
-                    expanded[arr.length] = Math.max((float) arrayValue.getRange().min(), 0);
+                    expanded[arr.length] = Math.max(arrayValue.getRange().min(), 0);
                     arrayValue.setValue(expanded);
                 });
                 screen.removeElement((i, trimmer) -> {
@@ -373,7 +383,9 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Double[] arr = arrayValue.get();
-                    return new DoubleValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, Double.TYPE, setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = arrayValue.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<Double> attributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, Double.TYPE, setCallback, i));
+                    return new DoubleValue(ValueData.of(attributes));
                 });
                 screen.addElement(() -> {
                     Double[] arr = arrayValue.get();
@@ -407,7 +419,9 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     String[] arr = arrayValue.get();
-                    return new StringValue(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, String.class, setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = arrayValue.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<String> attributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, String.class, setCallback, i));
+                    return new StringValue(ValueData.of(attributes));
                 });
                 screen.addElement(() -> {
                     String[] arr = arrayValue.get();
@@ -448,7 +462,9 @@ public interface DisplayAdapter {
                 screen.fetchSize(() -> enumArray.get().length);
                 screen.valueFactory((id, i) -> {
                     E[] arr = enumArray.get();
-                    return new EnumValue<>(ValueData.of(id, arr[i], ArrayConfigScreen.callbackCtx(field, (Class<E>) enumArray.getValueType().getComponentType(), setCallback, i)));
+                    TypeAdapter.TypeAttributes<?> parentAttributes = value.getValueData().getAttributes();
+                    TypeAdapter.TypeAttributes<E> attributes = parentAttributes.child(id, arr[i], ArrayConfigScreen.callbackCtx(field, (Class<E>) enumArray.getValueType().getComponentType(), setCallback, i));
+                    return new EnumValue<>(ValueData.of(attributes));
                 });
                 screen.addElement(() -> {
                     E[] arr = enumArray.get();

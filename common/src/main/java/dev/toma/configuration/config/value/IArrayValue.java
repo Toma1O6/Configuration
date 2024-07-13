@@ -1,6 +1,6 @@
 package dev.toma.configuration.config.value;
 
-public interface ArrayValue<T> extends HierarchicalConfigValue {
+public interface IArrayValue<T> extends IHierarchical {
 
     boolean isFixedSize();
 

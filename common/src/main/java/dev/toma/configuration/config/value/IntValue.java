@@ -1,29 +1,26 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public class IntValue extends IntegerValue<Integer> {
+public class IntValue extends NumericValue<Integer> {
 
     public IntValue(ValueData<Integer> valueData) {
-        super(valueData, Range.unboundedInt());
+        super(valueData, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     @Override
-    public Integer validateValue(Integer in) {
-        if (this.range == null)
-            return in;
-        if (!this.range.isWithin(in)) {
-            int corrected = this.range.clamp(in);
-            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
-            return corrected;
-        }
-        return in;
+    protected NumberRange<Integer> getValueRange(Field field, Integer min, Integer max) {
+        Configurable.Range range = field.getAnnotation(Configurable.Range.class);
+        return range != null
+                ? NumberRange.interval(this, (int) range.min(), (int) range.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -36,11 +33,12 @@ public class IntValue extends IntegerValue<Integer> {
         this.setValue(format.readInt(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) {
-            return new IntValue(ValueData.of(name, (int) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) {
+            return new IntValue(ValueData.of((TypeAttributes<Integer>) attributes));
         }
 
         @Override

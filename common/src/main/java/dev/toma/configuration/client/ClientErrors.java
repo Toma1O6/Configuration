@@ -1,7 +1,6 @@
 package dev.toma.configuration.client;
 
-import dev.toma.configuration.config.value.DecimalValue;
-import dev.toma.configuration.config.value.IntegerValue;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -19,20 +18,12 @@ public final class ClientErrors {
         return Component.translatable(KEY_NAN, value);
     }
 
-    public static MutableComponent outOfBounds(int i, IntegerValue.Range range) {
-        return Component.translatable(KEY_NUM_BOUNDS, i, range.min(), range.max());
+    public static MutableComponent outOfBoundsInt(Number number, NumberRange<?> range) {
+        return Component.translatable(KEY_NUM_BOUNDS, number.longValue(), range.min().longValue(), range.max().longValue());
     }
 
-    public static MutableComponent outOfBounds(long i, IntegerValue.Range range) {
-        return Component.translatable(KEY_NUM_BOUNDS, i, range.min(), range.max());
-    }
-
-    public static MutableComponent outOfBounds(float i, DecimalValue.Range range) {
-        return Component.translatable(KEY_NUM_BOUNDS, i, range.min(), range.max());
-    }
-
-    public static MutableComponent outOfBounds(double i, DecimalValue.Range range) {
-        return Component.translatable(KEY_NUM_BOUNDS, i, range.min(), range.max());
+    public static MutableComponent outOfBoundsDecimal(Number number, NumberRange<?> range) {
+        return Component.translatable(KEY_NUM_BOUNDS, number.doubleValue(), range.min().doubleValue(), range.max().doubleValue());
     }
 
     public static MutableComponent invalidText(String text, Pattern pattern) {

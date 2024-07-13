@@ -263,35 +263,19 @@ public final class ConfigHolder<CFG> {
             }
             String[] comments = new String[0];
             Configurable.Comment comment = field.getAnnotation(Configurable.Comment.class);
+            boolean localizeComments = false;
             if (comment != null) {
                 comments = comment.value();
+                localizeComments = comment.localize();
             }
+            Configurable.LocalizationKey localizationType = value.localizationType();
             field.setAccessible(true);
             Object fieldValue = field.get(instance);
             TypeMapper<T, Object> mapper = attributes.mapper();
             Object migratedField = mapper.migrate((T) fieldValue);
-            ConfigValue<?> cfgValue = adapter.serialize(field.getName(), comments, migratedField, (type1, instance1) -> serializeType(type1, instance1, false), new TypeAdapter.AdapterContext() {
-                @Override
-                public TypeAdapter getAdapter() {
-                    return adapter;
-                }
-
-                @Override
-                public Field getOwner() {
-                    return field;
-                }
-
-                @Override
-                public void setFieldValue(Object value) {
-                    field.setAccessible(true);
-                    try {
-                        Object remapped = mapper.rollback(value);
-                        adapter.setFieldValue(field, instance, remapped);
-                    } catch (IllegalAccessException e) {
-                        Configuration.LOGGER.error(ConfigIO.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, value, e);
-                    }
-                }
-            });
+            TypeAdapter.AdapterContext context = this.getAdapterContext(adapter, type, field, mapper, instance);
+            TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(field.getName(), (T) migratedField, context, localizationType, comments, localizeComments);
+            ConfigValue<?> cfgValue = adapter.serialize(typeAttributes, migratedField, (t, i) -> this.serializeType(t, i, false));
             Configurable.ValueUpdateCallback callback = field.getAnnotation(Configurable.ValueUpdateCallback.class);
             if (callback != null) {
                 this.processCallback(callback, type, instance, cfgValue);
@@ -347,6 +331,31 @@ public final class ConfigHolder<CFG> {
                 dest.put(path, value);
             }
         });
+    }
+
+    private TypeAdapter.AdapterContext getAdapterContext(TypeAdapter parent, Class<?> type, Field field, TypeMapper<?, Object> mapper, Object instance) {
+        return new TypeAdapter.AdapterContext() {
+            @Override
+            public TypeAdapter getAdapter() {
+                return parent;
+            }
+
+            @Override
+            public Field getOwner() {
+                return field;
+            }
+
+            @Override
+            public void setFieldValue(Object value) {
+                field.setAccessible(true);
+                try {
+                    Object remapped = mapper.rollback(value);
+                    parent.setFieldValue(field, instance, remapped);
+                } catch (IllegalAccessException e) {
+                    Configuration.LOGGER.error(ConfigIO.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, value, e);
+                }
+            }
+        };
     }
 
     /**

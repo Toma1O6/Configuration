@@ -4,6 +4,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
@@ -15,11 +16,11 @@ public class FloatArrayValue extends NumericArrayValue<Float> {
     }
 
     @Override
-    public ValueRange<Float> getValueRange(Field field, Float typeMin, Float typeMax) {
+    public NumberRange<Float> getValueRange(Field field) {
         Configurable.DecimalRange decimalRange = field.getAnnotation(Configurable.DecimalRange.class);
         return decimalRange != null
-                ? new ValueRange<>((float) decimalRange.min(), (float) decimalRange.max())
-                : new ValueRange<>(typeMin, typeMax);
+                ? NumberRange.interval(this, (float) decimalRange.min(), (float) decimalRange.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -37,6 +38,7 @@ public class FloatArrayValue extends NumericArrayValue<Float> {
         this.setValue(format.readFloatArray(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
@@ -50,8 +52,8 @@ public class FloatArrayValue extends NumericArrayValue<Float> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new FloatArrayValue(ValueData.of(name, (Float[]) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new FloatArrayValue(ValueData.of((TypeAttributes<Float[]>) attributes));
         }
     }
 }

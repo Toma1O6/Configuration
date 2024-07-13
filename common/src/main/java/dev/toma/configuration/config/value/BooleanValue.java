@@ -25,11 +25,12 @@ public class BooleanValue extends ConfigValue<Boolean> {
         this.setValue(format.readBoolean(field));
     }
 
+    @SuppressWarnings("unchecked")
     public static class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) {
-            return new BooleanValue(ValueData.of(name, (boolean) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) {
+            return new BooleanValue(ValueData.of((TypeAttributes<Boolean>) attributes));
         }
 
         @Override

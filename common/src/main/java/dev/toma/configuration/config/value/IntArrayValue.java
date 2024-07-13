@@ -4,6 +4,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
@@ -15,11 +16,11 @@ public class IntArrayValue extends NumericArrayValue<Integer> {
     }
 
     @Override
-    public ValueRange<Integer> getValueRange(Field field, Integer typeMin, Integer typeMax) {
+    public NumberRange<Integer> getValueRange(Field field) {
         Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
         return intRange != null
-                ? new ValueRange<>((int) intRange.min(), (int) intRange.max())
-                : new ValueRange<>(typeMin, typeMax);
+                ? NumberRange.interval(this, (int) intRange.min(), (int) intRange.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -37,6 +38,7 @@ public class IntArrayValue extends NumericArrayValue<Integer> {
         this.setValue(format.readIntArray(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
@@ -50,8 +52,8 @@ public class IntArrayValue extends NumericArrayValue<Integer> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new IntArrayValue(ValueData.of(name, (Integer[]) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new IntArrayValue(ValueData.of((TypeAttributes<Integer[]>) attributes));
         }
     }
 }

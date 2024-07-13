@@ -28,7 +28,8 @@ public final class Configuration {
     @ApiStatus.Internal
     public static void setup() {
         if (PLATFORM.isDevelopmentEnvironment()) {
-            registerConfig(TestingConfig.class, ConfigFormats.YAML);
+            //registerConfig(TestingConfig.class, ConfigFormats.YAML);
+            registerConfig(ArrayDebugConfig.class, ConfigFormats.JSON);
         }
     }
 

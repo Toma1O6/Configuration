@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements ArrayValue<T> {
+public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements IArrayValue<T> {
 
     private boolean fixedSize;
 
@@ -33,7 +33,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
         T[] defaultArray = this.valueData.getDefaultValue();
         int defaultSize = defaultArray.length;
         int valueSize = in.length;
-        if (valueSize != defaultSize) {
+        if (this.fixedSize && valueSize != defaultSize) {
             ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
             return defaultArray;
         }
@@ -46,7 +46,12 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
     }
 
     @Override
-    public <V> Optional<V> getChild(Iterator<String> iterator, Class<V> targetType) {
+    public <V> Optional<IConfigValue<V>> getChild(Iterator<String> pathIterator) {
+        throw new UnsupportedOperationException("Not implemented yet"); // TODO
+    }
+
+    @Override
+    public <V> Optional<V> getChildValue(Iterator<String> iterator, Class<V> targetType) {
         String key = iterator.next();
         T[] arrayValue = this.get();
         try {
@@ -58,8 +63,8 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
             }
             Object item = Array.get(arrayValue, elementIndex);
             if (iterator.hasNext()) {
-                if (item instanceof HierarchicalConfigValue hierarchicalConfigValue) {
-                    return hierarchicalConfigValue.getChild(iterator, targetType);
+                if (item instanceof IHierarchical hierarchical) {
+                    return hierarchical.getChildValue(iterator, targetType);
                 }
                 Configuration.LOGGER.warn("Attempted to get non-existing value {} in config!", key);
             } else {

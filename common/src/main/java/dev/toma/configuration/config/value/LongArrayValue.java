@@ -4,6 +4,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
@@ -15,11 +16,11 @@ public class LongArrayValue extends NumericArrayValue<Long> {
     }
 
     @Override
-    public ValueRange<Long> getValueRange(Field field, Long typeMin, Long typeMax) {
+    public NumberRange<Long> getValueRange(Field field) {
         Configurable.Range range = field.getAnnotation(Configurable.Range.class);
         return range != null
-                ? new ValueRange<>(range.min(), range.max())
-                : new ValueRange<>(typeMin, typeMax);
+                ? NumberRange.interval(this, range.min(), range.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -37,6 +38,7 @@ public class LongArrayValue extends NumericArrayValue<Long> {
         this.setValue(format.readLongArray(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
@@ -50,8 +52,8 @@ public class LongArrayValue extends NumericArrayValue<Long> {
         }
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new LongArrayValue(ValueData.of(name, (Long[]) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new LongArrayValue(ValueData.of((TypeAttributes<Long[]>) attributes));
         }
     }
 }

@@ -16,6 +16,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Configurable {
 
+    LocalizationKey localizationType() default LocalizationKey.FIELD; // TODO docs
+
     /**
      * Allows you to add description to configurable value.
      * This description will be visible on hover in GUI or as
@@ -29,6 +31,9 @@ public @interface Configurable {
          * @return Array of comments for this configurable value
          */
         String[] value();
+
+        // TODO
+        boolean localize() default false;
     }
 
     /**
@@ -139,6 +144,13 @@ public @interface Configurable {
     @interface FixedSize {
     }
 
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface DependsOn { // TODO implement
+        String field() default "";
+        String[] values() default {};
+    }
+
     /**
      * Allows you to map custom listener method to listen for value change.
      * Could be useful for example when validating item ID or something like that.
@@ -213,5 +225,10 @@ public @interface Configurable {
              */
             int value() default 32;
         }
+    }
+
+    enum LocalizationKey {
+        FULL,
+        FIELD
     }
 }

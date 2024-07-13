@@ -1,5 +1,6 @@
 package dev.toma.configuration.config.adapter;
 
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public abstract class TypeAdapter {
 
-    public abstract ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException;
+    public abstract ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException;
 
     public abstract void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer);
 
@@ -30,5 +31,17 @@ public abstract class TypeAdapter {
         Field getOwner();
 
         void setFieldValue(Object value);
+
+        default void setValue(Object value) {
+        }
+    }
+
+    public record TypeAttributes<V>(String id, V value, TypeAdapter.AdapterContext context,
+                                    Configurable.LocalizationKey localization, String[] fileComments, boolean localizeComments
+    ) {
+
+        public <R> TypeAttributes<R> child(String id, R value, TypeAdapter.AdapterContext ctx) {
+            return new TypeAttributes<>(id, value, ctx, localization, fileComments, localizeComments);
+        }
     }
 }

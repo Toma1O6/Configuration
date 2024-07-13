@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implements HierarchicalConfigValue {
+public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implements IHierarchical {
 
     public ObjectValue(ValueData<Map<String, ConfigValue<?>>> valueData) {
         super(valueData);
@@ -53,8 +53,13 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
-    public <T> Optional<T> getChild(Iterator<String> iterator, Class<T> targetType) {
+    public <T> Optional<T> getChildValue(Iterator<String> iterator, Class<T> targetType) {
         return getChildValue(iterator, targetType, this.get());
+    }
+
+    @Override
+    public <T> Optional<IConfigValue<T>> getChild(Iterator<String> pathIterator) {
+        return Optional.empty();
     }
 
     public static <V> Optional<V> getChildValue(Iterator<String> iterator, Class<V> targetType, Map<String, ConfigValue<?>> valueMap) {
@@ -67,8 +72,8 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
             }
             Configuration.LOGGER.warn("Attempted to get invalid value type {} in config!", key);
             return Optional.empty();
-        } else if (value instanceof HierarchicalConfigValue hierarchicalConfigValue) {
-            return hierarchicalConfigValue.getChild(iterator, targetType);
+        } else if (value instanceof IHierarchical hierarchical) {
+            return hierarchical.getChildValue(iterator, targetType);
         }
         Configuration.LOGGER.warn("Attempted to get non-existing value {} in config!", key);
         return Optional.empty();
@@ -77,10 +82,11 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            Class<?> type = value.getClass();
-            Map<String, ConfigValue<?>> map = serializer.serialize(type, value);
-            return new ObjectValue(ValueData.of(name, map, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            Class<?> type = instance.getClass();
+            Map<String, ConfigValue<?>> map = serializer.serialize(type, instance);
+            TypeAttributes<Map<String, ConfigValue<?>>> objectAttributes = attributes.child(attributes.id(), map, attributes.context());
+            return new ObjectValue(ValueData.of(objectAttributes));
         }
 
         @Override

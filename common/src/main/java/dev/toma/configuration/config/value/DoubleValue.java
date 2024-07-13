@@ -1,29 +1,26 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public class DoubleValue extends DecimalValue<Double> {
+public class DoubleValue extends NumericValue<Double> {
 
     public DoubleValue(ValueData<Double> valueData) {
-        super(valueData, Range.unboundedDouble());
+        super(valueData, -Double.MAX_VALUE, Double.MAX_VALUE);
     }
 
     @Override
-    public Double validateValue(Double in) {
-        if (this.range == null)
-            return in;
-        if (!this.range.isWithin(in)) {
-            double corrected = this.range.clamp(in);
-            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
-            return corrected;
-        }
-        return in;
+    protected NumberRange<Double> getValueRange(Field field, Double min, Double max) {
+        Configurable.DecimalRange range = field.getAnnotation(Configurable.DecimalRange.class);
+        return range != null
+                ? NumberRange.interval(this, range.min(), range.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -36,11 +33,12 @@ public class DoubleValue extends DecimalValue<Double> {
         this.setValue(format.readDouble(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new DoubleValue(ValueData.of(name, (double) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new DoubleValue(ValueData.of((TypeAttributes<Double>) attributes));
         }
 
         @Override

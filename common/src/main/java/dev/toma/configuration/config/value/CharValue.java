@@ -23,11 +23,12 @@ public class CharValue extends ConfigValue<Character> {
         this.setValue(format.readChar(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new CharValue(ValueData.of(name, (char) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new CharValue(ValueData.of((TypeAttributes<Character>) attributes));
         }
 
         @Override

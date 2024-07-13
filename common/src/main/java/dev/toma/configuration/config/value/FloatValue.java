@@ -1,29 +1,26 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public class FloatValue extends DecimalValue<Float> {
+public class FloatValue extends NumericValue<Float> {
 
     public FloatValue(ValueData<Float> valueData) {
-        super(valueData, Range.unboundedFloat());
+        super(valueData, -Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
     @Override
-    public Float validateValue(Float in) {
-        if (this.range == null)
-            return in;
-        if (!this.range.isWithin(in)) {
-            float corrected = this.range.clamp(in);
-            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
-            return corrected;
-        }
-        return in;
+    protected NumberRange<Float> getValueRange(Field field, Float min, Float max) {
+        Configurable.DecimalRange range = field.getAnnotation(Configurable.DecimalRange.class);
+        return range != null
+                ? NumberRange.interval(this, (float) range.min(), (float) range.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -36,11 +33,12 @@ public class FloatValue extends DecimalValue<Float> {
         this.setValue(format.readFloat(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new FloatValue(ValueData.of(name, (float) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new FloatValue(ValueData.of((TypeAttributes<Float>) attributes));
         }
 
         @Override

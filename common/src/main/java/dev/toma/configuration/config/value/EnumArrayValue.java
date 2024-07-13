@@ -36,15 +36,14 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
         setValue(format.readEnumArray(getId(), type));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter<E extends Enum<E>> extends TypeAdapter {
 
-        @SuppressWarnings("unchecked")
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new EnumArrayValue<>(ValueData.of(name, (E[]) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new EnumArrayValue<>(ValueData.of((TypeAttributes<E[]>) attributes));
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             E[] values = (E[]) value.get();
@@ -54,7 +53,6 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
             }
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
             int count = buffer.readInt();

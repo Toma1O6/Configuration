@@ -1,29 +1,26 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.NumberRange;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
 
-public class LongValue extends IntegerValue<Long> {
+public class LongValue extends NumericValue<Long> {
 
     public LongValue(ValueData<Long> valueData) {
-        super(valueData, Range.unboundedLong());
+        super(valueData, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     @Override
-    public Long validateValue(Long in) {
-        if (this.range == null)
-            return in;
-        if (!this.range.isWithin(in)) {
-            long corrected = this.range.clamp(in);
-            ConfigUtils.logCorrectedMessage(this.getId(), in, corrected);
-            return corrected;
-        }
-        return in;
+    protected NumberRange<Long> getValueRange(Field field, Long min, Long max) {
+        Configurable.Range range = field.getAnnotation(Configurable.Range.class);
+        return range != null
+                ? NumberRange.interval(this, range.min(), range.max())
+                : NumberRange.all(this);
     }
 
     @Override
@@ -36,11 +33,12 @@ public class LongValue extends IntegerValue<Long> {
         this.setValue(format.readLong(this.getId()));
     }
 
+    @SuppressWarnings("unchecked")
     public static final class Adapter extends TypeAdapter {
 
         @Override
-        public ConfigValue<?> serialize(String name, String[] comments, Object value, TypeSerializer serializer, AdapterContext context) throws IllegalAccessException {
-            return new LongValue(ValueData.of(name, (long) value, context, comments));
+        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new LongValue(ValueData.of((TypeAttributes<Long>) attributes));
         }
 
         @Override
