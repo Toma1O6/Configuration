@@ -44,13 +44,16 @@ public record S2C_SendConfigDataMessage(String config, Map<String, NetworkConfig
         for (Map.Entry<String, ConfigValue<?>> entry : synchronizedFields.entrySet()) {
             String field = entry.getKey();
             ConfigValue<?> value = entry.getValue();
-            TypeAdapter adapter = value.getAdapter();
             buffer.writeUtf(field);
-            adapter.encodeToBuffer(value, buffer);
+            this.encodeToBuffer(value, buffer);
         }
     }
 
-    @SuppressWarnings("unchecked")
+    private <T> void encodeToBuffer(ConfigValue<T> value, FriendlyByteBuf buffer) {
+        TypeAdapter<T> adapter = value.getAdapter();
+        adapter.encodeToBuffer(value, buffer);
+    }
+
     private static S2C_SendConfigDataMessage decode(FriendlyByteBuf buffer) {
         String config = buffer.readUtf();
         int valuesCount = buffer.readInt();
@@ -66,11 +69,16 @@ public record S2C_SendConfigDataMessage(String config, Map<String, NetworkConfig
                 Configuration.LOGGER.fatal("Received unknown config value {}", field);
                 throw new RuntimeException("Unknown config field: " + field);
             }
-            TypeAdapter adapter = configValue.getAdapter();
-            Object value = adapter.decodeFromBuffer(configValue, buffer);
-            values.put(field, new NetworkConfigValue<>((ConfigValue<Object>) configValue, value));
+            saveValue(values, configValue, field, buffer);
+
         }
         return new S2C_SendConfigDataMessage(config, values);
+    }
+
+    private static <T> void saveValue(Map<String, NetworkConfigValue<?>> map, ConfigValue<T> value, String field, FriendlyByteBuf buffer) {
+        TypeAdapter<T> adapter = value.getAdapter();
+        T t = adapter.decodeFromBuffer(value, buffer);
+        map.put(field, new NetworkConfigValue<>(value, t));
     }
 
     public void receive() {

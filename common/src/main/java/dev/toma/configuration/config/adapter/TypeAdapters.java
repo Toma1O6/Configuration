@@ -9,10 +9,11 @@ import java.util.Map;
 public final class TypeAdapters {
 
     private static final Map<Class<?>, TypeMapper<?, ?>> TYPE_MAPPERS = new HashMap<>();
-    private static final Map<TypeMatcher, TypeAdapter> ADAPTER_MAP = new HashMap<>();
+    private static final Map<TypeMatcher, TypeAdapter<?>> ADAPTER_MAP = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     public static <T> TypeAttributes<T> forType(final Class<T> type) {
-        TypeAdapter adapter = ADAPTER_MAP.entrySet().stream()
+        TypeAdapter<T> adapter = (TypeAdapter<T>) ADAPTER_MAP.entrySet().stream()
                 .filter(entry -> entry.getKey().test(type))
                 .sorted(Comparator.comparingInt(value -> value.getKey().priority()))
                 .map(Map.Entry::getValue)
@@ -31,7 +32,7 @@ public final class TypeAdapters {
         TYPE_MAPPERS.put(type, mapper); // TODO validate duplicates
     }
 
-    public static void registerTypeAdapter(TypeMatcher matcher, TypeAdapter adapter) {
+    public static void registerTypeAdapter(TypeMatcher matcher, TypeAdapter<?> adapter) {
         if (ADAPTER_MAP.put(matcher, adapter) != null) {
             throw new IllegalArgumentException("Duplicate type matcher with id: " + matcher.getIdentifier());
         }

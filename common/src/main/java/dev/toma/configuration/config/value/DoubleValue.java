@@ -33,21 +33,20 @@ public class DoubleValue extends NumericValue<Double> {
         this.setValue(format.readDouble(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Double> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new DoubleValue(ValueData.of((TypeAttributes<Double>) attributes));
+        public ConfigValue<Double> serialize(TypeAttributes<Double> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new DoubleValue(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            buffer.writeDouble((Double) value.get());
+        public void encodeToBuffer(ConfigValue<Double> value, FriendlyByteBuf buffer) {
+            buffer.writeDouble(value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Double decodeFromBuffer(ConfigValue<Double> value, FriendlyByteBuf buffer) {
             return buffer.readDouble();
         }
 

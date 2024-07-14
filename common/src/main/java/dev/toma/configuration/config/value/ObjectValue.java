@@ -1,6 +1,7 @@
 package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
@@ -79,10 +80,18 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
         return Optional.empty();
     }
 
-    public static final class Adapter extends TypeAdapter {
+    @Override
+    protected void readFieldData(Field field) {
+        super.readFieldData(field);
+        if (field.isAnnotationPresent(Configurable.Synchronized.class)) {
+            Configuration.LOGGER.warn("Detected configurable object annotated with '@Configurable.Synchronized' annotation [{}.{}]. This has no effect and is most likely bug in this configuration. Contact the mod author", field.getType().getCanonicalName(), field.getName());
+        }
+    }
+
+    public static final class Adapter extends TypeAdapter<Map<String, ConfigValue<?>>> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+        public ConfigValue<Map<String, ConfigValue<?>>> serialize(TypeAttributes<Map<String, ConfigValue<?>>> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
             Class<?> type = instance.getClass();
             Map<String, ConfigValue<?>> map = serializer.serialize(type, instance);
             TypeAttributes<Map<String, ConfigValue<?>>> objectAttributes = attributes.child(attributes.id(), map, attributes.context());
@@ -90,11 +99,11 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public void encodeToBuffer(ConfigValue<Map<String, ConfigValue<?>>> value, FriendlyByteBuf buffer) {
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Map<String, ConfigValue<?>> decodeFromBuffer(ConfigValue<Map<String, ConfigValue<?>>> value, FriendlyByteBuf buffer) {
             return null;
         }
 

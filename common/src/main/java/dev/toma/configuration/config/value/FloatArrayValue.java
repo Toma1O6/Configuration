@@ -38,22 +38,21 @@ public class FloatArrayValue extends NumericArrayValue<Float> {
         this.setValue(format.readFloatArray(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Float[]> {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            saveToBuffer((Float[]) value.get(), buffer, FriendlyByteBuf::writeFloat);
+        public void encodeToBuffer(ConfigValue<Float[]> value, FriendlyByteBuf buffer) {
+            saveToBuffer(value.get(), buffer, FriendlyByteBuf::writeFloat);
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Float[] decodeFromBuffer(ConfigValue<Float[]> value, FriendlyByteBuf buffer) {
             return readFromBuffer(buffer, Float[]::new, FriendlyByteBuf::readFloat);
         }
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new FloatArrayValue(ValueData.of((TypeAttributes<Float[]>) attributes));
+        public ConfigValue<Float[]> serialize(TypeAttributes<Float[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new FloatArrayValue(ValueData.of(attributes));
         }
     }
 }

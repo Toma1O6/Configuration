@@ -33,21 +33,20 @@ public class IntValue extends NumericValue<Integer> {
         this.setValue(format.readInt(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Integer> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) {
-            return new IntValue(ValueData.of((TypeAttributes<Integer>) attributes));
+        public ConfigValue<Integer> serialize(TypeAttributes<Integer> attributes, Object instance, TypeSerializer serializer) {
+            return new IntValue(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            buffer.writeInt((Integer) value.get());
+        public void encodeToBuffer(ConfigValue<Integer> value, FriendlyByteBuf buffer) {
+            buffer.writeInt(value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Integer decodeFromBuffer(ConfigValue<Integer> value, FriendlyByteBuf buffer) {
             return buffer.readInt();
         }
 

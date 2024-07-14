@@ -38,22 +38,21 @@ public class DoubleArrayValue extends NumericArrayValue<Double> {
         this.setValue(format.readDoubleArray(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Double[]> {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            saveToBuffer((Double[]) value.get(), buffer, FriendlyByteBuf::writeDouble);
+        public void encodeToBuffer(ConfigValue<Double[]> value, FriendlyByteBuf buffer) {
+            saveToBuffer(value.get(), buffer, FriendlyByteBuf::writeDouble);
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Double[] decodeFromBuffer(ConfigValue<Double[]> value, FriendlyByteBuf buffer) {
             return readFromBuffer(buffer, Double[]::new, FriendlyByteBuf::readDouble);
         }
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new DoubleArrayValue(ValueData.of((TypeAttributes<Double[]>) attributes));
+        public ConfigValue<Double[]> serialize(TypeAttributes<Double[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new DoubleArrayValue(ValueData.of(attributes));
         }
     }
 }

@@ -26,17 +26,16 @@ public class BooleanArrayValue extends AbstractArrayValue<Boolean> {
         this.setValue(format.readBoolArray(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Boolean[]> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new BooleanArrayValue(ValueData.of((TypeAttributes<Boolean[]>) attributes));
+        public ConfigValue<Boolean[]> serialize(TypeAttributes<Boolean[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new BooleanArrayValue(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            Boolean[] arr = (Boolean[]) value.get();
+        public void encodeToBuffer(ConfigValue<Boolean[]> value, FriendlyByteBuf buffer) {
+            Boolean[] arr = value.get();
             buffer.writeInt(arr.length);
             for (Boolean b : arr) {
                 buffer.writeBoolean(b);
@@ -44,7 +43,7 @@ public class BooleanArrayValue extends AbstractArrayValue<Boolean> {
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Boolean[] decodeFromBuffer(ConfigValue<Boolean[]> value, FriendlyByteBuf buffer) {
             Boolean[] arr = new Boolean[buffer.readInt()];
             for (int i = 0; i < arr.length; i++) {
                 arr[i] = buffer.readBoolean();

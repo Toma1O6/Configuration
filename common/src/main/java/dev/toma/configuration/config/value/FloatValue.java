@@ -33,21 +33,20 @@ public class FloatValue extends NumericValue<Float> {
         this.setValue(format.readFloat(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Float> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new FloatValue(ValueData.of((TypeAttributes<Float>) attributes));
+        public ConfigValue<Float> serialize(TypeAttributes<Float> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new FloatValue(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            buffer.writeFloat((Float) value.get());
+        public void encodeToBuffer(ConfigValue<Float> value, FriendlyByteBuf buffer) {
+            buffer.writeFloat(value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Float decodeFromBuffer(ConfigValue<Float> value, FriendlyByteBuf buffer) {
             return buffer.readFloat();
         }
 

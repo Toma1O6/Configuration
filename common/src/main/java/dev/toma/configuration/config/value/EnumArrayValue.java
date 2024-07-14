@@ -37,16 +37,16 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
     }
 
     @SuppressWarnings("unchecked")
-    public static final class Adapter<E extends Enum<E>> extends TypeAdapter {
+    public static final class Adapter<E extends Enum<E>> extends TypeAdapter<E[]> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new EnumArrayValue<>(ValueData.of((TypeAttributes<E[]>) attributes));
+        public ConfigValue<E[]> serialize(TypeAttributes<E[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new EnumArrayValue<>(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            E[] values = (E[]) value.get();
+        public void encodeToBuffer(ConfigValue<E[]> value, FriendlyByteBuf buffer) {
+            E[] values = value.get();
             buffer.writeInt(values.length);
             for (E e : values) {
                 buffer.writeEnum(e);
@@ -54,7 +54,7 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public E[] decodeFromBuffer(ConfigValue<E[]> value, FriendlyByteBuf buffer) {
             int count = buffer.readInt();
             Class<E> type = (Class<E>) value.getValueType().getComponentType();
             E[] enumArray = (E[]) Array.newInstance(type, count);

@@ -70,22 +70,21 @@ public class StringArrayValue extends AbstractArrayValue<String> {
         this.setValue(format.readStringArray(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<String[]> {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            saveToBuffer((String[]) value.get(), buffer, FriendlyByteBuf::writeUtf);
+        public void encodeToBuffer(ConfigValue<String[]> value, FriendlyByteBuf buffer) {
+            saveToBuffer(value.get(), buffer, FriendlyByteBuf::writeUtf);
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public String[] decodeFromBuffer(ConfigValue<String[]> value, FriendlyByteBuf buffer) {
             return readFromBuffer(buffer, String[]::new, FriendlyByteBuf::readUtf);
         }
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new StringArrayValue(ValueData.of((TypeAttributes<String[]>) attributes));
+        public ConfigValue<String[]> serialize(TypeAttributes<String[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new StringArrayValue(ValueData.of(attributes));
         }
     }
 }

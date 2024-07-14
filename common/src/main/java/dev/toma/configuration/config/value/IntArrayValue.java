@@ -38,22 +38,21 @@ public class IntArrayValue extends NumericArrayValue<Integer> {
         this.setValue(format.readIntArray(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Integer[]> {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            saveToBuffer((Integer[]) value.get(), buffer, FriendlyByteBuf::writeInt);
+        public void encodeToBuffer(ConfigValue<Integer[]> value, FriendlyByteBuf buffer) {
+            saveToBuffer(value.get(), buffer, FriendlyByteBuf::writeInt);
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Integer[] decodeFromBuffer(ConfigValue<Integer[]> value, FriendlyByteBuf buffer) {
             return readFromBuffer(buffer, Integer[]::new, FriendlyByteBuf::readInt);
         }
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new IntArrayValue(ValueData.of((TypeAttributes<Integer[]>) attributes));
+        public ConfigValue<Integer[]> serialize(TypeAttributes<Integer[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new IntArrayValue(ValueData.of(attributes));
         }
     }
 }

@@ -174,7 +174,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
 
     private static class DummyCallbackAdapter<V> implements TypeAdapter.AdapterContext {
 
-        private final TypeAdapter typeAdapter;
+        private final TypeAdapter<?> typeAdapter;
         private final Field parentField;
         private final BiConsumer<V, Integer> setCallback;
         private final int index;
@@ -187,7 +187,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         }
 
         @Override
-        public TypeAdapter getAdapter() {
+        public TypeAdapter<?> getAdapter() {
             return typeAdapter;
         }
 

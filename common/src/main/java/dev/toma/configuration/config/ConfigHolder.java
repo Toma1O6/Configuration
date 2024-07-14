@@ -256,7 +256,7 @@ public final class ConfigHolder<CFG> {
                 continue;
             }
             TypeAttributes<T> attributes = (TypeAttributes<T>) TypeAdapters.forType(field.getType());
-            TypeAdapter adapter = attributes.adapter();
+            TypeAdapter<T> adapter = attributes.adapter();
             if (adapter == null) {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());
                 continue;
@@ -333,10 +333,10 @@ public final class ConfigHolder<CFG> {
         });
     }
 
-    private TypeAdapter.AdapterContext getAdapterContext(TypeAdapter parent, Class<?> type, Field field, TypeMapper<?, Object> mapper, Object instance) {
+    private TypeAdapter.AdapterContext getAdapterContext(TypeAdapter<?> parent, Class<?> type, Field field, TypeMapper<?, Object> mapper, Object instance) {
         return new TypeAdapter.AdapterContext() {
             @Override
-            public TypeAdapter getAdapter() {
+            public TypeAdapter<?> getAdapter() {
                 return parent;
             }
 

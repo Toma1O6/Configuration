@@ -34,20 +34,20 @@ public class LongValue extends NumericValue<Long> {
     }
 
     @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Long> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new LongValue(ValueData.of((TypeAttributes<Long>) attributes));
+        public ConfigValue<Long> serialize(TypeAttributes<Long> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new LongValue(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            buffer.writeLong((Long) value.get());
+        public void encodeToBuffer(ConfigValue<Long> value, FriendlyByteBuf buffer) {
+            buffer.writeLong(value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Long decodeFromBuffer(ConfigValue<Long> value, FriendlyByteBuf buffer) {
             return buffer.readLong();
         }
 

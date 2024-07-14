@@ -69,22 +69,21 @@ public class StringValue extends ConfigValue<String> {
         return descriptor;
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<String> {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            buffer.writeUtf((String) value.get());
+        public void encodeToBuffer(ConfigValue<String> value, FriendlyByteBuf buffer) {
+            buffer.writeUtf(value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public String decodeFromBuffer(ConfigValue<String> value, FriendlyByteBuf buffer) {
             return buffer.readUtf();
         }
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new StringValue(ValueData.of((TypeAttributes<String>) attributes));
+        public ConfigValue<String> serialize(TypeAttributes<String> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new StringValue(ValueData.of(attributes));
         }
     }
 }

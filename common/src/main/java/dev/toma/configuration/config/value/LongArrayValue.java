@@ -38,22 +38,21 @@ public class LongArrayValue extends NumericArrayValue<Long> {
         this.setValue(format.readLongArray(this.getId()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter extends TypeAdapter {
+    public static final class Adapter extends TypeAdapter<Long[]> {
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            saveToBuffer((Long[]) value.get(), buffer, FriendlyByteBuf::writeLong);
+        public void encodeToBuffer(ConfigValue<Long[]> value, FriendlyByteBuf buffer) {
+            saveToBuffer(value.get(), buffer, FriendlyByteBuf::writeLong);
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
+        public Long[] decodeFromBuffer(ConfigValue<Long[]> value, FriendlyByteBuf buffer) {
             return readFromBuffer(buffer, Long[]::new, FriendlyByteBuf::readLong);
         }
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new LongArrayValue(ValueData.of((TypeAttributes<Long[]>) attributes));
+        public ConfigValue<Long[]> serialize(TypeAttributes<Long[]> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new LongArrayValue(ValueData.of(attributes));
         }
     }
 }

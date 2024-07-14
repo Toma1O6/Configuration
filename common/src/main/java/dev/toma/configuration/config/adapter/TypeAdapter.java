@@ -7,13 +7,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public abstract class TypeAdapter {
+public abstract class TypeAdapter<V> {
 
-    public abstract ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException;
+    public abstract ConfigValue<V> serialize(TypeAttributes<V> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException;
 
-    public abstract void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer);
+    public abstract void encodeToBuffer(ConfigValue<V> value, FriendlyByteBuf buffer);
 
-    public abstract Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer);
+    public abstract V decodeFromBuffer(ConfigValue<V> value, FriendlyByteBuf buffer);
 
     public void setFieldValue(Field field, Object instance, Object value) throws IllegalAccessException {
         field.set(instance, value);
@@ -26,7 +26,7 @@ public abstract class TypeAdapter {
 
     public interface AdapterContext {
 
-        TypeAdapter getAdapter();
+        TypeAdapter<?> getAdapter();
 
         Field getOwner();
 

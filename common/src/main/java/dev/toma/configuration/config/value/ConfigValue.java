@@ -168,8 +168,9 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return this.valueData.getContext();
     }
 
-    public final TypeAdapter getAdapter() {
-        return this.getSerializationContext().getAdapter();
+    @SuppressWarnings("unchecked")
+    public final TypeAdapter<T> getAdapter() {
+        return (TypeAdapter<T>) this.getSerializationContext().getAdapter();
     }
 
     public final Class<T> getValueType() {

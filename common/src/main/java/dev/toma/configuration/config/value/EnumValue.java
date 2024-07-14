@@ -21,22 +21,21 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
         this.setValue(format.readEnum(this.getId(), getValueType()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static final class Adapter<E extends Enum<E>> extends TypeAdapter {
+    public static final class Adapter<E extends Enum<E>> extends TypeAdapter<E> {
 
         @Override
-        public ConfigValue<?> serialize(TypeAttributes<?> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
-            return new EnumValue<>(ValueData.of((TypeAttributes<E>) attributes));
+        public ConfigValue<E> serialize(TypeAttributes<E> attributes, Object instance, TypeSerializer serializer) throws IllegalAccessException {
+            return new EnumValue<>(ValueData.of(attributes));
         }
 
         @Override
-        public void encodeToBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            buffer.writeEnum((E) value.get());
+        public void encodeToBuffer(ConfigValue<E> value, FriendlyByteBuf buffer) {
+            buffer.writeEnum(value.get());
         }
 
         @Override
-        public Object decodeFromBuffer(ConfigValue<?> value, FriendlyByteBuf buffer) {
-            Class<E> type = (Class<E>) value.getValueType();
+        public E decodeFromBuffer(ConfigValue<E> value, FriendlyByteBuf buffer) {
+            Class<E> type = value.getValueType();
             return buffer.readEnum(type);
         }
     }
