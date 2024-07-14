@@ -75,6 +75,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     public final void forceSetValue(T value) {
         T corrected = this.validateType(value);
+        this.pendingValue = null;
         this.activeValue = corrected;
         this.valueData.setValueToMemory(corrected);
     }
