@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public final class ValueData<T> implements IDescriptionProvider {
+public final class ValueData<T> {
 
     private final TypeAdapter.TypeAttributes<T> attributes;
     private final Class<T> valueType;
@@ -54,7 +54,6 @@ public final class ValueData<T> implements IDescriptionProvider {
         return this.title.get();
     }
 
-    @Override
     public List<Component> getDescription() {
         return this.description.get();
     }
