@@ -38,10 +38,13 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     private long hoverTimeStart;
 
     public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, String configId) {
-        super(x, y, w, h, Component.translatable("config." + configId + ".option." + value.getId()));
+        super(x, y, w, h, value.getValueData().getTitle());
         this.configValue = value;
         this.configId = configId;
-        this.description = Arrays.stream(value.getDescription()).map(text -> Component.literal(text).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
+        // TODO apply correct config styles for comments
+        this.description = value.getValueData().getDescription().stream()
+                .map(text -> Component.literal(text.getString()).withStyle(ChatFormatting.GRAY))
+                .collect(Collectors.toList());
     }
 
     public void setDescriptionRenderer(IDescriptionRenderer renderer) {

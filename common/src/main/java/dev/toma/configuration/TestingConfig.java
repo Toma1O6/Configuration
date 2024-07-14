@@ -1,15 +1,12 @@
 package dev.toma.configuration;
 
-import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
-import dev.toma.configuration.config.validate.ValidationResult;
-import net.minecraft.network.chat.Component;
 
 import java.util.regex.Pattern;
 
-@Config(id = Configuration.MODID)
+@Config(id = "configuration-test", group = Configuration.MODID)
 public final class TestingConfig {
 
     @Configurable
@@ -51,15 +48,14 @@ public final class TestingConfig {
     @Configurable.Range(min = 50, max = 160)
     public int[] intArray = {153, 123, 54};
 
-    @Configurable
+    @Configurable(localization = Configurable.LocalizationPath.FULL)
     public long[] longArray = {13, 56, 133};
 
-    @Configurable
+    @Configurable(localization = Configurable.LocalizationPath.FULL)
     @Configurable.DecimalRange(min = 500.0F)
     public float[] floatArray = {135.32F, 1561.23F};
 
     @Configurable
-    @Configurable.ValueUpdateCallback(method = "onUpdate")
     public String[] stringArray = {"minecraft:test"};
 
     @Configurable
@@ -75,20 +71,23 @@ public final class TestingConfig {
         A, B, C, D
     }
 
-    public void onUpdate(String[] value, IValidationHandler handler) {
-        handler.setValidationResult(ValidationResult.warn(Component.literal("Generic warning")));
-    }
-
     public static class NestedTest {
 
-        @Configurable
-        @Configurable.ValueUpdateCallback(method = "onUpdate")
+        @Configurable(localization = Configurable.LocalizationPath.FULL)
         public int testInt = 13;
 
-        public void onUpdate(int value, IValidationHandler handler) {
-            if (value == 0) {
-                handler.setValidationResult(ValidationResult.warn(Component.literal("value is 0")));
-            }
-        }
+        @Configurable
+        public int testInt2 = 15;
+
+        @Configurable
+        public AnotherNestedTest test = new AnotherNestedTest();
+    }
+
+    public static class AnotherNestedTest {
+
+        @Configurable(localization = Configurable.LocalizationPath.FULL)
+        @Configurable.Synchronized
+        @Configurable.Comment(localize = true, value = "Nested boolean value")
+        public boolean bool = true;
     }
 }

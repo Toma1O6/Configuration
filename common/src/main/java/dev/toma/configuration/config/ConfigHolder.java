@@ -268,13 +268,13 @@ public final class ConfigHolder<CFG> {
                 comments = comment.value();
                 localizeComments = comment.localize();
             }
-            Configurable.LocalizationKey localizationType = value.localizationType();
+            Configurable.LocalizationPath localizationType = value.localization();
             field.setAccessible(true);
             Object fieldValue = field.get(instance);
             TypeMapper<T, Object> mapper = attributes.mapper();
             Object migratedField = mapper.migrate((T) fieldValue);
             TypeAdapter.AdapterContext context = this.getAdapterContext(adapter, type, field, mapper, instance);
-            TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(field.getName(), (T) migratedField, context, localizationType, comments, localizeComments);
+            TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(this.configId, field.getName(), (T) migratedField, context, localizationType, comments, localizeComments);
             ConfigValue<?> cfgValue = adapter.serialize(typeAttributes, migratedField, (t, i) -> this.serializeType(t, i, false));
             Configurable.ValueUpdateCallback callback = field.getAnnotation(Configurable.ValueUpdateCallback.class);
             if (callback != null) {
@@ -327,7 +327,7 @@ public final class ConfigHolder<CFG> {
             } else {
                 if (!value.shouldSynchronize())
                     return;
-                String path = value.getFieldPath();
+                String path = value.getFullFieldPath();
                 dest.put(path, value);
             }
         });

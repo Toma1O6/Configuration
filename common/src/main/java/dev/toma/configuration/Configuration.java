@@ -19,17 +19,20 @@ import java.util.Optional;
 
 public final class Configuration {
 
+    public static final String MODID = "configuration";
+
     @ApiStatus.Internal
     public static final Logger LOGGER = LogManager.getLogger("Configuration");
     @ApiStatus.Internal
     public static final Platform PLATFORM = ServiceHelper.loadService(Platform.class);
-    public static final String MODID = "configuration";
+    @ApiStatus.Internal
+    public static ConfigurationConfig config;
 
     @ApiStatus.Internal
     public static void setup() {
+        config = registerConfig(ConfigurationConfig.class, ConfigFormats.YAML).getConfigInstance();
         if (PLATFORM.isDevelopmentEnvironment()) {
-            //registerConfig(TestingConfig.class, ConfigFormats.YAML);
-            registerConfig(ArrayDebugConfig.class, ConfigFormats.JSON);
+            registerConfig(TestingConfig.class, ConfigFormats.YAML);
         }
     }
 

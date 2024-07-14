@@ -7,7 +7,6 @@ import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IDescriptionProvider;
 
 import java.io.File;
 import java.io.FileReader;
@@ -238,7 +237,7 @@ public final class GsonFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(IDescriptionProvider provider) {
+    public void addComments(String[] fileComments) {
         // comments are not supported for JSON4 files
     }
 

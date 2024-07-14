@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Configurable {
 
-    LocalizationKey localizationType() default LocalizationKey.FIELD; // TODO docs
+    LocalizationPath localization() default LocalizationPath.FIELD; // TODO docs
 
     /**
      * Allows you to add description to configurable value.
@@ -54,7 +54,7 @@ public @interface Configurable {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface UpdateRestriction {
-        UpdateRestrictions value() default UpdateRestrictions.NONE;
+        UpdateRestrictions value();
     }
 
     /**
@@ -144,13 +144,6 @@ public @interface Configurable {
     @interface FixedSize {
     }
 
-    @Target(ElementType.FIELD)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface DependsOn { // TODO implement
-        String field() default "";
-        String[] values() default {};
-    }
-
     /**
      * Allows you to map custom listener method to listen for value change.
      * Could be useful for example when validating item ID or something like that.
@@ -227,7 +220,7 @@ public @interface Configurable {
         }
     }
 
-    enum LocalizationKey {
+    enum LocalizationPath {
         FULL,
         FIELD
     }

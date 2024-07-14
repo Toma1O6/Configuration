@@ -4,7 +4,6 @@ import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IDescriptionProvider;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -370,9 +369,8 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(IDescriptionProvider provider) {
-        String[] comments = provider.getDescription();
-        for (String comment : comments) {
+    public void addComments(String[] fileComments) {
+        for (String comment : fileComments) {
             spaces();
             buffer.append("# ").append(comment).append("\n");
         }

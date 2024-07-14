@@ -36,12 +36,12 @@ public abstract class TypeAdapter<V> {
         }
     }
 
-    public record TypeAttributes<V>(String id, V value, TypeAdapter.AdapterContext context,
-                                    Configurable.LocalizationKey localization, String[] fileComments, boolean localizeComments
+    public record TypeAttributes<V>(String configOwner, String id, V value, TypeAdapter.AdapterContext context,
+                                    Configurable.LocalizationPath localization, String[] fileComments, boolean localizeComments
     ) {
 
         public <R> TypeAttributes<R> child(String id, R value, TypeAdapter.AdapterContext ctx) {
-            return new TypeAttributes<>(id, value, ctx, localization, fileComments, localizeComments);
+            return new TypeAttributes<>(configOwner, id, value, ctx, localization, fileComments, localizeComments);
         }
     }
 }

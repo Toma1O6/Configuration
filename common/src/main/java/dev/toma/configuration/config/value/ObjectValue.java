@@ -63,6 +63,11 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
         return Optional.empty();
     }
 
+    @Override
+    public boolean shouldSynchronize() {
+        return false;
+    }
+
     public static <V> Optional<V> getChildValue(Iterator<String> iterator, Class<V> targetType, Map<String, ConfigValue<?>> valueMap) {
         String key = iterator.next();
         ConfigValue<?> value = valueMap.get(key);
@@ -84,7 +89,7 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     protected void readFieldData(Field field) {
         super.readFieldData(field);
         if (field.isAnnotationPresent(Configurable.Synchronized.class)) {
-            Configuration.LOGGER.warn("Detected configurable object annotated with '@Configurable.Synchronized' annotation [{}.{}]. This has no effect and is most likely bug in this configuration. Contact the mod author", field.getType().getCanonicalName(), field.getName());
+            Configuration.LOGGER.warn("Detected configurable object annotated with '@Configurable.Synchronized' annotation [{}.{}]. This has no effect and is most likely bug in this configuration. Contact the mod author", field.getDeclaringClass().getCanonicalName(), field.getName());
         }
     }
 
@@ -100,11 +105,12 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
 
         @Override
         public void encodeToBuffer(ConfigValue<Map<String, ConfigValue<?>>> value, FriendlyByteBuf buffer) {
+            throw new UnsupportedOperationException("Object values cannot be serialized to network buffers!");
         }
 
         @Override
         public Map<String, ConfigValue<?>> decodeFromBuffer(ConfigValue<Map<String, ConfigValue<?>>> value, FriendlyByteBuf buffer) {
-            return null;
+            throw new UnsupportedOperationException("Object values cannot be serialized to network buffers!");
         }
 
         @Override

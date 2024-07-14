@@ -1,6 +1,5 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
@@ -57,7 +56,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         }
     }
 
-    public final boolean shouldSynchronize() {
+    public boolean shouldSynchronize() {
         return synchronizeToClient;
     }
 
@@ -110,11 +109,11 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         Configurable.UpdateRestriction restriction = field.getAnnotation(Configurable.UpdateRestriction.class);
         if (restriction != null) {
             this.updateRestriction = restriction.value();
-            if (this.updateRestriction == UpdateRestrictions.GAME_RESTART && this.synchronizeToClient) {
-                throw new IllegalArgumentException("Config value which can be updated only on game restart cannot be synchronized!");
+            if (this.updateRestriction == UpdateRestrictions.GAME_RESTART && this.shouldSynchronize()) {
+                throw new IllegalArgumentException("Config value which can be updated only on game restart cannot be synchronized! Field " + field.getDeclaringClass().getCanonicalName() + "." + field.getName());
             }
         }
-        if (this.synchronizeToClient) {
+        if (this.shouldSynchronize()) {
             this.updateRestriction = UpdateRestrictions.MAIN_MENU;
         }
         this.readFieldData(field);
@@ -145,12 +144,8 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     protected abstract void serialize(IConfigFormat format);
 
     public final void serializeValue(IConfigFormat format) {
-        format.addComments(valueData);
+        format.addComments(valueData.getFileComments());
         this.serialize(format);
-    }
-
-    public final String[] getDescription() {
-        return this.valueData.getDescription();
     }
 
     protected abstract void deserialize(IConfigFormat format) throws ConfigValueMissingException;
@@ -181,15 +176,8 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return this.valueData;
     }
 
-    public final String getFieldPath() {
-        List<String> paths = new ArrayList<>();
-        paths.add(this.getId());
-        ConfigValue<?> parent = this;
-        while ((parent = parent.valueData.getParent()) != null) {
-            paths.add(parent.getId());
-        }
-        Collections.reverse(paths);
-        return paths.stream().reduce("", (a, b) -> a + "." + b);
+    public final String getFullFieldPath() {
+        return this.valueData.getFullFieldPath();
     }
 
     @Override

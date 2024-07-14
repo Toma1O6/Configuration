@@ -3,7 +3,6 @@ package dev.toma.configuration.config.format;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IDescriptionProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +84,7 @@ public interface IConfigFormat {
 
     void writeFile(File file) throws IOException;
 
-    void addComments(IDescriptionProvider provider);
+    void addComments(String[] fileComments);
 
     static Boolean parseBoolean(String string) throws ConfigValueMissingException {
         try {
