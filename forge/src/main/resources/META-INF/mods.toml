@@ -6,7 +6,7 @@ license="${mod_licence}"
 modId="${mod_id}"
 version="${version}"
 displayName="${mod_name}"
-logoFile="assets/icon.png"
+logoFile="assets/logo.png"
 authors="${mod_authors}"
 description='''${mod_description}'''
 

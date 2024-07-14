@@ -3,7 +3,9 @@ package dev.toma.configuration.client.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.client.ConfigurationClient;
 import dev.toma.configuration.client.IValidationHandler;
+import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
@@ -39,16 +41,22 @@ public abstract class AbstractConfigScreen extends Screen {
             ResourceLocation.withDefaultNamespace("widget/button_highlighted")
     );
     public static final Marker MARKER = MarkerManager.getMarker("Screen");
+    protected final ConfigHolder<?> holder;
+    protected final ConfigTheme theme;
     protected final Screen last;
-    protected final String configId;
 
     protected int index;
     protected int pageSize;
 
-    public AbstractConfigScreen(Component title, Screen previous, String configId) {
+    public AbstractConfigScreen(Component title, Screen previous, ConfigHolder<?> configHolder) {
         super(title);
+        this.holder = configHolder;
+        this.theme = ConfigurationClient.getConfigTheme(configHolder);
         this.last = previous;
-        this.configId = configId;
+    }
+
+    public String getConfigId() {
+        return this.holder.getConfigId();
     }
 
     @Override
@@ -101,11 +109,9 @@ public abstract class AbstractConfigScreen extends Screen {
     private void buttonRevertToDefaultClicked(Button button) {
         DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_DEFAULTS, new Component[] {ConfigEntryWidget.REVERT_DEFAULTS_DIALOG_TEXT}, this);
         dialog.onConfirmed(screen -> {
-            Configuration.LOGGER.info(MARKER, "Reverting config {} to default values", this.configId);
-            ConfigHolder.getConfig(this.configId).ifPresent(holder -> {
-                revertToDefault(holder.values());
-                ConfigIO.saveClientValues(holder);
-            });
+            Configuration.LOGGER.info(MARKER, "Reverting config {} to default values", this.getConfigId());
+            this.revertToDefault(this.holder.values());
+            ConfigIO.saveClientValues(this.holder);
             this.backToConfigList();
         });
         minecraft.setScreen(dialog);
@@ -114,7 +120,7 @@ public abstract class AbstractConfigScreen extends Screen {
     private void buttonRevertChangesClicked(Button button) {
         DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_CHANGES, new Component[] {ConfigEntryWidget.REVERT_CHANGES_DIALOG_TEXT}, this);
         dialog.onConfirmed(screen -> {
-            ConfigHolder.getConfig(this.configId).ifPresent(ConfigIO::reloadClientValues);
+            ConfigIO.reloadClientValues(this.holder);
             this.backToConfigList();
         });
         minecraft.setScreen(dialog);
@@ -141,7 +147,7 @@ public abstract class AbstractConfigScreen extends Screen {
 
     private void saveConfig(boolean force) {
         if (force || !(last instanceof AbstractConfigScreen)) {
-            ConfigHolder.getConfig(this.configId).ifPresent(ConfigIO::saveClientValues);
+            ConfigIO.saveClientValues(this.holder);
         }
     }
 

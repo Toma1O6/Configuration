@@ -3,7 +3,7 @@ package dev.toma.configuration.config;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.adapter.TypeAdapters;
+import dev.toma.configuration.config.adapter.TypeAdapterManager;
 import dev.toma.configuration.config.adapter.TypeAttributes;
 import dev.toma.configuration.config.adapter.TypeMapper;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
@@ -11,6 +11,8 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
@@ -50,8 +52,11 @@ public final class ConfigHolder<CFG> {
     private final Map<String, ConfigValue<?>> networkSerializedFields = new LinkedHashMap<>();
     // Set of file refresh listeners
     private final Set<IFileRefreshListener<CFG>> fileRefreshListeners = new HashSet<>();
+    // Title component for GUI displays
+    private final Component title;
     // Lock for async operations
     private final Object lock = new Object();
+    private ResourceLocation backgroundTexture;
 
     public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, String group, IConfigFormatHandler format) {
         this.configClass = cfgClass;
@@ -71,6 +76,7 @@ public final class ConfigHolder<CFG> {
         }
         this.format = format;
         this.loadNetworkFields(valueMap, networkSerializedFields);
+        this.title = Component.translatable("config.screen." + this.configId);
     }
 
     /**
@@ -228,6 +234,10 @@ public final class ConfigHolder<CFG> {
         return networkSerializedFields;
     }
 
+    public Component getTitle() {
+        return title;
+    }
+
     /**
      * Dispatches file refresh event to all registered listeners
      */
@@ -240,6 +250,18 @@ public final class ConfigHolder<CFG> {
      */
     public Object getLock() {
         return lock;
+    }
+
+    public void setBackgroundTexture(ResourceLocation backgroundTexture) {
+        this.backgroundTexture = backgroundTexture;
+    }
+
+    public ResourceLocation getBackgroundTexture() {
+        return backgroundTexture;
+    }
+
+    public boolean hasCustomBackgroundTexture() {
+        return backgroundTexture != null;
     }
 
     @SuppressWarnings("unchecked")
@@ -255,7 +277,7 @@ public final class ConfigHolder<CFG> {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping config field {}, only instance non-final types are supported", field);
                 continue;
             }
-            TypeAttributes<T> attributes = (TypeAttributes<T>) TypeAdapters.forType(field.getType());
+            TypeAttributes<T> attributes = (TypeAttributes<T>) TypeAdapterManager.forType(field.getType());
             TypeAdapter<T> adapter = attributes.adapter();
             if (adapter == null) {
                 Configuration.LOGGER.warn(ConfigIO.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());

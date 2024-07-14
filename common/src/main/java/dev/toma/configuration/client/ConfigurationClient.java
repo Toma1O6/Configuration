@@ -2,21 +2,27 @@ package dev.toma.configuration.client;
 
 import dev.toma.configuration.client.screen.ConfigGroupScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
+import dev.toma.configuration.client.theme.ConfigTheme;
+import dev.toma.configuration.client.theme.DefaultConfigTheme;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.screens.Screen;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 public final class ConfigurationClient {
+
+    private static final Map<String, ConfigTheme> CONFIG_THEMES = new HashMap<>();
 
     /**
      * You can obtain default config screen based on provided config class.
      *
      * @param configClass Your config class
-     * @param previous Previously open screen
+     * @param previous    Previously open screen
      * @return Either new config screen or {@code null} when no config exists for the provided class
      */
     public static Screen getConfigScreen(Class<?> configClass, Screen previous) {
@@ -38,7 +44,7 @@ public final class ConfigurationClient {
     public static Screen getConfigScreen(String configId, Screen previous) {
         return ConfigHolder.getConfig(configId).map(holder -> {
             Map<String, ConfigValue<?>> valueMap = holder.getValueMap();
-            return new ConfigScreen(configId, holder.getConfigId(), valueMap, previous);
+            return new ConfigScreen(holder, holder.getTitle(), valueMap, previous);
         }).orElse(null);
     }
 
@@ -46,7 +52,7 @@ public final class ConfigurationClient {
      * Obtain group of multiple configs based on group ID. This is useful when you have multiple config files
      * for your mod.
      *
-     * @param group Group ID, usually mod ID
+     * @param group    Group ID, usually mod ID
      * @param previous Previously open screen
      * @return Either new config group screen or null when no config exists under the provided group
      */
@@ -59,5 +65,17 @@ public final class ConfigurationClient {
 
     public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
         return new ConfigGroupScreen(previous, groupId, group);
+    }
+
+    public static void setCustomConfigTheme(ConfigHolder<?> holder, UnaryOperator<ConfigTheme> themeBuilder) {
+        ConfigTheme theme = getConfigTheme(holder).copy();
+        CONFIG_THEMES.put(holder.getConfigId(), themeBuilder.apply(theme));
+    }
+
+    public static ConfigTheme getConfigTheme(ConfigHolder<?> holder) {
+        return CONFIG_THEMES.computeIfAbsent(holder.getConfigId(), id -> holder.hasCustomBackgroundTexture()
+                ? new DefaultConfigTheme(holder.getBackgroundTexture())
+                : DefaultConfigTheme.DEFAULT
+        );
     }
 }

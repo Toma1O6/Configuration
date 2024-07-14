@@ -1,6 +1,6 @@
 package dev.toma.configuration.client.screen;
 
-import dev.toma.configuration.client.DisplayAdapter;
+import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import net.minecraft.client.gui.Font;
@@ -53,7 +53,7 @@ public class ConfigGroupScreen extends Screen {
             String configId = value.getConfigId();
             this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, Component.translatable("config.screen." + configId), this.font));
             this.addRenderableWidget(Button.builder(ConfigEntryWidget.OPEN, btn -> {
-                ConfigScreen screen = new ConfigScreen(configId, configId, value.getValueMap(), this);
+                ConfigScreen screen = new ConfigScreen(value, value.getTitle(), value.getValueMap(), this);
                 minecraft.setScreen(screen);
             }).pos(DisplayAdapter.getValueX(posX, componentWidth), y).size(DisplayAdapter.getValueWidth(componentWidth), 20).build());
         }

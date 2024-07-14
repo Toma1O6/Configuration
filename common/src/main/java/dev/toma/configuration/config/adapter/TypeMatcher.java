@@ -2,11 +2,12 @@ package dev.toma.configuration.config.adapter;
 
 import dev.toma.configuration.Configuration;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public interface TypeMatcher extends Predicate<Class<?>> {
+public interface TypeMatcher extends Predicate<Class<?>>, Comparable<TypeMatcher> {
 
     ResourceLocation getIdentifier();
 
@@ -114,6 +115,11 @@ public interface TypeMatcher extends Predicate<Class<?>> {
         @Override
         public int priority() {
             return priority;
+        }
+
+        @Override
+        public int compareTo(@NotNull TypeMatcher o) {
+            return this.priority() - o.priority();
         }
 
         @Override

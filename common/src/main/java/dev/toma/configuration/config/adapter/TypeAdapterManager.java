@@ -2,21 +2,19 @@ package dev.toma.configuration.config.adapter;
 
 import dev.toma.configuration.config.value.*;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public final class TypeAdapters {
+public final class TypeAdapterManager {
 
     private static final Map<Class<?>, TypeMapper<?, ?>> TYPE_MAPPERS = new HashMap<>();
-    private static final Map<TypeMatcher, TypeAdapter<?>> ADAPTER_MAP = new HashMap<>();
+    private static final Set<AdapterHolder<TypeAdapter<?>>> ADAPTERS = new HashSet<>();
 
     @SuppressWarnings("unchecked")
     public static <T> TypeAttributes<T> forType(final Class<T> type) {
-        TypeAdapter<T> adapter = (TypeAdapter<T>) ADAPTER_MAP.entrySet().stream()
-                .filter(entry -> entry.getKey().test(type))
-                .sorted(Comparator.comparingInt(value -> value.getKey().priority()))
-                .map(Map.Entry::getValue)
+        TypeAdapter<T> adapter = (TypeAdapter<T>) ADAPTERS.stream()
+                .filter(entry -> entry.test(type))
+                .sorted()
+                .map(AdapterHolder::adapter)
                 .findFirst()
                 .orElse(null);
         TypeMapper<T, Object> mapper = getTypeMapper(type);
@@ -33,7 +31,7 @@ public final class TypeAdapters {
     }
 
     public static void registerTypeAdapter(TypeMatcher matcher, TypeAdapter<?> adapter) {
-        if (ADAPTER_MAP.put(matcher, adapter) != null) {
+        if (!ADAPTERS.add(new AdapterHolder<>(matcher, adapter))) {
             throw new IllegalArgumentException("Duplicate type matcher with id: " + matcher.getIdentifier());
         }
     }

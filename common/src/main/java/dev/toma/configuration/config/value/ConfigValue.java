@@ -8,6 +8,7 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
+import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

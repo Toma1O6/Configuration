@@ -77,4 +77,13 @@ public @interface Config {
          */
         String[] changes() default {};
     }
+
+    class Gui {
+
+        @Target(ElementType.TYPE)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface BackgroundTexture {
+            String value() default "";
+        }
+    }
 }

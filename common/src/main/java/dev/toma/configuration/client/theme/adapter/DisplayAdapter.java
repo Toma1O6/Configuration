@@ -1,11 +1,14 @@
-package dev.toma.configuration.client;
+package dev.toma.configuration.client.theme.adapter;
 
+import dev.toma.configuration.client.ClientErrors;
+import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.client.screen.ArrayConfigScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
 import dev.toma.configuration.client.widget.BooleanWidget;
 import dev.toma.configuration.client.widget.ColorWidget;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.EnumWidget;
+import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
@@ -30,16 +33,16 @@ import java.util.regex.Pattern;
 @FunctionalInterface
 public interface DisplayAdapter {
 
-    void placeWidgets(ConfigValue<?> value, Field field, WidgetAdder container);
+    void placeWidgets(ConfigHolder<?> holder, ConfigValue<?> value, Field field, WidgetAdder container);
 
     static DisplayAdapter booleanValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             return new BooleanWidget(getValueX(x, width), y, getValueWidth(width), 20, (BooleanValue) value);
         });
     }
 
     static DisplayAdapter characterValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             EditBox widget = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             CharValue charValue = (CharValue) value;
             char character = charValue.get();
@@ -60,7 +63,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter integerValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             IntValue intValue = (IntValue) value;
             int num = intValue.get();
@@ -92,7 +95,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter longValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             LongValue longValue = (LongValue) value;
             long num = longValue.get();
@@ -124,7 +127,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter floatValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             FloatValue floatValue = (FloatValue) value;
             DecimalFormat format = ConfigUtils.getDecimalFormat(field);
@@ -157,7 +160,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter doubleValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             EditBox tfw = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
             DoubleValue doubleValue = (DoubleValue) value;
             DecimalFormat format = ConfigUtils.getDecimalFormat(field);
@@ -190,7 +193,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter stringValue() {
-        return (value, field, container) -> {
+        return (holder, value, field, container) -> {
             Configurable.Gui.ColorValue colorValue = field.getAnnotation(Configurable.Gui.ColorValue.class);
             StringValue strValue = (StringValue) value;
             EditBox widget = container.addConfigWidget((x, y, width, height, configId) -> {
@@ -225,7 +228,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter booleanArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             BooleanArrayValue arrayValue = (BooleanArrayValue) value;
             BiConsumer<Boolean, Integer> setCallback = (val, i) -> {
                 Boolean[] arr = arrayValue.get();
@@ -235,7 +238,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<Boolean, BooleanArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Boolean, BooleanArrayValue> screen = new ArrayConfigScreen<>(holder, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Boolean[] arr = arrayValue.get();
@@ -261,7 +264,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter integerArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             IntArrayValue arrayValue = (IntArrayValue) value;
             BiConsumer<Integer, Integer> setCallback = (val, i) -> {
                 Integer[] arr = arrayValue.get();
@@ -271,7 +274,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<Integer, IntArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Integer, IntArrayValue> screen = new ArrayConfigScreen<>(holder, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Integer[] arr = arrayValue.get();
@@ -297,7 +300,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter longArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             LongArrayValue arrayValue = (LongArrayValue) value;
             BiConsumer<Long, Integer> setCallback = (val, i) -> {
                 Long[] arr = arrayValue.get();
@@ -307,7 +310,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<Long, LongArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Long, LongArrayValue> screen = new ArrayConfigScreen<>(holder, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Long[] arr = arrayValue.get();
@@ -333,7 +336,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter floatArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             FloatArrayValue arrayValue = (FloatArrayValue) value;
             BiConsumer<Float, Integer> setCallback = (val, i) -> {
                 Float[] arr = arrayValue.get();
@@ -343,7 +346,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<Float, FloatArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Float, FloatArrayValue> screen = new ArrayConfigScreen<>(holder, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Float[] arr = arrayValue.get();
@@ -369,7 +372,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter doubleArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             DoubleArrayValue arrayValue = (DoubleArrayValue) value;
             BiConsumer<Double, Integer> setCallback = (val, i) -> {
                 Double[] arr = arrayValue.get();
@@ -379,7 +382,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<Double, DoubleArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<Double, DoubleArrayValue> screen = new ArrayConfigScreen<>(holder, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     Double[] arr = arrayValue.get();
@@ -405,7 +408,7 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter stringArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             StringArrayValue arrayValue = (StringArrayValue) value;
             BiConsumer<String, Integer> setCallback = (val, i) -> {
                 String[] arr = arrayValue.get();
@@ -415,7 +418,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<String, StringArrayValue> screen = new ArrayConfigScreen<>(value.getId(), configId, arrayValue, usedScreen);
+                ArrayConfigScreen<String, StringArrayValue> screen = new ArrayConfigScreen<>(holder, arrayValue, usedScreen);
                 screen.fetchSize(() -> arrayValue.get().length);
                 screen.valueFactory((id, i) -> {
                     String[] arr = arrayValue.get();
@@ -441,14 +444,14 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter enumValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             return new EnumWidget<>(getValueX(x, width), y, getValueWidth(width), 20, (EnumValue<?>) value);
         });
     }
 
     @SuppressWarnings("unchecked")
     static <E extends Enum<E>> DisplayAdapter enumArrayValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             EnumArrayValue<E> enumArray = (EnumArrayValue<E>) value;
             BiConsumer<E, Integer> setCallback = (val, i) -> {
                 E[] arr = enumArray.get();
@@ -458,7 +461,7 @@ public interface DisplayAdapter {
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen usedScreen = client.screen;
-                ArrayConfigScreen<E, EnumArrayValue<E>> screen = new ArrayConfigScreen<>(value.getId(), configId, enumArray, usedScreen);
+                ArrayConfigScreen<E, EnumArrayValue<E>> screen = new ArrayConfigScreen<>(holder, enumArray, usedScreen);
                 screen.fetchSize(() -> enumArray.get().length);
                 screen.valueFactory((id, i) -> {
                     E[] arr = enumArray.get();
@@ -486,13 +489,13 @@ public interface DisplayAdapter {
     }
 
     static DisplayAdapter objectValue() {
-        return (value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
+        return (holder, value, field, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             ObjectValue objectValue = (ObjectValue) value;
             Map<String, ConfigValue<?>> valueMap = objectValue.get();
             Button.OnPress pressable = btn -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen currentScreen = client.screen;
-                Screen nestedConfigScreen = new ConfigScreen(container.getComponentName(), configId, valueMap, currentScreen);
+                Screen nestedConfigScreen = new ConfigScreen(holder, container.getComponentName(), valueMap, currentScreen);
                 client.setScreen(nestedConfigScreen);
             };
             return Button.builder(ConfigEntryWidget.OPEN, pressable).pos(getValueX(x, width), y).size(getValueWidth(width), 20).build();

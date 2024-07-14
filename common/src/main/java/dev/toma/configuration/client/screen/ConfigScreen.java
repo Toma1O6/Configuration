@@ -1,9 +1,9 @@
 package dev.toma.configuration.client.screen;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.client.DisplayAdapter;
-import dev.toma.configuration.client.DisplayAdapterManager;
+import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
+import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
@@ -23,12 +23,8 @@ public class ConfigScreen extends AbstractConfigScreen {
 
     private final Map<String, ConfigValue<?>> valueMap;
 
-    public ConfigScreen(String ownerIdentifier, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
-        this(Component.translatable("config.screen." + ownerIdentifier), configId, valueMap, previous);
-    }
-
-    public ConfigScreen(Component screenTitle, String configId, Map<String, ConfigValue<?>> valueMap, Screen previous) {
-        super(screenTitle, previous, configId);
+    public ConfigScreen(ConfigHolder<?> configHolder, Component screenTitle, Map<String, ConfigValue<?>> valueMap, Screen previous) {
+        super(screenTitle, previous, configHolder);
         this.valueMap = valueMap;
     }
 
@@ -49,17 +45,17 @@ public class ConfigScreen extends AbstractConfigScreen {
             errorOffset -= correct;
             offset += correct;
             ConfigValue<?> value = values.get(i);
-            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.configId));
+            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.getConfigId()));
             widget.setDescriptionRenderer((graphics, widget1, severity, text) -> renderEntryDescription(graphics, widget1, severity, text));
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();
-            DisplayAdapter adapter = DisplayAdapterManager.forType(field.getType());
+            DisplayAdapter adapter = this.theme.getAdapter(field.getType());
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", field.getType().getSimpleName());
                 continue;
             }
             try {
-                adapter.placeWidgets(value, field, widget);
+                adapter.placeWidgets(this.holder, value, field, widget); // TODO config theme
                 initializeGuiValue(value, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", field.getType().getSimpleName()), e);

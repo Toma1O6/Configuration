@@ -10,6 +10,7 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.service.ServiceHelper;
 import dev.toma.configuration.service.services.Platform;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -80,6 +81,11 @@ public final class Configuration {
         ConfigHolder.registerConfig(holder);
         if (cfgClass.getAnnotation(Config.NoAutoSync.class) == null) {
             ConfigIO.FILE_WATCH_MANAGER.addTrackedConfig(holder);
+        }
+        Config.Gui.BackgroundTexture texture = cfgClass.getAnnotation(Config.Gui.BackgroundTexture.class);
+        if (texture != null) {
+            ResourceLocation resourceLocation = ResourceLocation.parse(texture.value());
+            holder.setBackgroundTexture(resourceLocation);
         }
         return holder;
     }

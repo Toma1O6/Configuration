@@ -1,11 +1,11 @@
 package dev.toma.configuration.client.screen;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.client.DisplayAdapter;
-import dev.toma.configuration.client.DisplayAdapterManager;
+import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
+import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.adapter.TypeAdapters;
+import dev.toma.configuration.config.adapter.TypeAdapterManager;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.AbstractArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
@@ -34,8 +34,8 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
     private ElementAddHandler addHandler;
     private ElementRemoveHandler<V[]> removeHandler;
 
-    public ArrayConfigScreen(String ownerIdentifier, String configId, C array, Screen previous) {
-        super(Component.translatable(String.format("config.%s.option.%s", configId, ownerIdentifier)), previous, configId);
+    public ArrayConfigScreen(ConfigHolder<?> holder, C array, Screen previous) {
+        super(array.getValueData().getTitle(), previous, holder);
         this.array = array;
         this.fixedSize = array.isFixedSize();
     }
@@ -66,7 +66,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         int offset = 0;
 
         Class<?> compType = array.get().getClass().getComponentType();
-        DisplayAdapter adapter = DisplayAdapterManager.forType(compType);
+        DisplayAdapter adapter = this.theme.getAdapter(compType);
         TypeAdapter.AdapterContext context = array.getSerializationContext();
         Field owner = context.getOwner();
         for (int i = this.index; i < this.index + this.pageSize; i++) {
@@ -78,14 +78,14 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             offset += correct;
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
-            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.configId));
+            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.getConfigId()));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
                 continue;
             }
             try {
-                adapter.placeWidgets(dummy, owner, widget);
+                adapter.placeWidgets(this.holder, dummy, owner, widget); // TODO config theme
                 initializeGuiValue(dummy, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", compType.getSimpleName()), e);
@@ -180,7 +180,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         private final int index;
 
         private DummyCallbackAdapter(Class<V> type, Field parentField, BiConsumer<V, Integer> setCallback, int index) {
-            this.typeAdapter = TypeAdapters.forType(type).adapter();
+            this.typeAdapter = TypeAdapterManager.forType(type).adapter();
             this.parentField = parentField;
             this.setCallback = setCallback;
             this.index = index;
