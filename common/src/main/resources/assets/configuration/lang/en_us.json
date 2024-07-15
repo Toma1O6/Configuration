@@ -8,6 +8,8 @@
   "text.configuration.value.revert.changes": "Rollback changes",
   "text.configuration.value.revert.changes.dialog": "Are you sure you want to discard your currently made changes?",
   "text.configuration.value.add_element": "Add element",
+  "text.configuration.value.revert": "Revert changes",
+  "text.configuration.value.revert_default": "Revert to default",
   "text.configuration.screen.select_config": "Select config",
   "text.configuration.screen.dialog.confirm": "Confirm",
   "text.configuration.screen.dialog.cancel": "Cancel",

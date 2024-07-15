@@ -1,5 +1,6 @@
 package dev.toma.configuration.client.theme;
 
+import dev.toma.configuration.client.theme.adapter.BooleanDisplayAdapter;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.config.adapter.TypeMatcher;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +20,7 @@ public class DefaultConfigTheme extends ConfigTheme {
         setScrollbar(new Scrollbar(false, 5, 0xFF << 24));
         setBackgroundFillColor(0x55 << 24);
 
-        registerDisplayAdapter(TypeMatcher.matchBoolean(), DisplayAdapter.booleanValue());
+        registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchCharacter(), DisplayAdapter.characterValue());
         registerDisplayAdapter(TypeMatcher.matchInteger(), DisplayAdapter.integerValue());
         registerDisplayAdapter(TypeMatcher.matchLong(), DisplayAdapter.longValue());

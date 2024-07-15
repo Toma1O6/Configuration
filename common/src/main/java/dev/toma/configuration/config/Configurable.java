@@ -218,6 +218,17 @@ public @interface Configurable {
              */
             int value() default 32;
         }
+
+        @Target(ElementType.FIELD)
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface RenderType { // TODO impl
+            RenderTypes value() default RenderTypes.TEXT;
+        }
+
+        public enum RenderTypes {
+            TEXT,
+            SLIDER
+        }
     }
 
     enum LocalizationPath {

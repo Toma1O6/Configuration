@@ -16,6 +16,10 @@ public interface IConfigValue<T> extends Supplier<T> {
 
     void setValue(T value);
 
+    void revertChanges();
+
+    void revertChangesToDefault();
+
     void save();
 
     boolean isChanged();

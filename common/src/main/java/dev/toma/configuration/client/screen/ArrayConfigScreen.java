@@ -85,7 +85,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
                 continue;
             }
             try {
-                adapter.placeWidgets(this.holder, dummy, owner, widget); // TODO config theme
+                adapter.placeWidgets(this.holder, dummy, owner, this.theme, widget);
                 initializeGuiValue(dummy, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", compType.getSimpleName()), e);

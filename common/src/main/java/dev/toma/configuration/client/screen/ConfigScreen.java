@@ -46,7 +46,7 @@ public class ConfigScreen extends AbstractConfigScreen {
             offset += correct;
             ConfigValue<?> value = values.get(i);
             ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.getConfigId()));
-            widget.setDescriptionRenderer((graphics, widget1, severity, text) -> renderEntryDescription(graphics, widget1, severity, text));
+            widget.setDescriptionRenderer(this::renderEntryDescription);
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();
             DisplayAdapter adapter = this.theme.getAdapter(field.getType());
@@ -55,7 +55,7 @@ public class ConfigScreen extends AbstractConfigScreen {
                 continue;
             }
             try {
-                adapter.placeWidgets(this.holder, value, field, widget); // TODO config theme
+                adapter.placeWidgets(this.holder, value, field, this.theme, widget);
                 initializeGuiValue(value, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", field.getType().getSimpleName()), e);

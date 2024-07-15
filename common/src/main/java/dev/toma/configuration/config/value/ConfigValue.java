@@ -68,6 +68,19 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     @Override
+    public void revertChanges() {
+        this.pendingValue = null;
+        this.valueData.getContext().setValue(this.activeValue);
+    }
+
+    @Override
+    public void revertChangesToDefault() {
+        this.pendingValue = null;
+        this.activeValue = this.valueData.getDefaultValue();
+        this.valueData.getContext().setValue(this.activeValue);
+    }
+
+    @Override
     public final boolean isEditable() {
         ConfigIO.ConfigEnvironment environment = ConfigIO.getEnvironment();
         return this.updateRestriction.isEditableInEnvironment(environment);
