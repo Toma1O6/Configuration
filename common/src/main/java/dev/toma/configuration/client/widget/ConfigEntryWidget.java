@@ -1,6 +1,7 @@
 package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.WidgetAdder;
+import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
@@ -62,15 +63,20 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Font font = Minecraft.getInstance().font;
-        if (!lastHoverState && isHovered) {
-            hoverTimeStart = System.currentTimeMillis();
+        if (isHovered) {
+            if (!lastHoverState) {
+                hoverTimeStart = System.currentTimeMillis();
+            }
+            graphics.fill(this.getX() - 30, this.getY() - 2, this.getRight() + 30, this.getBottom() + 2, 0x44FFFFFF); // TODO optional based on theme
         }
         boolean isError = !this.result.isOk();
         MutableComponent label = Component.literal(this.getMessage().getString()).withStyle(this.getMessage().getStyle());
         if (this.configValue.isChanged()) {
             label.withStyle(ChatFormatting.ITALIC);
         }
-        graphics.drawString(font, label, this.getX(), this.getY() + (this.height - font.lineHeight) / 2, 0xFFFFFF);
+        int entryLeft = WidgetPlacerHelper.getLeft(this.getX(), this.width);
+        // TODO apply FG color
+        drawScrollingString(graphics, font, label, this.getX(), entryLeft - 5, this.getY() + (this.height - font.lineHeight) / 2, 0xFFFFFF);
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
@@ -96,6 +102,16 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         if (editableCheck)
             widget.active = this.configValue.isEditable();
         return this.addRenderableWidget(widget);
+    }
+
+    public static void drawScrollingString(GuiGraphics graphics, Font font, Component text, int x1, int x2, int y, int color) {
+        int maxWidth = x2 - x1;
+        int width = font.width(text);
+        if (width <= maxWidth) {
+            graphics.drawString(font, text, x1, y, color);
+        } else {
+            AbstractWidget.renderScrollingString(graphics, font, text, x1, y, x2, y + font.lineHeight, color);
+        }
     }
 
     @FunctionalInterface

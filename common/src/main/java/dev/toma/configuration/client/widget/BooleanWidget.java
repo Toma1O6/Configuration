@@ -29,10 +29,7 @@ public class BooleanWidget extends AbstractThemeWidget {
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (this.backgroundRenderer != null) {
-            this.backgroundRenderer.draw(graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        }
-        graphics.blitSprite(AbstractConfigScreen.BUTTON_SPRITES.get(active, isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        this.renderBackground(graphics);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = this.active ? 0xffffff : 0xa0a0a0;
         this.renderString(graphics, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);

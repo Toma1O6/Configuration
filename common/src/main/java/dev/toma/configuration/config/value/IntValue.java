@@ -19,8 +19,15 @@ public class IntValue extends NumericValue<Integer> {
     protected NumberRange<Integer> getValueRange(Field field, Integer min, Integer max) {
         Configurable.Range range = field.getAnnotation(Configurable.Range.class);
         return range != null
-                ? NumberRange.interval(this, (int) range.min(), (int) range.max())
+                ? NumberRange.interval(this, (int) Math.max(range.min(), min), (int) Math.min(range.max(), max))
                 : NumberRange.all(this);
+    }
+
+    @Override
+    public Integer getValueFromSlider(double sliderValue) {
+        NumberRange<Integer> range = this.getRange();
+        int delta = range.max() - range.min();
+        return range.min() + (int) (delta * sliderValue);
     }
 
     @Override

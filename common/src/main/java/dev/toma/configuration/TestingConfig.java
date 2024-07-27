@@ -14,6 +14,8 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.Synchronized
+    @Configurable.Range(min = 10, max = 30)
+    @Configurable.Gui.Slider
     public int number = 15;
 
     @Configurable

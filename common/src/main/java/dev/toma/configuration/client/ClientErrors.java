@@ -26,6 +26,10 @@ public final class ClientErrors {
         return Component.translatable(KEY_NUM_BOUNDS, number.doubleValue(), range.min().doubleValue(), range.max().doubleValue());
     }
 
+    public static MutableComponent outOfBounds(Number number, NumberRange<?> range) {
+        return Component.translatable(KEY_NUM_BOUNDS, number, range.min(), range.max());
+    }
+
     public static MutableComponent invalidText(String text, Pattern pattern) {
         return Component.translatable(KEY_MISMATCHED_PATTERN, text, pattern.pattern());
     }

@@ -2,6 +2,7 @@ package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.render.IBackgroundRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -29,6 +30,16 @@ public abstract class AbstractThemeWidget extends AbstractWidget {
 
     public void setBackgroundRenderer(IBackgroundRenderer backgroundRenderer) {
         this.backgroundRenderer = backgroundRenderer;
+    }
+
+    public void renderBackground(GuiGraphics graphics) {
+        this.applyRenderer(this.backgroundRenderer, graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+    }
+
+    public void applyRenderer(IBackgroundRenderer renderer, GuiGraphics graphics, int x, int y, int width, int height) {
+        if (renderer != null) {
+            renderer.draw(graphics, x, y, width, height);
+        }
     }
 
     public void setChangeListener(ChangeListener<AbstractThemeWidget> changeListener) {

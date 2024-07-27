@@ -32,6 +32,17 @@ public abstract class NumericValue<T extends Number & Comparable<T>> extends Con
         return this.range;
     }
 
+    public final double getSliderValue() {
+        return this.getSliderValue(this.get());
+    }
+
+    public final double getSliderValue(T num) {
+        double current = num.doubleValue();
+        return (current - this.range.min().doubleValue()) / (this.range.max().doubleValue() - this.range.min().doubleValue());
+    }
+
+    public abstract T getValueFromSlider(double sliderValue);
+
     protected abstract NumberRange<T> getValueRange(Field field, T min, T max);
 
     @Override

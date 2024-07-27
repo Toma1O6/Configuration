@@ -24,6 +24,13 @@ public class LongValue extends NumericValue<Long> {
     }
 
     @Override
+    public Long getValueFromSlider(double sliderValue) {
+        NumberRange<Long> range = this.getRange();
+        long delta = range.max() - range.min();
+        return range.min() + (long) (delta * sliderValue);
+    }
+
+    @Override
     protected void serialize(IConfigFormat format) {
         format.writeLong(this.getId(), this.get());
     }

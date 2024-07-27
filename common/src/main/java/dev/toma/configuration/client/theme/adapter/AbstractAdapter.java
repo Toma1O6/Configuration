@@ -21,7 +21,7 @@ public abstract class AbstractAdapter implements DisplayAdapter {
             widget.setTooltip(Tooltip.create(AbstractThemeWidget.REVERT));
             widget.setTooltipDelay(Duration.ofMillis(200));
             widget.setBackgroundRenderer(new SpriteBackgroundRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(widget.active, widget.isHoveredOrFocused())));
-            widget.active = value.isChanged();
+            widget.active = value.isEditable() && value.isChanged();
             return widget;
         });
     }
@@ -34,15 +34,15 @@ public abstract class AbstractAdapter implements DisplayAdapter {
             widget.setTooltip(Tooltip.create(AbstractThemeWidget.REVERT_DEFAULT));
             widget.setTooltipDelay(Duration.ofMillis(200));
             widget.setBackgroundRenderer(new SpriteBackgroundRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(widget.active, widget.isHoveredOrFocused())));
-            widget.active = value.isChangedFromDefault();
+            widget.active = value.isEditable() && value.isChangedFromDefault();
             return widget;
         });
     }
 
     protected void attachDefaultChangeListeners(ConfigValue<?> value, AbstractThemeWidget widget, ThemedButtonWidget revertButton, ThemedButtonWidget revertToDefault) {
         widget.setChangeListener(w -> {
-            revertButton.active = value.isChanged();
-            revertToDefault.active = value.isChangedFromDefault();
+            revertButton.active = value.isEditable() && value.isChanged();
+            revertToDefault.active = value.isEditable() && value.isChangedFromDefault();
         });
     }
 

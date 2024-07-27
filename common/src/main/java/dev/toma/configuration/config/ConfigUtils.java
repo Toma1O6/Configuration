@@ -1,6 +1,7 @@
 package dev.toma.configuration.config;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
 import net.minecraft.client.gui.components.EditBox;
@@ -70,7 +71,15 @@ public final class ConfigUtils {
         return PRIMITIVE_MAPPINGS.getOrDefault(type, type);
     }
 
+    @Deprecated
     public static void adjustCharacterLimit(Field field, EditBox widget) {
+        Configurable.Gui.CharacterLimit limit = field.getAnnotation(Configurable.Gui.CharacterLimit.class);
+        if (limit != null) {
+            widget.setMaxLength(Math.max(limit.value(), 1));
+        }
+    }
+
+    public static void adjustCharacterLimit(Field field, EditBoxWidget widget) {
         Configurable.Gui.CharacterLimit limit = field.getAnnotation(Configurable.Gui.CharacterLimit.class);
         if (limit != null) {
             widget.setMaxLength(Math.max(limit.value(), 1));

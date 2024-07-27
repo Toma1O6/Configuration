@@ -2,6 +2,7 @@ package dev.toma.configuration.client.theme;
 
 import dev.toma.configuration.client.theme.adapter.BooleanDisplayAdapter;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
+import dev.toma.configuration.client.theme.adapter.IntegerDisplayAdapter;
 import dev.toma.configuration.config.adapter.TypeMatcher;
 import net.minecraft.resources.ResourceLocation;
 
@@ -22,7 +23,7 @@ public class DefaultConfigTheme extends ConfigTheme {
 
         registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchCharacter(), DisplayAdapter.characterValue());
-        registerDisplayAdapter(TypeMatcher.matchInteger(), DisplayAdapter.integerValue());
+        registerDisplayAdapter(TypeMatcher.matchInteger(), new IntegerDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchLong(), DisplayAdapter.longValue());
         registerDisplayAdapter(TypeMatcher.matchFloat(), DisplayAdapter.floatValue());
         registerDisplayAdapter(TypeMatcher.matchDouble(), DisplayAdapter.doubleValue());

@@ -24,6 +24,13 @@ public class DoubleValue extends NumericValue<Double> {
     }
 
     @Override
+    public Double getValueFromSlider(double sliderValue) {
+        NumberRange<Double> range = this.getRange();
+        double delta = range.max() - range.min();
+        return range.min() + delta * sliderValue;
+    }
+
+    @Override
     protected void serialize(IConfigFormat format) {
         format.writeDouble(this.getId(), this.get());
     }

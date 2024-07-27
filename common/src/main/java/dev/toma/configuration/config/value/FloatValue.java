@@ -19,8 +19,15 @@ public class FloatValue extends NumericValue<Float> {
     protected NumberRange<Float> getValueRange(Field field, Float min, Float max) {
         Configurable.DecimalRange range = field.getAnnotation(Configurable.DecimalRange.class);
         return range != null
-                ? NumberRange.interval(this, (float) range.min(), (float) range.max())
+                ? NumberRange.interval(this, (float) Math.max(min, range.min()), (float) Math.min(range.max(), max))
                 : NumberRange.all(this);
+    }
+
+    @Override
+    public Float getValueFromSlider(double sliderValue) {
+        NumberRange<Float> range = this.getRange();
+        float delta = range.max() - range.min();
+        return range.min() + (float) (delta * sliderValue);
     }
 
     @Override
