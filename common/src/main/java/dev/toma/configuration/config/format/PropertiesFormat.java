@@ -122,6 +122,36 @@ public final class PropertiesFormat implements IConfigFormat {
     }
 
     @Override
+    public void writeCharArray(String field, Character[] values) {
+        this.writeArray(field, values);
+    }
+
+    @Override
+    public Character[] readCharArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Character[]::new, IConfigFormat::parseCharacter);
+    }
+
+    @Override
+    public void writeByteArray(String field, Byte[] values) {
+        this.writeArray(field, values);
+    }
+
+    @Override
+    public Byte[] readByteArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Byte[]::new, IConfigFormat::parseByte);
+    }
+
+    @Override
+    public void writeShortArray(String field, Short[] values) {
+        this.writeArray(field, values);
+    }
+
+    @Override
+    public Short[] readShortArray(String field) throws ConfigValueMissingException {
+        return this.readArray(field, Short[]::new, IConfigFormat::parseShort);
+    }
+
+    @Override
     public void writeIntArray(String field, Integer[] values) {
         this.writeArray(field, values);
     }

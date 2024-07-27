@@ -2,7 +2,7 @@ package dev.toma.configuration.client.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.toma.configuration.client.theme.ConfigTheme;
-import dev.toma.configuration.client.widget.render.IBackgroundRenderer;
+import dev.toma.configuration.client.widget.render.IRenderer;
 import dev.toma.configuration.config.value.NumericValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -29,7 +29,7 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
 
     protected final Font font;
     protected final NumericValue<N> numericValue;
-    protected IBackgroundRenderer handleRenderer;
+    protected IRenderer handleRenderer;
     protected double value;
     protected N num;
 
@@ -49,7 +49,7 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
         this.updateDisplayText();
     }
 
-    public void setHandleRenderer(IBackgroundRenderer handleRenderer) {
+    public void setHandleRenderer(IRenderer handleRenderer) {
         this.handleRenderer = handleRenderer;
     }
 

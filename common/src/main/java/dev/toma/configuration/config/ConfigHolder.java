@@ -12,7 +12,6 @@ import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
@@ -56,7 +55,6 @@ public final class ConfigHolder<CFG> {
     private final Component title;
     // Lock for async operations
     private final Object lock = new Object();
-    private ResourceLocation backgroundTexture;
 
     public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, String group, IConfigFormatHandler format) {
         this.configClass = cfgClass;
@@ -260,18 +258,6 @@ public final class ConfigHolder<CFG> {
         return lock;
     }
 
-    public void setBackgroundTexture(ResourceLocation backgroundTexture) {
-        this.backgroundTexture = backgroundTexture;
-    }
-
-    public ResourceLocation getBackgroundTexture() {
-        return backgroundTexture;
-    }
-
-    public boolean hasCustomBackgroundTexture() {
-        return backgroundTexture != null;
-    }
-
     @SuppressWarnings("unchecked")
     private <T> Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
         Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
@@ -298,7 +284,7 @@ public final class ConfigHolder<CFG> {
                 comments = comment.value();
                 localizeComments = comment.localize();
             }
-            Configurable.LocalizationPath localizationType = value.localization();
+            Configurable.LocalizationKey localizationType = value.key();
             field.setAccessible(true);
             Object fieldValue = field.get(instance);
             TypeMapper<T, Object> mapper = attributes.mapper();

@@ -10,13 +10,13 @@ import dev.toma.configuration.config.value.ShortValue;
 
 import java.lang.reflect.Field;
 
-public class ShortDisplayAdapter extends AbstractNumericAdapter {
+public class ShortDisplayAdapter extends AbstractNumericDisplayAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
         ShortValue shortValue = (ShortValue) value;
         EditBoxWidget editBox = initEditBox(container, theme, shortValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowIntegerCharacters);
+        editBox.setFilter(AbstractNumericDisplayAdapter::allowIntegerCharacters);
         handleValueChanged(editBox, shortValue, Short::parseShort, container);
         placeEditBoxControls(shortValue, theme, editBox, container);
     }

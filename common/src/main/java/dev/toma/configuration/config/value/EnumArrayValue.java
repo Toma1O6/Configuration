@@ -13,15 +13,19 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
         super(value);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public E createElementInstance() {
-        Class<E> enumType = (Class<E>) this.valueData.getValueType().getComponentType();
+        Class<E> enumType = this.getElementType();
         E[] constants = enumType.getEnumConstants();
         if (constants.length == 0) {
             throw new IllegalArgumentException("Enum does not define any constants");
         }
         return constants[0];
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<E> getElementType() {
+        return (Class<E>) this.valueData.getValueType().getComponentType();
     }
 
     @Override

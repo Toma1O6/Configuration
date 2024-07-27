@@ -1,10 +1,14 @@
 package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.theme.ConfigTheme;
+import dev.toma.configuration.client.widget.render.IRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class ThemedButtonWidget extends AbstractThemeWidget {
+
+    protected IRenderer foregroundRenderer;
 
     private ClickListener clickListener;
 
@@ -17,7 +21,12 @@ public class ThemedButtonWidget extends AbstractThemeWidget {
         if (this.backgroundRenderer != null) {
             this.backgroundRenderer.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
         }
+        this.renderScrollingString(guiGraphics, Minecraft.getInstance().font, 2, 0xFFFFFF); // TODO color from theme
+        this.applyRenderer(this.foregroundRenderer, guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+    }
 
+    public void setForegroundRenderer(IRenderer foregroundRenderer) {
+        this.foregroundRenderer = foregroundRenderer;
     }
 
     public void setClickListener(ClickListener clickListener) {

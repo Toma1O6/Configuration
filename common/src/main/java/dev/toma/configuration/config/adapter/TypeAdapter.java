@@ -37,7 +37,7 @@ public abstract class TypeAdapter<V> {
     }
 
     public record TypeAttributes<V>(String configOwner, String id, V value, TypeAdapter.AdapterContext context,
-                                    Configurable.LocalizationPath localization, String[] fileComments, boolean localizeComments
+                                    Configurable.LocalizationKey localization, String[] fileComments, boolean localizeComments
     ) {
 
         public <R> TypeAttributes<R> child(String id, R value, TypeAdapter.AdapterContext ctx) {

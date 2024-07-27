@@ -98,9 +98,9 @@ public final class ValueData<T> {
         return paths.stream().reduce("", (a, b) -> a != null && !a.isBlank() ? (a + "." + b) : b);
     }
 
-    private String getLanguageKey(TypeAdapter.TypeAttributes<T> attributes) {
+    public String getLanguageKey(TypeAdapter.TypeAttributes<T> attributes) {
         String owner = attributes.configOwner();
-        String path = attributes.localization() == Configurable.LocalizationPath.FULL
+        String path = attributes.localization() == Configurable.LocalizationKey.FULL
                 ? getFullFieldPath()
                 : attributes.id();
         return String.format("config.%s.option.%s", owner, path);

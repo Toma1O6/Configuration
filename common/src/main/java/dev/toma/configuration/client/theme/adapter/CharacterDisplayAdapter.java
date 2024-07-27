@@ -15,7 +15,7 @@ import net.minecraft.client.gui.Font;
 
 import java.lang.reflect.Field;
 
-public class CharacterDisplayAdapter extends AbstractAdapter {
+public class CharacterDisplayAdapter extends AbstractDisplayAdapter {
 
     @Override
     public void placeWidgets(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {

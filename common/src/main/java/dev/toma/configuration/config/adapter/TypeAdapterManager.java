@@ -59,9 +59,9 @@ public final class TypeAdapterManager {
 
         // primitive arrays
         registerTypeAdapter(TypeMatcher.matchBooleanArray(), new BooleanArrayValue.Adapter());
-        // TODO char array
-        // TODO byte array
-        // TODO short array
+        registerTypeAdapter(TypeMatcher.matchCharacterArray(), new CharArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchByteArray(), new ByteArrayValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchShortArray(), new ShortArrayValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchIntegerArray(), new IntArrayValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchLongArray(), new LongArrayValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchFloatArray(), new FloatArrayValue.Adapter());

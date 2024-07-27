@@ -3,17 +3,23 @@ package dev.toma.configuration.client.screen;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
+import dev.toma.configuration.client.widget.ThemedButtonWidget;
+import dev.toma.configuration.client.widget.render.SpriteRenderer;
+import dev.toma.configuration.client.widget.render.TextureRenderer;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapterManager;
 import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.AbstractArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.ValueData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import org.apache.logging.log4j.message.FormattedMessage;
 
@@ -25,6 +31,7 @@ import java.util.function.Supplier;
 public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends AbstractConfigScreen {
 
     public static final Component ADD_ELEMENT = Component.translatable("text.configuration.value.add_element");
+    public static final ResourceLocation REMOVE_ICON = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "textures/icons/remove.png");
 
     public final C array;
     private final boolean fixedSize;
@@ -61,7 +68,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         final int viewportMin = HEADER_HEIGHT;
         final int viewportHeight = this.height - viewportMin - FOOTER_HEIGHT;
         this.pageSize = (viewportHeight - 20) / 25;
-        this.correctScrollingIndex(this.sizeSupplier.get());
+        this.correctScrollingIndex(this.getTotalSize());
         int errorOffset = (viewportHeight - 20) - (this.pageSize * 25 - 5);
         int offset = 0;
 
@@ -71,14 +78,22 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         Field owner = context.getOwner();
         for (int i = this.index; i < this.index + this.pageSize; i++) {
             int j = i - this.index;
-            if (i >= this.sizeSupplier.get())
+            if (i >= this.sizeSupplier.get()) {
+                ThemedButtonWidget addElement = addRenderableWidget(new ThemedButtonWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, ADD_ELEMENT, theme));
+                addElement.setBackgroundRenderer(theme.getButtonBackground(addElement));
+                addElement.setClickListener((widget, mouseX, mouseY) -> {
+                    this.addHandler.insertElement();
+                    this.init(minecraft, width, height);
+                });
                 break;
+            }
             int correct = errorOffset / (this.pageSize - j);
             errorOffset -= correct;
             offset += correct;
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
-            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, dummy, this.getConfigId()));
+            Component label = this.getEntryLabel(dummy, i);
+            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, label, dummy, this.getConfigId()));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
@@ -92,17 +107,27 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             }
             if (!fixedSize) {
                 final int elementIndex = i;
-                addRenderableWidget(Button.builder(Component.literal("x"), btn -> {
-                    this.removeHandler.removeElementAt(elementIndex, (index, src, dest) -> {
+                ThemedButtonWidget removeButton = addRenderableWidget(new ThemedButtonWidget(this.width - 29, widget.getY(), 20, 20, CommonComponents.EMPTY, theme));
+                removeButton.setClickListener((widget1, mouseX, mouseY) -> {
+                    this.removeHandler.removeElementAt(elementIndex, (index1, src, dest) -> {
                         System.arraycopy(src, 0, dest, 0, index);
                         System.arraycopy(src, index + 1, dest, index, this.sizeSupplier.get() - 1 - index);
                         return dest;
                     });
                     this.init(minecraft, width, height);
-                }).pos(this.width - 28, widget.getY()).size(20, 20).build());
+                });
+                removeButton.setBackgroundRenderer(theme.getButtonBackground(removeButton));
+                removeButton.setForegroundRenderer(new TextureRenderer(REMOVE_ICON, 2, 2, 16, 16));
             }
         }
         addFooter();
+    }
+
+    private <T> Component getEntryLabel(ConfigValue<T> value, int index) {
+        ValueData<T> valueData = value.getValueData();
+        String languageKey = valueData.getLanguageKey(valueData.getAttributes()) + ".entry";
+        Component translated = Component.translatable(languageKey);
+        return Component.literal("[" + index + "] " + translated.getString());
     }
 
     private void renderEntryDescription(GuiGraphics graphics, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
@@ -114,38 +139,33 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(graphics, mouseX, mouseY, partialTicks);
-        // HEADER
         int titleWidth = this.font.width(this.title);
         graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
         graphics.fill(0, 0, width, HEADER_HEIGHT, 0x99 << 24);
         graphics.fill(0, height - FOOTER_HEIGHT, width, height, 0x99 << 24);
         graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x55 << 24);
-        renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, sizeSupplier.get(), pageSize);
         renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
-    }
-
-    @Override
-    protected void addFooter() {
-        super.addFooter();
-        if (!this.fixedSize) {
-            int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-            addRenderableWidget(Button.builder(ADD_ELEMENT, btn -> {
-                this.addHandler.insertElement();
-                this.init(minecraft, width, height);
-            }).pos(width - 100, centerY).size(80, 20).build());
-        }
+        renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, this.getTotalSize(), pageSize);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amountY) {
         int scale = (int) -amountY;
         int next = this.index + scale;
-        if (next >= 0 && next + this.pageSize <= this.sizeSupplier.get()) {
+        if (next >= 0 && next + this.pageSize <= this.getTotalSize()) {
             this.index = next;
             this.init(minecraft, width, height);
             return true;
         }
         return false;
+    }
+
+    private int getTotalSize() {
+        int elementSize = this.sizeSupplier.get();
+        if (!this.fixedSize) {
+            ++elementSize;
+        }
+        return elementSize;
     }
 
     public static <V> TypeAdapter.AdapterContext callbackCtx(Field parent, Class<V> componentType, BiConsumer<V, Integer> callback, int index) {

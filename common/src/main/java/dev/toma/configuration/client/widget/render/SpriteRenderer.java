@@ -5,11 +5,11 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
-public class SpriteBackgroundRenderer implements IBackgroundRenderer {
+public class SpriteRenderer implements IRenderer {
 
     private final Supplier<ResourceLocation> resourceProvider;
 
-    public SpriteBackgroundRenderer(Supplier<ResourceLocation> resourceProvider) {
+    public SpriteRenderer(Supplier<ResourceLocation> resourceProvider) {
         this.resourceProvider = resourceProvider;
     }
 

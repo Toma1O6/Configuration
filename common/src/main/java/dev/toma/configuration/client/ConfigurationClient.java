@@ -73,9 +73,6 @@ public final class ConfigurationClient {
     }
 
     public static ConfigTheme getConfigTheme(ConfigHolder<?> holder) {
-        return CONFIG_THEMES.computeIfAbsent(holder.getConfigId(), id -> holder.hasCustomBackgroundTexture()
-                ? new DefaultConfigTheme(holder.getBackgroundTexture())
-                : DefaultConfigTheme.DEFAULT
-        );
+        return CONFIG_THEMES.computeIfAbsent(holder.getConfigId(), id -> DefaultConfigTheme.DEFAULT);
     }
 }

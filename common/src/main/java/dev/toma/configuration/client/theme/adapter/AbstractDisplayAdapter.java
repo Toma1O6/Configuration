@@ -1,16 +1,18 @@
 package dev.toma.configuration.client.theme.adapter;
 
 import dev.toma.configuration.client.WidgetAdder;
+import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.AbstractThemeWidget;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
+import dev.toma.configuration.client.widget.render.TextureRenderer;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.CommonComponents;
 
 import java.time.Duration;
 
-public abstract class AbstractAdapter implements DisplayAdapter {
+public abstract class AbstractDisplayAdapter implements DisplayAdapter {
 
     protected void createControls(AbstractThemeWidget widget, ConfigValue<?> value, ConfigTheme theme, WidgetAdder container, ValueReverter reverter) {
         ThemedButtonWidget revertButton = this.createRevertButton(widget, value, theme, container, reverter);
@@ -26,6 +28,7 @@ public abstract class AbstractAdapter implements DisplayAdapter {
             widget.setTooltip(Tooltip.create(AbstractThemeWidget.REVERT));
             widget.setTooltipDelay(Duration.ofMillis(200));
             widget.setBackgroundRenderer(theme.getButtonBackground(widget));
+            widget.setForegroundRenderer(new TextureRenderer(AbstractConfigScreen.ICON_REVERT, 2, 2, 16, 16));
             widget.active = value.isEditable() && value.isChanged();
             return widget;
         });
@@ -39,6 +42,7 @@ public abstract class AbstractAdapter implements DisplayAdapter {
             widget.setTooltip(Tooltip.create(AbstractThemeWidget.REVERT_DEFAULT));
             widget.setTooltipDelay(Duration.ofMillis(200));
             widget.setBackgroundRenderer(theme.getButtonBackground(widget));
+            widget.setForegroundRenderer(new TextureRenderer(AbstractConfigScreen.ICON_REVERT_DEFAULT, 2, 2, 16, 16));
             widget.active = value.isEditable() && value.isChangedFromDefault();
             return widget;
         });

@@ -7,17 +7,16 @@ import dev.toma.configuration.client.widget.SliderWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.DoubleValue;
-import dev.toma.configuration.config.value.FloatValue;
 
 import java.lang.reflect.Field;
 
-public class DoubleDisplayAdapter extends AbstractNumericAdapter {
+public class DoubleDisplayAdapter extends AbstractNumericDisplayAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
         DoubleValue doubleValue = (DoubleValue) value;
         EditBoxWidget editBox = initEditBox(container, theme, doubleValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowDecimalCharacters);
+        editBox.setFilter(AbstractNumericDisplayAdapter::allowDecimalCharacters);
         handleValueChanged(editBox, doubleValue, Double::parseDouble, container);
         placeEditBoxControls(doubleValue, theme, editBox, container);
     }

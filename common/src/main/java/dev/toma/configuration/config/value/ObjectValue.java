@@ -55,6 +55,18 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
+    public void revertChanges() {
+        super.revertChanges();
+        this.get().values().forEach(ConfigValue::revertChanges);
+    }
+
+    @Override
+    public void revertChangesToDefault() {
+        super.revertChangesToDefault();
+        this.get().values().forEach(ConfigValue::revertChangesToDefault);
+    }
+
+    @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
         format.readMap(this.getId(), this.get().values());
     }

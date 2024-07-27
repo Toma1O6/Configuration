@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     public static final Component OPEN = Component.translatable("text.configuration.value.open");
-    public static final Component BACK = Component.translatable("text.configuration.value.back");
+    public static final Component APPLY = Component.translatable("text.configuration.value.apply");
     public static final Component REVERT_DEFAULTS = Component.translatable("text.configuration.value.revert.default");
     public static final Component REVERT_DEFAULTS_DIALOG_TEXT = Component.translatable("text.configuration.value.revert.default.dialog");
     public static final Component REVERT_CHANGES = Component.translatable("text.configuration.value.revert.changes");
@@ -38,7 +38,11 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     private long hoverTimeStart;
 
     public ConfigEntryWidget(int x, int y, int w, int h, ConfigValue<?> value, String configId) {
-        super(x, y, w, h, value.getValueData().getTitle());
+        this(x, y, w, h, value.getValueData().getTitle(), value, configId);
+    }
+
+    public ConfigEntryWidget(int x, int y, int w, int h, Component label, ConfigValue<?> value, String configId) {
+        super(x, y, w, h, label);
         this.configValue = value;
         this.configId = configId;
         // TODO apply correct config styles for comments

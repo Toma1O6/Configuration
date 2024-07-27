@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringDisplayAdapter extends AbstractAdapter {
+public class StringDisplayAdapter extends AbstractDisplayAdapter {
 
     @Override
     public void placeWidgets(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {

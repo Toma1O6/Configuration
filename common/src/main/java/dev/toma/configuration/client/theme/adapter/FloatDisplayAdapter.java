@@ -10,13 +10,13 @@ import dev.toma.configuration.config.value.FloatValue;
 
 import java.lang.reflect.Field;
 
-public class FloatDisplayAdapter extends AbstractNumericAdapter {
+public class FloatDisplayAdapter extends AbstractNumericDisplayAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
         FloatValue floatValue = (FloatValue) value;
         EditBoxWidget editBox = initEditBox(container, theme, floatValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowDecimalCharacters);
+        editBox.setFilter(AbstractNumericDisplayAdapter::allowDecimalCharacters);
         handleValueChanged(editBox, floatValue, Float::parseFloat, container);
         placeEditBoxControls(floatValue, theme, editBox, container);
     }

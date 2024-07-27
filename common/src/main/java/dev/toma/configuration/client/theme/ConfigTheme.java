@@ -6,7 +6,7 @@ import dev.toma.configuration.client.widget.AbstractThemeWidget;
 import dev.toma.configuration.client.widget.ColorWidget;
 import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.client.widget.SliderWidget;
-import dev.toma.configuration.client.widget.render.IBackgroundRenderer;
+import dev.toma.configuration.client.widget.render.IRenderer;
 import dev.toma.configuration.config.adapter.AdapterHolder;
 import dev.toma.configuration.config.adapter.TypeMatcher;
 import net.minecraft.network.chat.Component;
@@ -19,7 +19,6 @@ public class ConfigTheme {
     // widgets
     private final Set<AdapterHolder<DisplayAdapter>> displayAdapters = new HashSet<>();
 
-    private ResourceLocation backgroundTexture;
     private Header header;
     private Footer footer;
     private Scrollbar scrollbar;
@@ -35,7 +34,6 @@ public class ConfigTheme {
     public ConfigTheme copy() {
         ConfigTheme theme = new ConfigTheme();
         theme.displayAdapters.addAll(displayAdapters);
-        theme.backgroundTexture = backgroundTexture;
         theme.header = header;
         theme.footer = footer;
         theme.scrollbar = scrollbar;
@@ -60,10 +58,6 @@ public class ConfigTheme {
 
     public final void registerDisplayAdapter(TypeMatcher matcher, DisplayAdapter adapter) {
         this.displayAdapters.add(new AdapterHolder<>(matcher, adapter));
-    }
-
-    public void setBackgroundTexture(ResourceLocation backgroundTexture) {
-        this.backgroundTexture = backgroundTexture;
     }
 
     public void setHeader(Header header) {
@@ -103,9 +97,6 @@ public class ConfigTheme {
     }
 
     // Getters
-    public ResourceLocation getBackgroundTexture() {
-        return this.backgroundTexture;
-    }
 
     public Header getHeader() {
         return header;
@@ -119,23 +110,23 @@ public class ConfigTheme {
         return scrollbar;
     }
 
-    public IBackgroundRenderer getButtonBackground(AbstractThemeWidget widget) {
+    public IRenderer getButtonBackground(AbstractThemeWidget widget) {
         return buttonBackground.create(widget);
     }
 
-    public IBackgroundRenderer getEditBoxBackground(EditBoxWidget widget) {
+    public IRenderer getEditBoxBackground(EditBoxWidget widget) {
         return editBoxBackground.create(widget);
     }
 
-    public IBackgroundRenderer getSliderBackground(SliderWidget<?> widget) {
+    public IRenderer getSliderBackground(SliderWidget<?> widget) {
         return sliderBackground.create(widget);
     }
 
-    public IBackgroundRenderer getSliderHandle(SliderWidget<?> widget) {
+    public IRenderer getSliderHandle(SliderWidget<?> widget) {
         return sliderHandle.create(widget);
     }
 
-    public IBackgroundRenderer getColorBackground(ColorWidget widget) {
+    public IRenderer getColorBackground(ColorWidget widget) {
         return colorBackground.create(widget);
     }
 
@@ -148,7 +139,7 @@ public class ConfigTheme {
     @FunctionalInterface
     public interface BackgroundRendererFactory<T> {
 
-        IBackgroundRenderer create(T type);
+        IRenderer create(T type);
 
         static <T> BackgroundRendererFactory<T> none() {
             return t -> null;

@@ -4,21 +4,15 @@ import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.client.theme.adapter.*;
 import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.client.widget.SliderWidget;
-import dev.toma.configuration.client.widget.render.SolidColorBackgroundRenderer;
-import dev.toma.configuration.client.widget.render.SpriteBackgroundRenderer;
+import dev.toma.configuration.client.widget.render.SolidColorRenderer;
+import dev.toma.configuration.client.widget.render.SpriteRenderer;
 import dev.toma.configuration.config.adapter.TypeMatcher;
-import net.minecraft.resources.ResourceLocation;
 
 public class DefaultConfigTheme extends ConfigTheme {
 
-    public static final ConfigTheme DEFAULT = new DefaultConfigTheme(null);
+    public static final ConfigTheme DEFAULT = new DefaultConfigTheme();
 
     public DefaultConfigTheme() {
-        this(null);
-    }
-
-    public DefaultConfigTheme(ResourceLocation backgroundTexture) {
-        setBackgroundTexture(backgroundTexture);
         setHeader(new Header(null, 35, 0x99 << 24, 0xaaaaaa));
         setFooter(new Footer(30, 0x99 << 24));
         setScrollbar(new Scrollbar(false, 5, 0xFF << 24));
@@ -33,20 +27,23 @@ public class DefaultConfigTheme extends ConfigTheme {
         registerDisplayAdapter(TypeMatcher.matchFloat(), new FloatDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchDouble(), new DoubleDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchString(), new StringDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchBooleanArray(), DisplayAdapter.booleanArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchIntegerArray(), DisplayAdapter.integerArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchLongArray(), DisplayAdapter.longArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchFloatArray(), DisplayAdapter.floatArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchDoubleArray(), DisplayAdapter.doubleArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchStringArray(), DisplayAdapter.stringArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchEnum(), DisplayAdapter.enumValue());
-        registerDisplayAdapter(TypeMatcher.matchEnumArray(), DisplayAdapter.enumArrayValue());
-        registerDisplayAdapter(TypeMatcher.matchObject(), DisplayAdapter.objectValue());
+        registerDisplayAdapter(TypeMatcher.matchBooleanArray(), new BooleanArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchCharacterArray(), new ChararacterArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchByteArray(), new ByteArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchShortArray(), new ShortArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchIntegerArray(), new IntegerArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchLongArray(), new LongArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchFloatArray(), new FloatArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchDoubleArray(), new DoubleArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchStringArray(), new StringArrayDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchEnum(), new EnumDisplayAdapter<>());
+        registerDisplayAdapter(TypeMatcher.matchEnumArray(), new EnumArrayDisplayAdapter<>());
+        registerDisplayAdapter(TypeMatcher.matchObject(), new ObjectDisplayAdapter());
 
-        setButtonBackground(t -> new SpriteBackgroundRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
-        setEditBoxBackground(t -> new SpriteBackgroundRenderer(() -> EditBoxWidget.SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
-        setSliderBackground(t -> new SpriteBackgroundRenderer(() -> SliderWidget.SLIDER.get(t.isActive(), t.isHoveredOrFocused())));
-        setSliderHandle(t -> new SpriteBackgroundRenderer(() -> SliderWidget.HANDLE.get(t.isActive(), t.isFocused())));
-        setColorBackground(t -> new SolidColorBackgroundRenderer(() -> t.isHoveredOrFocused() ? 0xFFFFFFFF : 0xFFA0A0A0));
+        setButtonBackground(t -> new SpriteRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
+        setEditBoxBackground(t -> new SpriteRenderer(() -> EditBoxWidget.SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
+        setSliderBackground(t -> new SpriteRenderer(() -> SliderWidget.SLIDER.get(t.isActive(), t.isHoveredOrFocused())));
+        setSliderHandle(t -> new SpriteRenderer(() -> SliderWidget.HANDLE.get(t.isActive(), t.isFocused())));
+        setColorBackground(t -> new SolidColorRenderer(() -> t.isHoveredOrFocused() ? 0xFFFFFFFF : 0xFFA0A0A0));
     }
 }

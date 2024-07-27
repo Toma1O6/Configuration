@@ -10,13 +10,13 @@ import dev.toma.configuration.config.value.IntValue;
 
 import java.lang.reflect.Field;
 
-public class IntegerDisplayAdapter extends AbstractNumericAdapter {
+public class IntegerDisplayAdapter extends AbstractNumericDisplayAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
         IntValue intValue = (IntValue) value;
         EditBoxWidget editBox = initEditBox(container, theme, intValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowIntegerCharacters);
+        editBox.setFilter(AbstractNumericDisplayAdapter::allowIntegerCharacters);
         handleValueChanged(editBox, intValue, Integer::parseInt, container);
         placeEditBoxControls(intValue, theme, editBox, container);
     }

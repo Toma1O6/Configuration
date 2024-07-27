@@ -135,6 +135,36 @@ public final class GsonFormat implements IConfigFormat {
     }
 
     @Override
+    public void writeCharArray(String field, Character[] values) {
+        writeArray(field, values, JsonArray::add);
+    }
+
+    @Override
+    public Character[] readCharArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Character[]::new, JsonElement::getAsCharacter);
+    }
+
+    @Override
+    public void writeByteArray(String field, Byte[] values) {
+        writeArray(field, values, JsonArray::add);
+    }
+
+    @Override
+    public Byte[] readByteArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Byte[]::new, JsonElement::getAsByte);
+    }
+
+    @Override
+    public void writeShortArray(String field, Short[] values) {
+        writeArray(field, values, JsonArray::add);
+    }
+
+    @Override
+    public Short[] readShortArray(String field) throws ConfigValueMissingException {
+        return readArray(field, Short[]::new, JsonElement::getAsShort);
+    }
+
+    @Override
     public void writeIntArray(String field, Integer[] values) {
         writeArray(field, values, JsonArray::add);
     }

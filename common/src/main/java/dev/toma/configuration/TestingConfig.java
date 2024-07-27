@@ -90,10 +90,10 @@ public final class TestingConfig {
     @Configurable.Range(min = 50, max = 160)
     public int[] intArray = {153, 123, 54};
 
-    @Configurable(localization = Configurable.LocalizationPath.FULL)
+    @Configurable(key = Configurable.LocalizationKey.FULL)
     public long[] longArray = {13, 56, 133};
 
-    @Configurable(localization = Configurable.LocalizationPath.FULL)
+    @Configurable(key = Configurable.LocalizationKey.FULL)
     @Configurable.DecimalRange(min = 500.0F)
     public float[] floatArray = {135.32F, 1561.23F};
 
@@ -115,7 +115,7 @@ public final class TestingConfig {
 
     public static class NestedTest {
 
-        @Configurable(localization = Configurable.LocalizationPath.FULL)
+        @Configurable(key = Configurable.LocalizationKey.FULL)
         public int testInt = 13;
 
         @Configurable
@@ -127,7 +127,7 @@ public final class TestingConfig {
 
     public static class AnotherNestedTest {
 
-        @Configurable(localization = Configurable.LocalizationPath.FULL)
+        @Configurable(key = Configurable.LocalizationKey.FULL)
         @Configurable.Synchronized
         @Configurable.Comment(localize = true, value = "Nested boolean value")
         public boolean bool = true;

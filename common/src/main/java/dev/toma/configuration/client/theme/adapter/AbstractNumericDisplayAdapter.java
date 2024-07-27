@@ -23,7 +23,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AbstractNumericAdapter extends AbstractAdapter {
+public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapter {
 
     public static final Pattern INTEGER_CHARS_PATTERN = Pattern.compile("^[-0-9]+$");
     public static final Pattern DECIMAL_CHARS_PATTERN = Pattern.compile("^[-0-9.Ee]+$");

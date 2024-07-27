@@ -150,6 +150,63 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
+    public void writeCharArray(String field, Character[] values) {
+        writeKey(field);
+        for (Character value : values) {
+            writeArrayEntry(String.valueOf(value));
+        }
+        newLine();
+    }
+
+    @Override
+    public Character[] readCharArray(String field) throws ConfigValueMissingException {
+        String[] arr = this.getValueArray(field);
+        Character[] res = new Character[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            res[i] = arr[i].charAt(0);
+        }
+        return res;
+    }
+
+    @Override
+    public void writeByteArray(String field, Byte[] values) {
+        writeKey(field);
+        for (Byte value : values) {
+            writeArrayEntry(String.valueOf(value));
+        }
+        newLine();
+    }
+
+    @Override
+    public Byte[] readByteArray(String field) throws ConfigValueMissingException {
+        String[] arr = this.getValueArray(field);
+        Byte[] res = new Byte[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            res[i] = Byte.parseByte(arr[i]);
+        }
+        return res;
+    }
+
+    @Override
+    public void writeShortArray(String field, Short[] values) {
+        writeKey(field);
+        for (Short value : values) {
+            writeArrayEntry(String.valueOf(value));
+        }
+        newLine();
+    }
+
+    @Override
+    public Short[] readShortArray(String field) throws ConfigValueMissingException {
+        String[] arr = this.getValueArray(field);
+        Short[] res = new Short[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            res[i] = Short.parseShort(arr[i]);
+        }
+        return res;
+    }
+
+    @Override
     public void writeIntArray(String field, Integer[] values) {
         writeKey(field);
         for (Integer value : values) {

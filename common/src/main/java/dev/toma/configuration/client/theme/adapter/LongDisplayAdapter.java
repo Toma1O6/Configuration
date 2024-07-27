@@ -10,13 +10,13 @@ import dev.toma.configuration.config.value.LongValue;
 
 import java.lang.reflect.Field;
 
-public class LongDisplayAdapter extends AbstractNumericAdapter {
+public class LongDisplayAdapter extends AbstractNumericDisplayAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
         LongValue longValue = (LongValue) value;
         EditBoxWidget editBox = initEditBox(container, theme, longValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowIntegerCharacters);
+        editBox.setFilter(AbstractNumericDisplayAdapter::allowIntegerCharacters);
         handleValueChanged(editBox, longValue, Long::parseLong, container);
         placeEditBoxControls(longValue, theme, editBox, container);
     }

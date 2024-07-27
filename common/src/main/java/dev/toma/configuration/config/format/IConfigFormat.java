@@ -56,6 +56,18 @@ public interface IConfigFormat {
 
     Boolean[] readBoolArray(String field) throws ConfigValueMissingException;
 
+    void writeCharArray(String field, Character[] values);
+
+    Character[] readCharArray(String field) throws ConfigValueMissingException;
+
+    void writeByteArray(String field, Byte[] values);
+
+    Byte[] readByteArray(String field) throws ConfigValueMissingException;
+
+    void writeShortArray(String field, Short[] values);
+
+    Short[] readShortArray(String field) throws ConfigValueMissingException;
+
     void writeIntArray(String field, Integer[] values);
 
     Integer[] readIntArray(String field) throws ConfigValueMissingException;
@@ -100,6 +112,12 @@ public interface IConfigFormat {
         } catch (NumberFormatException e) {
             throw new ConfigValueMissingException(string);
         }
+    }
+
+    static Character parseCharacter(String string) throws ConfigValueMissingException {
+        if (string.isEmpty())
+            throw new ConfigValueMissingException(string);
+        return string.charAt(0);
     }
 
     static Byte parseByte(String string) throws ConfigValueMissingException {

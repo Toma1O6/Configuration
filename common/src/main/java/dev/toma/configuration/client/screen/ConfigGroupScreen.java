@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.screen;
 
-import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import net.minecraft.client.gui.Font;
@@ -55,15 +54,22 @@ public class ConfigGroupScreen extends Screen {
             this.addRenderableWidget(Button.builder(ConfigEntryWidget.OPEN, btn -> {
                 ConfigScreen screen = new ConfigScreen(value, value.getTitle(), value.getValueMap(), this);
                 minecraft.setScreen(screen);
-            }).pos(DisplayAdapter.getValueX(posX, componentWidth), y).size(DisplayAdapter.getValueWidth(componentWidth), 20).build());
+            }).pos(getValueX(posX, componentWidth), y).size(getValueWidth(componentWidth), 20).build());
         }
         initFooter();
+    }
+
+    static int getValueX(int x, int width) {
+        return x + width - getValueWidth(width);
+    }
+
+    static int getValueWidth(int width) {
+        return width / 3;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(graphics, mouseX, mouseY, partialTicks);
-        // HEADER
         int titleWidth = this.font.width(this.title);
         graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
         graphics.fill(0, 0, width, HEADER_HEIGHT, 0x99 << 24);
@@ -75,7 +81,7 @@ public class ConfigGroupScreen extends Screen {
 
     protected void initFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addRenderableWidget(Button.builder(ConfigEntryWidget.BACK, btn -> minecraft.setScreen(last)).pos(20, centerY).size(50, 20).build());
+        addRenderableWidget(Button.builder(AbstractConfigScreen.LABEL_BACK, btn -> minecraft.setScreen(last)).pos(5, centerY).size(120, 20).build());
     }
 
     protected void correctScrollingIndex(int count) {

@@ -51,39 +51,4 @@ public @interface Config {
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @interface NoAutoSync {}
-
-    /**
-     * Enables config version tracking for your configuration file. This means, that when version change is detected on
-     * client/server side, user will be informed that config format version has been changed and will be prompted to reset
-     * configuration back to default values.
-     *
-     * @since 3.0
-     */
-    // TODO implement
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Version {
-
-        /**
-         * Your current config version. You can increase this when for example default value is changed, and you want to
-         * give your users option to actually apply that change via restoring their config to default version.
-         * @return Your current config version
-         */
-        int version();
-
-        /**
-         *
-         * @return
-         */
-        String[] changes() default {};
-    }
-
-    class Gui {
-
-        @Target(ElementType.TYPE)
-        @Retention(RetentionPolicy.RUNTIME)
-        public @interface BackgroundTexture {
-            String value() default "";
-        }
-    }
 }

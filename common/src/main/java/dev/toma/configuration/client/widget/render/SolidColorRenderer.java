@@ -4,11 +4,11 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.function.IntSupplier;
 
-public class SolidColorBackgroundRenderer implements IBackgroundRenderer {
+public class SolidColorRenderer implements IRenderer {
 
     private final IntSupplier colorProvider;
 
-    public SolidColorBackgroundRenderer(IntSupplier colorProvider) {
+    public SolidColorRenderer(IntSupplier colorProvider) {
         this.colorProvider = colorProvider;
     }
 

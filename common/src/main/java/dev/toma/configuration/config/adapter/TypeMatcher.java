@@ -53,6 +53,18 @@ public interface TypeMatcher extends Predicate<Class<?>>, Comparable<TypeMatcher
         return NamedMatcherImpl.vanilla("array/boolean", boolean[].class);
     }
 
+    static TypeMatcher matchCharacterArray() {
+        return NamedMatcherImpl.vanilla("array/character", char[].class);
+    }
+
+    static TypeMatcher matchByteArray() {
+        return NamedMatcherImpl.vanilla("array/byte", byte[].class);
+    }
+
+    static TypeMatcher matchShortArray() {
+        return NamedMatcherImpl.vanilla("array/short", short[].class);
+    }
+
     static TypeMatcher matchIntegerArray() {
         return NamedMatcherImpl.vanilla("array/integer", int[].class);
     }

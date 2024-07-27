@@ -10,13 +10,13 @@ import dev.toma.configuration.config.value.ConfigValue;
 
 import java.lang.reflect.Field;
 
-public class ByteDisplayAdapter extends AbstractNumericAdapter {
+public class ByteDisplayAdapter extends AbstractNumericDisplayAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
         ByteValue byteValue = (ByteValue) value;
         EditBoxWidget editBox = initEditBox(container, theme, byteValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowIntegerCharacters);
+        editBox.setFilter(AbstractNumericDisplayAdapter::allowIntegerCharacters);
         handleValueChanged(editBox, byteValue, Byte::parseByte, container);
         placeEditBoxControls(byteValue, theme, editBox, container);
     }

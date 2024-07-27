@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
 
-public class BooleanDisplayAdapter extends AbstractAdapter {
+public class BooleanDisplayAdapter extends AbstractDisplayAdapter {
 
     public static final Component TRUE = Component.translatable("text.configuration.value.true").withStyle(ChatFormatting.GREEN);
     public static final Component FALSE = Component.translatable("text.configuration.value.false").withStyle(ChatFormatting.RED);

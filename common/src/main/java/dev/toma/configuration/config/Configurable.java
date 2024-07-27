@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Configurable {
 
-    LocalizationPath localization() default LocalizationPath.FIELD; // TODO docs
+    LocalizationKey key() default LocalizationKey.SHORT; // TODO docs
 
     /**
      * Allows you to add description to configurable value.
@@ -225,8 +225,8 @@ public @interface Configurable {
         }
     }
 
-    enum LocalizationPath {
+    enum LocalizationKey {
         FULL,
-        FIELD
+        SHORT
     }
 }
