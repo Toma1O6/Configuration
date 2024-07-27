@@ -1,8 +1,11 @@
 package dev.toma.configuration.client.theme;
 
-import dev.toma.configuration.client.theme.adapter.BooleanDisplayAdapter;
-import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
-import dev.toma.configuration.client.theme.adapter.IntegerDisplayAdapter;
+import dev.toma.configuration.client.screen.AbstractConfigScreen;
+import dev.toma.configuration.client.theme.adapter.*;
+import dev.toma.configuration.client.widget.EditBoxWidget;
+import dev.toma.configuration.client.widget.SliderWidget;
+import dev.toma.configuration.client.widget.render.SolidColorBackgroundRenderer;
+import dev.toma.configuration.client.widget.render.SpriteBackgroundRenderer;
 import dev.toma.configuration.config.adapter.TypeMatcher;
 import net.minecraft.resources.ResourceLocation;
 
@@ -24,10 +27,10 @@ public class DefaultConfigTheme extends ConfigTheme {
         registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchCharacter(), DisplayAdapter.characterValue());
         registerDisplayAdapter(TypeMatcher.matchInteger(), new IntegerDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchLong(), DisplayAdapter.longValue());
-        registerDisplayAdapter(TypeMatcher.matchFloat(), DisplayAdapter.floatValue());
-        registerDisplayAdapter(TypeMatcher.matchDouble(), DisplayAdapter.doubleValue());
-        registerDisplayAdapter(TypeMatcher.matchString(), DisplayAdapter.stringValue());
+        registerDisplayAdapter(TypeMatcher.matchLong(), new LongDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchFloat(), new FloatDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchDouble(), new DoubleDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchString(), new StringDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchBooleanArray(), DisplayAdapter.booleanArrayValue());
         registerDisplayAdapter(TypeMatcher.matchIntegerArray(), DisplayAdapter.integerArrayValue());
         registerDisplayAdapter(TypeMatcher.matchLongArray(), DisplayAdapter.longArrayValue());
@@ -37,5 +40,11 @@ public class DefaultConfigTheme extends ConfigTheme {
         registerDisplayAdapter(TypeMatcher.matchEnum(), DisplayAdapter.enumValue());
         registerDisplayAdapter(TypeMatcher.matchEnumArray(), DisplayAdapter.enumArrayValue());
         registerDisplayAdapter(TypeMatcher.matchObject(), DisplayAdapter.objectValue());
+
+        setButtonBackground(t -> new SpriteBackgroundRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
+        setEditBoxBackground(t -> new SpriteBackgroundRenderer(() -> EditBoxWidget.SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
+        setSliderBackground(t -> new SpriteBackgroundRenderer(() -> SliderWidget.SLIDER.get(t.isActive(), t.isHoveredOrFocused())));
+        setSliderHandle(t -> new SpriteBackgroundRenderer(() -> SliderWidget.HANDLE.get(t.isActive(), t.isFocused())));
+        setColorBackground(t -> new SolidColorBackgroundRenderer(() -> t.isHoveredOrFocused() ? 0xFFFFFFFF : 0xFFA0A0A0));
     }
 }

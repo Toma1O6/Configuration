@@ -6,25 +6,25 @@ import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.client.widget.SliderWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IntValue;
+import dev.toma.configuration.config.value.LongValue;
 
 import java.lang.reflect.Field;
 
-public class IntegerDisplayAdapter extends AbstractNumericAdapter {
+public class LongDisplayAdapter extends AbstractNumericAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
-        IntValue intValue = (IntValue) value;
-        EditBoxWidget editBox = initEditBox(container, theme, intValue, field);
+        LongValue longValue = (LongValue) value;
+        EditBoxWidget editBox = initEditBox(container, theme, longValue, field);
         editBox.setFilter(AbstractNumericAdapter::allowIntegerCharacters);
-        handleValueChanged(editBox, intValue, Integer::parseInt, container);
-        placeEditBoxControls(intValue, theme, editBox, container);
+        handleValueChanged(editBox, longValue, Long::parseLong, container);
+        placeEditBoxControls(longValue, theme, editBox, container);
     }
 
     @Override
     protected void placeSlider(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
-        IntValue intValue = (IntValue) value;
-        SliderWidget<Integer> slider = initSlider(container, theme, intValue, field);
-        placeSliderControls(intValue, theme, slider, container);
+        LongValue longValue = (LongValue) value;
+        SliderWidget<Long> slider = initSlider(container, theme, longValue, field);
+        placeSliderControls(longValue, theme, slider, container);
     }
 }

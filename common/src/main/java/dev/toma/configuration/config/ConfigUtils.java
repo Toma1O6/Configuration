@@ -18,7 +18,9 @@ public final class ConfigUtils {
 
     public static final char[] INTEGER_CHARS = { '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     public static final char[] DECIMAL_CHARS = { '-', '.', 'E', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    @Deprecated
     public static final Pattern INTEGER_PATTERN = Pattern.compile("-?[0-9]+");
+    @Deprecated
     public static final Pattern DECIMAL_PATTERN = Pattern.compile("-?[0-9]+(\\.[0-9]+)?(E[0-9]+)?");
     public static final Map<Class<?>, Class<?>> PRIMITIVE_MAPPINGS = new HashMap<>();
 
@@ -40,6 +42,7 @@ public final class ConfigUtils {
         throw new ConfigValueMissingException("Missing enum value: " + value);
     }
 
+    @Deprecated
     public static boolean containsOnlyValidCharacters(String in, char[] allowedChars) {
         char[] arr = in.toCharArray();
         for (char c : arr) {

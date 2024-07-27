@@ -19,10 +19,12 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 // Shamelessly copied from Vanilla and adjusted as needed
 public class EditBoxWidget extends AbstractThemeWidget {
@@ -50,6 +52,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
     private BiFunction<String, Integer, FormattedCharSequence> formatter;
     private Component hint;
     private long focusedTime;
+    private NumberFormatter numberFormatter;
 
     public EditBoxWidget(int x, int y, int width, int height, ConfigTheme theme, Font font) {
         super(x, y, width, height, theme);
@@ -63,6 +66,10 @@ public class EditBoxWidget extends AbstractThemeWidget {
         this.filter = Objects::nonNull;
         this.formatter = (text, i) -> FormattedCharSequence.forward(text, Style.EMPTY);
         this.focusedTime = Util.getMillis();
+    }
+
+    public void setFormatter(DecimalFormat formatter, Supplier<Number> provider) {
+        this.numberFormatter = formatter != null ? new NumberFormatter(formatter, provider) : null;
     }
 
     public void setResponder(Consumer<String> $$0) {
@@ -348,62 +355,63 @@ public class EditBoxWidget extends AbstractThemeWidget {
                 this.renderBackground(graphics);
             }
 
-            int $$5 = this.isActive() ? this.textColor : this.textColorUneditable;
-            int $$6 = this.cursorPos - this.displayPos;
-            String $$7 = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
-            boolean $$8 = $$6 >= 0 && $$6 <= $$7.length();
-            boolean $$9 = this.isFocused() && (Util.getMillis() - this.focusedTime) / CURSOR_BLINK_INTERVAL_MS % 2L == 0L && $$8;
-            int $$10 = this.bordered ? this.getX() + 4 : this.getX();
-            int $$11 = this.bordered ? this.getY() + (this.height - 8) / 2 : this.getY();
-            int $$12 = $$10;
-            int $$13 = Mth.clamp(this.highlightPos - this.displayPos, 0, $$7.length());
-            if (!$$7.isEmpty()) {
-                String $$14 = $$8 ? $$7.substring(0, $$6) : $$7;
-                $$12 = graphics.drawString(this.font, this.formatter.apply($$14, this.displayPos), $$12, $$11, $$5);
+            int textColor = this.isActive() ? this.textColor : this.textColorUneditable;
+            int position = this.cursorPos - this.displayPos;
+            String displayValue = this.numberFormatter != null && !this.isFocused() ? this.numberFormatter.applyFormat() : this.value;
+            String label = this.font.plainSubstrByWidth(displayValue.substring(this.displayPos), this.getInnerWidth());
+            boolean cursorAtEnd = position >= 0 && position <= label.length();
+            boolean blink = this.isFocused() && (Util.getMillis() - this.focusedTime) / CURSOR_BLINK_INTERVAL_MS % 2L == 0L && cursorAtEnd;
+            int left = this.bordered ? this.getX() + 4 : this.getX();
+            int top = this.bordered ? this.getY() + (this.height - 8) / 2 : this.getY();
+            int $$12 = left;
+            int $$13 = Mth.clamp(this.highlightPos - this.displayPos, 0, label.length());
+            if (!label.isEmpty()) {
+                String $$14 = cursorAtEnd ? label.substring(0, position) : label;
+                $$12 = graphics.drawString(this.font, this.formatter.apply($$14, this.displayPos), $$12, top, textColor);
             }
 
-            boolean $$15 = this.cursorPos < this.value.length() || this.value.length() >= this.getMaxLength();
+            boolean $$15 = this.cursorPos < displayValue.length() || displayValue.length() >= this.getMaxLength();
             int $$16 = $$12;
-            if (!$$8) {
-                $$16 = $$6 > 0 ? $$10 + this.width : $$10;
+            if (!cursorAtEnd) {
+                $$16 = position > 0 ? left + this.width : left;
             } else if ($$15) {
                 --$$16;
                 --$$12;
             }
 
-            if (!$$7.isEmpty() && $$8 && $$6 < $$7.length()) {
-                graphics.drawString(this.font, this.formatter.apply($$7.substring($$6), this.cursorPos), $$12, $$11, $$5);
+            if (!label.isEmpty() && cursorAtEnd && position < label.length()) {
+                graphics.drawString(this.font, this.formatter.apply(label.substring(position), this.cursorPos), $$12, top, textColor);
             }
 
-            if (this.hint != null && $$7.isEmpty() && !this.isFocused()) {
-                graphics.drawString(this.font, this.hint, $$12, $$11, $$5);
+            if (this.hint != null && label.isEmpty() && !this.isFocused()) {
+                graphics.drawString(this.font, this.hint, $$12, top, textColor);
             }
 
             if (!$$15 && this.suggestion != null) {
-                graphics.drawString(this.font, this.suggestion, $$16 - 1, $$11, -8355712);
+                graphics.drawString(this.font, this.suggestion, $$16 - 1, top, -8355712);
             }
 
             int var10003;
             int var10004;
             int var10005;
-            if ($$9) {
+            if (blink) {
                 if ($$15) {
                     RenderType var10001 = RenderType.guiOverlay();
-                    var10003 = $$11 - 1;
+                    var10003 = top - 1;
                     var10004 = $$16 + 1;
-                    var10005 = $$11 + 1;
+                    var10005 = top + 1;
                     Objects.requireNonNull(this.font);
                     graphics.fill(var10001, $$16, var10003, var10004, var10005 + 9, CURSOR_INSERT_COLOR);
                 } else {
-                    graphics.drawString(this.font, CURSOR_APPEND_CHARACTER, $$16, $$11, $$5);
+                    graphics.drawString(this.font, CURSOR_APPEND_CHARACTER, $$16, top, textColor);
                 }
             }
 
-            if ($$13 != $$6) {
-                int $$17 = $$10 + this.font.width($$7.substring(0, $$13));
-                var10003 = $$11 - 1;
+            if ($$13 != position && this.isFocused()) {
+                int $$17 = left + this.font.width(label.substring(0, $$13));
+                var10003 = top - 1;
                 var10004 = $$17 - 1;
-                var10005 = $$11 + 1;
+                var10005 = top + 1;
                 Objects.requireNonNull(this.font);
                 this.renderHighlight(graphics, $$16, var10003, var10004, var10005 + 9);
             }
@@ -535,5 +543,12 @@ public class EditBoxWidget extends AbstractThemeWidget {
 
     public void setHint(Component $$0) {
         this.hint = $$0;
+    }
+
+    public record NumberFormatter(DecimalFormat format, Supplier<Number> value) {
+
+        public String applyFormat() {
+            return format.format(value.get());
+        }
     }
 }

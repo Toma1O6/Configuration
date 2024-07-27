@@ -6,25 +6,25 @@ import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.client.widget.SliderWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IntValue;
+import dev.toma.configuration.config.value.FloatValue;
 
 import java.lang.reflect.Field;
 
-public class IntegerDisplayAdapter extends AbstractNumericAdapter {
+public class FloatDisplayAdapter extends AbstractNumericAdapter {
 
     @Override
     protected void placeTextField(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
-        IntValue intValue = (IntValue) value;
-        EditBoxWidget editBox = initEditBox(container, theme, intValue, field);
-        editBox.setFilter(AbstractNumericAdapter::allowIntegerCharacters);
-        handleValueChanged(editBox, intValue, Integer::parseInt, container);
-        placeEditBoxControls(intValue, theme, editBox, container);
+        FloatValue floatValue = (FloatValue) value;
+        EditBoxWidget editBox = initEditBox(container, theme, floatValue, field);
+        editBox.setFilter(AbstractNumericAdapter::allowDecimalCharacters);
+        handleValueChanged(editBox, floatValue, Float::parseFloat, container);
+        placeEditBoxControls(floatValue, theme, editBox, container);
     }
 
     @Override
     protected void placeSlider(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container) {
-        IntValue intValue = (IntValue) value;
-        SliderWidget<Integer> slider = initSlider(container, theme, intValue, field);
-        placeSliderControls(intValue, theme, slider, container);
+        FloatValue floatValue = (FloatValue) value;
+        SliderWidget<Float> slider = initSlider(container, theme, floatValue, field);
+        placeSliderControls(floatValue, theme, slider, container);
     }
 }

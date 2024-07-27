@@ -1,14 +1,9 @@
 package dev.toma.configuration.client.theme.adapter;
 
 import dev.toma.configuration.client.WidgetAdder;
-import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.client.theme.ConfigTheme;
-import dev.toma.configuration.client.widget.AbstractThemeWidget;
 import dev.toma.configuration.client.widget.BooleanWidget;
-import dev.toma.configuration.client.widget.ThemedButtonWidget;
-import dev.toma.configuration.client.widget.render.IBackgroundRenderer;
-import dev.toma.configuration.client.widget.render.SpriteBackgroundRenderer;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.BooleanValue;
 import dev.toma.configuration.config.value.ConfigValue;
@@ -37,20 +32,13 @@ public class BooleanDisplayAdapter extends AbstractAdapter {
             int widgetWidth = WidgetPlacerHelper.getWidth(width);
             return createWidget(left, y, widgetWidth, height, theme, booleanValue);
         });
+        widget.setBackgroundRenderer(theme.getButtonBackground(widget));
         ValueReverter reverter = useDefault -> widget.setState(useDefault ? booleanValue.getValueData().getDefaultValue() : !booleanValue.get());
-        ThemedButtonWidget revertButton = this.createRevertButton(widget, value, container, reverter);
-        ThemedButtonWidget revertDefaultButton = this.createRevertToDefaultButton(widget, value, container, reverter);
-        IBackgroundRenderer renderer = this.createWidgetRenderer(widget);
-        widget.setBackgroundRenderer(renderer);
-        this.attachDefaultChangeListeners(value, widget, revertButton, revertDefaultButton);
+        this.createControls(widget, value, theme, container, reverter);
     }
 
     protected BooleanWidget createWidget(int x, int y, int width, int height, ConfigTheme theme, BooleanValue config) {
         return new BooleanWidget(x, y, width, height, theme, config, this.enabledText, this.disabledText);
-    }
-
-    protected IBackgroundRenderer createWidgetRenderer(AbstractThemeWidget widget) {
-        return new SpriteBackgroundRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(widget.active, widget.isHovered()));
     }
 
     public void setEnabledText(Component enabledText) {

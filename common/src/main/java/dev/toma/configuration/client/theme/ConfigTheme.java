@@ -2,6 +2,11 @@ package dev.toma.configuration.client.theme;
 
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapterManager;
+import dev.toma.configuration.client.widget.AbstractThemeWidget;
+import dev.toma.configuration.client.widget.ColorWidget;
+import dev.toma.configuration.client.widget.EditBoxWidget;
+import dev.toma.configuration.client.widget.SliderWidget;
+import dev.toma.configuration.client.widget.render.IBackgroundRenderer;
 import dev.toma.configuration.config.adapter.AdapterHolder;
 import dev.toma.configuration.config.adapter.TypeMatcher;
 import net.minecraft.network.chat.Component;
@@ -21,6 +26,12 @@ public class ConfigTheme {
 
     private Integer backgroundFillColor;
 
+    private BackgroundRendererFactory<AbstractThemeWidget> buttonBackground = BackgroundRendererFactory.none();
+    private BackgroundRendererFactory<EditBoxWidget> editBoxBackground = BackgroundRendererFactory.none();
+    private BackgroundRendererFactory<SliderWidget<?>> sliderBackground = BackgroundRendererFactory.none();
+    private BackgroundRendererFactory<SliderWidget<?>> sliderHandle = BackgroundRendererFactory.none();
+    private BackgroundRendererFactory<ColorWidget> colorBackground = BackgroundRendererFactory.none();
+
     public ConfigTheme copy() {
         ConfigTheme theme = new ConfigTheme();
         theme.displayAdapters.addAll(displayAdapters);
@@ -29,6 +40,11 @@ public class ConfigTheme {
         theme.footer = footer;
         theme.scrollbar = scrollbar;
         theme.backgroundFillColor = backgroundFillColor;
+        theme.buttonBackground = buttonBackground;
+        theme.editBoxBackground = editBoxBackground;
+        theme.sliderBackground = sliderBackground;
+        theme.sliderHandle = sliderHandle;
+        theme.colorBackground = colorBackground;
         return theme;
     }
 
@@ -66,6 +82,26 @@ public class ConfigTheme {
         this.backgroundFillColor = backgroundFillColor;
     }
 
+    public void setButtonBackground(BackgroundRendererFactory<AbstractThemeWidget> buttonBackground) {
+        this.buttonBackground = buttonBackground;
+    }
+
+    public void setEditBoxBackground(BackgroundRendererFactory<EditBoxWidget> editBoxBackground) {
+        this.editBoxBackground = editBoxBackground;
+    }
+
+    public void setSliderBackground(BackgroundRendererFactory<SliderWidget<?>> sliderBackground) {
+        this.sliderBackground = sliderBackground;
+    }
+
+    public void setSliderHandle(BackgroundRendererFactory<SliderWidget<?>> sliderHandle) {
+        this.sliderHandle = sliderHandle;
+    }
+
+    public void setColorBackground(BackgroundRendererFactory<ColorWidget> colorBackground) {
+        this.colorBackground = colorBackground;
+    }
+
     // Getters
     public ResourceLocation getBackgroundTexture() {
         return this.backgroundTexture;
@@ -83,9 +119,39 @@ public class ConfigTheme {
         return scrollbar;
     }
 
+    public IBackgroundRenderer getButtonBackground(AbstractThemeWidget widget) {
+        return buttonBackground.create(widget);
+    }
+
+    public IBackgroundRenderer getEditBoxBackground(EditBoxWidget widget) {
+        return editBoxBackground.create(widget);
+    }
+
+    public IBackgroundRenderer getSliderBackground(SliderWidget<?> widget) {
+        return sliderBackground.create(widget);
+    }
+
+    public IBackgroundRenderer getSliderHandle(SliderWidget<?> widget) {
+        return sliderHandle.create(widget);
+    }
+
+    public IBackgroundRenderer getColorBackground(ColorWidget widget) {
+        return colorBackground.create(widget);
+    }
+
     public record Header(Component customText, int height, int backgroundColor, int foregroundColor) {}
 
     public record Footer(int height, int backgroundColor) {} // TODO widget factory
 
     public record Scrollbar(boolean alwaysRendered, int width, Integer backgroundColor) {}
+
+    @FunctionalInterface
+    public interface BackgroundRendererFactory<T> {
+
+        IBackgroundRenderer create(T type);
+
+        static <T> BackgroundRendererFactory<T> none() {
+            return t -> null;
+        }
+    }
 }

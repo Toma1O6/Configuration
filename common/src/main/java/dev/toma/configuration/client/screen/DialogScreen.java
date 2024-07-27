@@ -29,8 +29,8 @@ public class DialogScreen extends Screen {
         super(title);
         this.text = text;
         this.background = background;
-        this.onCancel = this::displayPreviousScreen;
-        this.onConfirm = this::displayPreviousScreen;
+        this.onCancel = screen -> displayPreviousScreen();
+        this.onConfirm = screen -> displayPreviousScreen();
     }
 
     public void onCancelled(DialogRespondEvent cancelEvent) {
@@ -122,7 +122,7 @@ public class DialogScreen extends Screen {
         this.onCancel.respond(this);
     }
 
-    public void displayPreviousScreen(DialogScreen screen) {
+    public void displayPreviousScreen() {
         this.minecraft.setScreen(this.background);
     }
 

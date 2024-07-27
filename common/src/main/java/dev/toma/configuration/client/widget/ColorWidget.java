@@ -1,6 +1,7 @@
 package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.screen.DialogScreen;
+import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.Configurable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-public final class ColorWidget extends AbstractWidget {
+public final class ColorWidget extends AbstractThemeWidget {
 
     public static final Component SELECT_COLOR = Component.translatable("text.configuration.screen.color_dialog");
     private final boolean argb;
@@ -27,8 +28,8 @@ public final class ColorWidget extends AbstractWidget {
     private final GetSet<String> colorWidget;
     private final Screen lastScreen;
 
-    public ColorWidget(int x, int y, int width, int height, Configurable.Gui.ColorValue colorOptions, GetSet<String> colorWidget, Screen lastScreen) {
-        super(x, y, width, height, CommonComponents.EMPTY);
+    public ColorWidget(int x, int y, int width, int height, ConfigTheme theme, Configurable.Gui.ColorValue colorOptions, GetSet<String> colorWidget, Screen lastScreen) {
+        super(x, y, width, height, theme);
         this.argb = colorOptions.isARGB();
         this.colorPrefix = colorOptions.getGuiColorPrefix();
         this.colorWidget = colorWidget;
@@ -46,12 +47,11 @@ public final class ColorWidget extends AbstractWidget {
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialRenderTicks) {
-        int borderColor = this.isFocused() ? 0xffffffff : 0xffa0a0a0;
         int providedColor = this.colorSupplier.getAsInt();
         int color = this.argb ? providedColor : (0xFF << 24) | providedColor;
-        graphics.fill(this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, borderColor);
-        graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xFFFFFFFF, 0xFF888888);
-        graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, color);
+        this.renderBackground(graphics);
+        graphics.fillGradient(this.getX() + 1, this.getY() + 1, this.getRight() - 1, this.getBottom() - 1, 0xFFFFFFFF, 0xFF888888);
+        graphics.fill(this.getX() + 1, this.getY() + 1, this.getRight() - 1, this.getBottom() - 1, color);
     }
 
     @Override
@@ -66,7 +66,7 @@ public final class ColorWidget extends AbstractWidget {
             int color = dialog.getResultColor();
             String colorText = this.colorPrefix + Integer.toHexString(color).toUpperCase();
             this.colorWidget.set(colorText);
-            dialog.displayPreviousScreen(dialog);
+            dialog.displayPreviousScreen();
         });
         Minecraft.getInstance().setScreen(dialog);
     }

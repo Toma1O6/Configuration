@@ -3,7 +3,6 @@ package dev.toma.configuration.client.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.render.IBackgroundRenderer;
-import dev.toma.configuration.client.widget.render.SpriteBackgroundRenderer;
 import dev.toma.configuration.config.value.NumericValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -14,6 +13,8 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+
+import java.text.DecimalFormat;
 
 public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThemeWidget {
 
@@ -30,6 +31,9 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
     protected final NumericValue<N> numericValue;
     protected IBackgroundRenderer handleRenderer;
     protected double value;
+    protected N num;
+
+    private DecimalFormat decimalFormat;
 
     public SliderWidget(int x, int y, int width, int height, ConfigTheme theme, NumericValue<N> numericValue, Font font) {
         super(x, y, width, height, theme);
@@ -37,8 +41,11 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
         this.value = numericValue.getSliderValue();
         this.font = font;
 
-        this.setBackgroundRenderer(new SpriteBackgroundRenderer(() -> SLIDER.get(this.isActive(), this.isFocused())));
-        this.setHandleRenderer(new SpriteBackgroundRenderer(() -> HANDLE.get(this.isActive(), this.isFocused())));
+        this.updateDisplayText();
+    }
+
+    public void setFormatter(DecimalFormat decimalFormat) {
+        this.decimalFormat = decimalFormat;
         this.updateDisplayText();
     }
 
@@ -80,7 +87,8 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
     }
 
     protected void updateDisplayText() {
-        this.setMessage(Component.literal(String.valueOf(this.numericValue.get())));
+        this.num = this.numericValue.get();
+        this.setMessage(Component.literal(this.decimalFormat != null ? this.decimalFormat.format(this.num) : String.valueOf(this.num)));
     }
 
     @Override

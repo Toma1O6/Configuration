@@ -23,6 +23,7 @@ public final class TestingConfig {
     public long longNumber = 16644564564561651L;
 
     @Configurable
+    @Configurable.Gui.NumberFormat("0.0#")
     public float floatNumber = 151.3123F;
 
     @Configurable
