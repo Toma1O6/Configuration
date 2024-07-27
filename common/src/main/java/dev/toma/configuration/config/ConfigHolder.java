@@ -137,6 +137,14 @@ public final class ConfigHolder<CFG> {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public boolean isChanged() {
+        return this.values().stream().anyMatch(ConfigValue::isChanged);
+    }
+
+    public boolean isChangedFromDefault() {
+        return this.values().stream().anyMatch(ConfigValue::isChangedFromDefault);
+    }
+
     public void save() {
         this.values().forEach(ConfigValue::save);
     }

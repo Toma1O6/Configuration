@@ -24,6 +24,14 @@ public interface IConfigFormat {
 
     char readChar(String field) throws ConfigValueMissingException;
 
+    void writeByte(String field, byte value);
+
+    byte readByte(String field) throws ConfigValueMissingException;
+
+    void writeShort(String field, short value);
+
+    short readShort(String field) throws ConfigValueMissingException;
+
     void writeInt(String field, int value);
 
     int readInt(String field) throws ConfigValueMissingException;

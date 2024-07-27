@@ -19,7 +19,7 @@ public class FloatArrayValue extends NumericArrayValue<Float> {
     public NumberRange<Float> getValueRange(Field field) {
         Configurable.DecimalRange decimalRange = field.getAnnotation(Configurable.DecimalRange.class);
         return decimalRange != null
-                ? NumberRange.interval(this, (float) decimalRange.min(), (float) decimalRange.max())
+                ? NumberRange.interval(this, (float) Math.max(min(), decimalRange.min()), (float) Math.min(decimalRange.max(), max()))
                 : NumberRange.all(this);
     }
 

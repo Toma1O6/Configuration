@@ -27,7 +27,7 @@ public final class TypeAdapterManager {
     }
 
     public static <T> void registerTypeMapper(Class<T> type, TypeMapper<T, ?> mapper) {
-        TYPE_MAPPERS.put(type, mapper); // TODO validate duplicates
+        TYPE_MAPPERS.put(type, mapper);
     }
 
     public static void registerTypeAdapter(TypeMatcher matcher, TypeAdapter<?> adapter) {
@@ -49,8 +49,8 @@ public final class TypeAdapterManager {
         // primitives
         registerTypeAdapter(TypeMatcher.matchBoolean(), new BooleanValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchCharacter(), new CharValue.Adapter());
-        // TODO byte
-        // TODO short
+        registerTypeAdapter(TypeMatcher.matchByte(), new ByteValue.Adapter());
+        registerTypeAdapter(TypeMatcher.matchShort(), new ShortValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchInteger(), new IntValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchLong(), new LongValue.Adapter());
         registerTypeAdapter(TypeMatcher.matchFloat(), new FloatValue.Adapter());
@@ -74,6 +74,5 @@ public final class TypeAdapterManager {
 
         // objects
         registerTypeAdapter(TypeMatcher.matchObject(), new ObjectValue.Adapter());
-        // TODO object array
     }
 }

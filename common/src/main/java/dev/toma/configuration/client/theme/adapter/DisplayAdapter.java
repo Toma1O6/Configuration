@@ -35,27 +35,6 @@ public interface DisplayAdapter {
 
     void placeWidgets(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container);
 
-    static DisplayAdapter characterValue() {
-        return (holder, value, field, theme, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
-            EditBox widget = new EditBox(Minecraft.getInstance().font, getValueX(x, width), y, getValueWidth(width), 20, CommonComponents.EMPTY);
-            CharValue charValue = (CharValue) value;
-            char character = charValue.get();
-            widget.setValue(String.valueOf(character));
-            widget.setFilter(str -> str.length() <= 1);
-            widget.setResponder(str -> {
-                if (!str.isEmpty()) {
-                    container.setOkStatus();
-                    char toSet = str.charAt(0);
-                    charValue.setWithValidationHandler(toSet, container);
-                } else {
-                    container.setValidationResult(ValidationResult.error(ClientErrors.CHAR_VALUE_EMPTY));
-                }
-            });
-            ConfigUtils.adjustCharacterLimit(field, widget);
-            return widget;
-        });
-    }
-
     static DisplayAdapter booleanArrayValue() {
         return (holder, value, field, theme, container) -> container.addConfigWidget((x, y, width, height, configId) -> {
             BooleanArrayValue arrayValue = (BooleanArrayValue) value;

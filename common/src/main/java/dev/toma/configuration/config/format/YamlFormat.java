@@ -61,6 +61,26 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
+    public void writeByte(String field, byte value) {
+        writeValuePair(field, String.valueOf(value));
+    }
+
+    @Override
+    public byte readByte(String field) throws ConfigValueMissingException {
+        return getValue(field, Byte::parseByte);
+    }
+
+    @Override
+    public void writeShort(String field, short value) {
+        writeValuePair(field, String.valueOf(value));
+    }
+
+    @Override
+    public short readShort(String field) throws ConfigValueMissingException {
+        return getValue(field, Short::parseShort);
+    }
+
+    @Override
     public void writeInt(String field, int value) {
         writeValuePair(field, String.valueOf(value));
     }

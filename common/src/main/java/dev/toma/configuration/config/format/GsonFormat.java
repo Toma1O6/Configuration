@@ -55,6 +55,26 @@ public final class GsonFormat implements IConfigFormat {
     }
 
     @Override
+    public void writeByte(String field, byte value) {
+        this.root.addProperty(field, value);
+    }
+
+    @Override
+    public byte readByte(String field) throws ConfigValueMissingException {
+        return this.tryRead(field, JsonElement::getAsByte);
+    }
+
+    @Override
+    public void writeShort(String field, short value) {
+        this.root.addProperty(field, value);
+    }
+
+    @Override
+    public short readShort(String field) throws ConfigValueMissingException {
+        return this.tryRead(field, JsonElement::getAsShort);
+    }
+
+    @Override
     public void writeInt(String field, int value) {
         this.root.addProperty(field, value);
     }

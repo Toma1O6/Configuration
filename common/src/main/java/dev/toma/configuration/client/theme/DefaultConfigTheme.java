@@ -25,7 +25,9 @@ public class DefaultConfigTheme extends ConfigTheme {
         setBackgroundFillColor(0x55 << 24);
 
         registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchCharacter(), DisplayAdapter.characterValue());
+        registerDisplayAdapter(TypeMatcher.matchCharacter(), new CharacterDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchByte(), new ByteDisplayAdapter());
+        registerDisplayAdapter(TypeMatcher.matchShort(), new ShortDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchInteger(), new IntegerDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchLong(), new LongDisplayAdapter());
         registerDisplayAdapter(TypeMatcher.matchFloat(), new FloatDisplayAdapter());

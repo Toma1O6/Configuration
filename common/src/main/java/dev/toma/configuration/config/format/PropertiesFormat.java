@@ -19,8 +19,7 @@ public final class PropertiesFormat implements IConfigFormat {
     public static final String DELIMITER = ",";
 
     private final Properties properties = new Properties();
-    private LinkedList<String> prefixes = new LinkedList<>();
-    private int nestingLevel;
+    private final LinkedList<String> prefixes = new LinkedList<>();
 
     @Override
     public void writeBoolean(String field, boolean value) {
@@ -40,6 +39,26 @@ public final class PropertiesFormat implements IConfigFormat {
     @Override
     public char readChar(String field) throws ConfigValueMissingException {
         return this.read(field, s -> s.charAt(0));
+    }
+
+    @Override
+    public void writeByte(String field, byte value) {
+        this.write(field, String.valueOf(value));
+    }
+
+    @Override
+    public byte readByte(String field) throws ConfigValueMissingException {
+        return this.read(field, Byte::parseByte);
+    }
+
+    @Override
+    public void writeShort(String field, short value) {
+        this.write(field, String.valueOf(value));
+    }
+
+    @Override
+    public short readShort(String field) throws ConfigValueMissingException {
+        return this.read(field, Short::parseShort);
     }
 
     @Override

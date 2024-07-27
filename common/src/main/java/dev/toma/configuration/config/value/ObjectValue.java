@@ -44,6 +44,17 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
+    public boolean isChangedFromDefault() {
+        Map<String, ConfigValue<?>> map = this.get();
+        for (ConfigValue<?> value : map.values()) {
+            if (value.isChangedFromDefault()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
         format.readMap(this.getId(), this.get().values());
     }

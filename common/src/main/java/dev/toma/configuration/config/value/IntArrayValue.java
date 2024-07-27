@@ -17,9 +17,9 @@ public class IntArrayValue extends NumericArrayValue<Integer> {
 
     @Override
     public NumberRange<Integer> getValueRange(Field field) {
-        Configurable.Range intRange = field.getAnnotation(Configurable.Range.class);
-        return intRange != null
-                ? NumberRange.interval(this, (int) intRange.min(), (int) intRange.max())
+        Configurable.Range range = field.getAnnotation(Configurable.Range.class);
+        return range != null
+                ? NumberRange.interval(this, (int) Math.max(range.min(), min()), (int) Math.min(range.max(), max()))
                 : NumberRange.all(this);
     }
 

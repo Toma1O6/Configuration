@@ -13,10 +13,49 @@ public final class TestingConfig {
     public boolean bool = true;
 
     @Configurable
-    @Configurable.Synchronized
-    @Configurable.Range(min = 10, max = 30)
+    public char character = 'c';
+
+    @Configurable
+    public byte byteSimple = 123;
+
+    @Configurable
+    @Configurable.Range(min = 10, max = 20)
+    public byte byteRanged = 15;
+
+    @Configurable
     @Configurable.Gui.Slider
-    public int number = 15;
+    public byte byteSlider = 0;
+
+    @Configurable
+    public short shortSimple = 123;
+
+    @Configurable
+    @Configurable.Range(min = 10, max = 20)
+    public short shortRanged = 15;
+
+    @Configurable
+    @Configurable.Gui.Slider
+    public short shortSlider = 0;
+
+    @Configurable
+    public int intSimple = 15;
+
+    @Configurable
+    @Configurable.Range(min = 0, max = 255)
+    public int intRanged = 10;
+
+    @Configurable
+    @Configurable.Range(min = 0, max = 1000)
+    @Configurable.Gui.Slider
+    public int intSlider = 15;
+
+    @Configurable
+    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
+    public int intGameRestartRestriction = 99;
+
+    @Configurable
+    @Configurable.Synchronized
+    public int intSynchronized = 123;
 
     @Configurable
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)

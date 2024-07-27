@@ -21,6 +21,14 @@ public interface TypeMatcher extends Predicate<Class<?>>, Comparable<TypeMatcher
         return NamedMatcherImpl.vanilla("character", Character.TYPE);
     }
 
+    static TypeMatcher matchByte() {
+        return NamedMatcherImpl.vanilla("byte", Byte.TYPE);
+    }
+
+    static TypeMatcher matchShort() {
+        return NamedMatcherImpl.vanilla("short", Short.TYPE);
+    }
+
     static TypeMatcher matchInteger() {
         return NamedMatcherImpl.vanilla("integer", Integer.TYPE);
     }
