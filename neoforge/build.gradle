@@ -15,11 +15,15 @@ plugins {
     id 'idea'
     id 'java'
     id 'net.neoforged.gradle.userdev' version "${neogradle_userdev}"
+    id 'maven-publish'
 }
 
-version = "${project.minecraft_version}-${project.version}"
+version = "${project.version}"
 group = project.mod_group
-archivesBaseName = "${project.mod_id}" + "-neoforge"
+def classifier = 'neoforge'
+base {
+    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
+}
 
 def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
 if (at.exists()) {
@@ -71,4 +75,25 @@ jar {
     }
 
     exclude("${mod_id}.accesswidener")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = "${project.mod_id}-${project.minecraft_version}"
+            version = "${project.version}-${classifier}"
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("${MAVEN_PUBLIC_URL}")
+            credentials {
+                username MAVEN_USERNAME
+                password MAVEN_PASSWORD
+            }
+        }
+    }
 }

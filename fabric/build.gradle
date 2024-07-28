@@ -10,11 +10,15 @@ buildscript {
 plugins {
     id 'fabric-loom' version "${fabric_loom}"
     id 'idea'
+    id 'maven-publish'
 }
 
-version = "${project.minecraft_version}-${project.version}"
+version = "${project.version}"
 group = project.mod_group
-archivesBaseName = "${project.mod_id}" + "-fabric"
+def classifier = 'fabric'
+base {
+    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
+}
 
 repositories {
     maven {
@@ -83,4 +87,25 @@ processResources {
 
 tasks.withType(JavaCompile) {
     source(project(":common").sourceSets.main.allSource)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = "${project.mod_id}-${project.minecraft_version}"
+            version = "${project.version}-${classifier}"
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("${MAVEN_PUBLIC_URL}")
+            credentials {
+                username MAVEN_USERNAME
+                password MAVEN_PASSWORD
+            }
+        }
+    }
 }

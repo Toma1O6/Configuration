@@ -1,11 +1,15 @@
 plugins {
     id 'java'
     id 'org.spongepowered.gradle.vanilla' version "${vanilla_gradle_version}"
+    id 'maven-publish'
 }
 
-version = "${project.minecraft_version}-${project.version}"
+version = "${project.version}"
 group = project.mod_group
-archivesBaseName = "${project.mod_id}" + "-common"
+def classifier = 'common'
+base {
+    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
+}
 
 minecraft {
     version("${minecraft_version}")
@@ -21,4 +25,25 @@ minecraft {
 
 dependencies {
     compileOnly group: 'org.spongepowered', name: 'mixin', version: "${mixin_version}"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = "${project.mod_id}-${project.minecraft_version}"
+            version = "${project.version}-${classifier}"
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("${MAVEN_PUBLIC_URL}")
+            credentials {
+                username MAVEN_USERNAME
+                password MAVEN_PASSWORD
+            }
+        }
+    }
 }
