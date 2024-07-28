@@ -31,7 +31,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
                 .map(ConfigHolder::getConfig)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .forEach(ConfigIO::reloadClientValues);
+                .forEach(ConfigIO::reloadClientValues); // TODO no reading, instead just restore the network fields and clean up
     }
 
     @Inject(
