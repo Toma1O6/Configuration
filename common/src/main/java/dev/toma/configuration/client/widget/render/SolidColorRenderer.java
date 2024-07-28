@@ -13,7 +13,7 @@ public class SolidColorRenderer implements IRenderer {
     }
 
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height) {
+    public void draw(GuiGraphics graphics, int x, int y, int width, int height, boolean hovered) {
         graphics.fill(x, y, x + width, y + height, colorProvider.getAsInt());
     }
 }

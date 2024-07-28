@@ -30,7 +30,7 @@ public class LongArrayValue extends NumericArrayValue<Long> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeLongArray(this.getId(), this.get());
+        format.writeLongArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

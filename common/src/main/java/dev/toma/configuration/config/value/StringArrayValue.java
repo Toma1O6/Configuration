@@ -62,7 +62,7 @@ public class StringArrayValue extends AbstractArrayValue<String> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeStringArray(this.getId(), this.get());
+        format.writeStringArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

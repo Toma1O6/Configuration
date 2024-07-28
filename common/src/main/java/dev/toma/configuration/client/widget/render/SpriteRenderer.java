@@ -14,7 +14,7 @@ public class SpriteRenderer implements IRenderer {
     }
 
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height) {
+    public void draw(GuiGraphics graphics, int x, int y, int width, int height, boolean hovered) {
         graphics.blitSprite(resourceProvider.get(), x, y, width, height);
     }
 }

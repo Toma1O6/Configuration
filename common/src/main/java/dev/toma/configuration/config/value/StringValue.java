@@ -53,7 +53,7 @@ public class StringValue extends ConfigValue<String> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeString(this.getId(), this.get());
+        format.writeString(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

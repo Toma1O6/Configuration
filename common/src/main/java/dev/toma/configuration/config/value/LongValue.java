@@ -32,7 +32,7 @@ public class LongValue extends NumericValue<Long> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeLong(this.getId(), this.get());
+        format.writeLong(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

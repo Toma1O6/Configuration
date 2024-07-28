@@ -30,7 +30,7 @@ public class FloatArrayValue extends NumericArrayValue<Float> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeFloatArray(this.getId(), this.get());
+        format.writeFloatArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

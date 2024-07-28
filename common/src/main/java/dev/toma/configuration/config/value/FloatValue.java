@@ -32,7 +32,7 @@ public class FloatValue extends NumericValue<Float> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeFloat(this.getId(), this.get());
+        format.writeFloat(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

@@ -30,7 +30,7 @@ public class ByteArrayValue extends NumericArrayValue<Byte> {
 
     @Override
     public void serialize(IConfigFormat format) {
-        format.writeByteArray(this.getId(), this.get());
+        format.writeByteArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

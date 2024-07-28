@@ -32,7 +32,7 @@ public class IntValue extends NumericValue<Integer> {
 
     @Override
     public void serialize(IConfigFormat format) {
-        format.writeInt(this.getId(), this.get());
+        format.writeInt(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

@@ -38,7 +38,7 @@ public abstract class AbstractThemeWidget extends AbstractWidget {
 
     public void applyRenderer(IRenderer renderer, GuiGraphics graphics, int x, int y, int width, int height) {
         if (renderer != null) {
-            renderer.draw(graphics, x, y, width, height);
+            renderer.draw(graphics, x, y, width, height, this.isHovered);
         }
     }
 

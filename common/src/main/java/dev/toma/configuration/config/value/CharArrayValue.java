@@ -18,7 +18,7 @@ public class CharArrayValue extends AbstractArrayValue<Character> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeCharArray(this.getId(), this.get());
+        format.writeCharArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

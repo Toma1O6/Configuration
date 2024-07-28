@@ -29,7 +29,7 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
 
     @Override
     public void serialize(IConfigFormat format) {
-        format.writeMap(this.getId(), this.get());
+        format.writeMap(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override
@@ -64,6 +64,14 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     public void revertChangesToDefault() {
         super.revertChangesToDefault();
         this.get().values().forEach(ConfigValue::revertChangesToDefault);
+    }
+
+    @Override
+    public void clearNetworkValues() {
+        super.clearNetworkValues();
+        for (ConfigValue<?> value : this.get().values()) {
+            value.clearNetworkValues();
+        }
     }
 
     @Override

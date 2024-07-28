@@ -30,7 +30,7 @@ public class ShortArrayValue extends NumericArrayValue<Short> {
 
     @Override
     public void serialize(IConfigFormat format) {
-        format.writeShortArray(this.getId(), this.get());
+        format.writeShortArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

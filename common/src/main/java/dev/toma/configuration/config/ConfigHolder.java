@@ -147,6 +147,10 @@ public final class ConfigHolder<CFG> {
         this.values().forEach(ConfigValue::save);
     }
 
+    public void restoreClientStoredValues() {
+        this.values().forEach(ConfigValue::clearNetworkValues);
+    }
+
     /**
      * Register new file refresh listener for this config holder
      * @param listener The file listener

@@ -15,7 +15,7 @@ public class CharValue extends ConfigValue<Character> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeChar(this.getId(), this.get());
+        format.writeChar(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

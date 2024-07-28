@@ -15,7 +15,7 @@ public class BooleanValue extends ConfigValue<Boolean> {
 
     @Override
     public void serialize(IConfigFormat format) {
-        boolean value = this.get();
+        boolean value = this.get(Mode.SAVED);
         format.writeBoolean(this.getId(), value);
     }
 

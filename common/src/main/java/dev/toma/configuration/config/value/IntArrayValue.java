@@ -30,7 +30,7 @@ public class IntArrayValue extends NumericArrayValue<Integer> {
 
     @Override
     public void serialize(IConfigFormat format) {
-        format.writeIntArray(this.getId(), this.get());
+        format.writeIntArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

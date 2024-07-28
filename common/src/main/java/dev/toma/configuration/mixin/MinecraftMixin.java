@@ -1,7 +1,6 @@
 package dev.toma.configuration.mixin;
 
 import com.mojang.blaze3d.platform.WindowEventHandler;
-import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
 import net.minecraft.client.Minecraft;
@@ -31,7 +30,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
                 .map(ConfigHolder::getConfig)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .forEach(ConfigIO::reloadClientValues); // TODO no reading, instead just restore the network fields and clean up
+                .forEach(ConfigHolder::restoreClientStoredValues);
     }
 
     @Inject(
@@ -44,7 +43,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
                 .map(ConfigHolder::getConfig)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .forEach(ConfigIO::reloadClientValues);
+                .forEach(ConfigHolder::restoreClientStoredValues);
     }
 
     @Inject(

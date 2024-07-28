@@ -18,7 +18,7 @@ public class BooleanArrayValue extends AbstractArrayValue<Boolean> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeBoolArray(this.getId(), this.get());
+        format.writeBoolArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

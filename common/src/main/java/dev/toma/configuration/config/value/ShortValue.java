@@ -32,7 +32,7 @@ public class ShortValue extends NumericValue<Short> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeShort(this.getId(), this.get());
+        format.writeShort(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

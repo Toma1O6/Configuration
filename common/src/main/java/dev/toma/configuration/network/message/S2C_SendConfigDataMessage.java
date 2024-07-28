@@ -91,7 +91,7 @@ public record S2C_SendConfigDataMessage(String config, Map<String, NetworkConfig
     private record NetworkConfigValue<T>(ConfigValue<T> configValue, T value) {
 
         void bind() {
-            this.configValue.forceSetValue(this.value); // TODO set network only value
+            this.configValue.setFromNetwork(this.value);
         }
     }
 }

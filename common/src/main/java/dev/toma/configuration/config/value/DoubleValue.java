@@ -32,7 +32,7 @@ public class DoubleValue extends NumericValue<Double> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeDouble(this.getId(), this.get());
+        format.writeDouble(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

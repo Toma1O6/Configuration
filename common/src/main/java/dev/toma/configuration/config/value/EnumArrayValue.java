@@ -30,7 +30,7 @@ public class EnumArrayValue<E extends Enum<E>> extends AbstractArrayValue<E> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeEnumArray(getId(), get());
+        format.writeEnumArray(getId(), get(Mode.SAVED));
     }
 
     @SuppressWarnings("unchecked")

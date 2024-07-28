@@ -32,7 +32,7 @@ public class ByteValue extends NumericValue<Byte> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeByte(this.getId(), this.get());
+        format.writeByte(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

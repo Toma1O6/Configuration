@@ -8,18 +8,15 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
-import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     protected final ValueData<T> valueData;
     private T pendingValue;
     private T activeValue;
+    private T networkSavedValue;
     private boolean synchronizeToClient;
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
     private SetValueCallback<T> setValueCallback;
@@ -31,6 +28,9 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     @Override
     public T get(Mode mode) {
+        if (mode != Mode.SAVED && this.networkSavedValue != null) {
+            return this.networkSavedValue;
+        }
         if (this.pendingValue == null) {
             return this.activeValue;
         }
@@ -63,8 +63,10 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     @Override
     public final void setValue(T value) {
-        this.pendingValue = value;
-        this.valueData.getContext().setValue(value);
+        if (this.isEditable()) {
+            this.pendingValue = value;
+            this.valueData.getContext().setValue(value);
+        }
     }
 
     @Override
@@ -80,6 +82,11 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         this.valueData.getContext().setValue(this.activeValue);
     }
 
+    public void clearNetworkValues() {
+        this.networkSavedValue = null;
+        this.valueData.setValueToMemory(this.activeValue);
+    }
+
     @Override
     public final boolean isEditable() {
         ConfigIO.ConfigEnvironment environment = ConfigIO.getEnvironment();
@@ -91,6 +98,12 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         this.pendingValue = null;
         this.activeValue = corrected;
         this.valueData.setValueToMemory(corrected);
+    }
+
+    public final void setFromNetwork(T value) {
+        value = this.validateType(value);
+        this.networkSavedValue = value;
+        this.valueData.setValueToMemory(value);
     }
 
     public final void forceSetDefaultValue() {

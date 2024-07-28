@@ -13,7 +13,7 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeEnum(this.getId(), this.get());
+        format.writeEnum(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

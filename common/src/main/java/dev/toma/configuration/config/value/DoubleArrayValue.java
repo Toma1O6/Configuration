@@ -30,7 +30,7 @@ public class DoubleArrayValue extends NumericArrayValue<Double> {
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.writeDoubleArray(this.getId(), this.get());
+        format.writeDoubleArray(this.getId(), this.get(Mode.SAVED));
     }
 
     @Override

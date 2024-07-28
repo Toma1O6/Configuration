@@ -19,7 +19,7 @@ public class ThemedButtonWidget extends AbstractThemeWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
         if (this.backgroundRenderer != null) {
-            this.backgroundRenderer.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+            this.backgroundRenderer.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.isHovered);
         }
         this.renderScrollingString(guiGraphics, Minecraft.getInstance().font, 2, 0xFFFFFF); // TODO color from theme
         this.applyRenderer(this.foregroundRenderer, guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
