@@ -42,7 +42,7 @@ public class ConfigurationNeoforge {
             Optional<? extends ModContainer> optional = modList.getModContainerById(modId);
             optional.ifPresent(modContainer -> {
                 List<ConfigHolder<?>> list = entry.getValue();
-                modContainer.registerExtensionPoint(IConfigScreenFactory.class, (Supplier<IConfigScreenFactory>) () -> (minecraft, screen) -> {
+                modContainer.registerExtensionPoint(IConfigScreenFactory.class, (Supplier<IConfigScreenFactory>) () -> (container, screen) -> {
                     if (list.size() == 1) {
                         return ConfigurationClient.getConfigScreen(list.getFirst().getConfigId(), screen);
                     }
