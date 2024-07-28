@@ -62,8 +62,8 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
         this.renderBackground(guiGraphics);
         this.applyRenderer(this.handleRenderer, guiGraphics, this.getX() + (int)(this.value * (this.width - 8.0D)), this.getY(), 8, this.getHeight());
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-        int textColor = this.isActive() ? 0xffffff : 0xa0a0a0;
-        this.renderScrollingString(guiGraphics, font, 2, textColor | Mth.ceil(this.alpha * 255.0F) << 24);
+        int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
+        this.renderScrollingString(guiGraphics, font, 2, textColor);
     }
 
     @Override

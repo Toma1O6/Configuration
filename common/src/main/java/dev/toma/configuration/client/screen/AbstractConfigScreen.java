@@ -78,7 +78,7 @@ public abstract class AbstractConfigScreen extends Screen {
         this.saveConfig(true);
     }
 
-    public static void renderScrollbar(GuiGraphics graphics, int x, int y, int width, int height, int index, int valueCount, int paging) {
+    public static void renderScrollbar(GuiGraphics graphics, int x, int y, int width, int height, int index, int valueCount, int paging, int bgColor) {
         if (valueCount <= paging)
             return;
         double step = height / (double) valueCount;
@@ -86,7 +86,7 @@ public abstract class AbstractConfigScreen extends Screen {
         int max = Mth.ceil((index + paging) * step);
         int y1 = y + min;
         int y2 = y + max;
-        graphics.fill(x, y, x + width, y + height, 0xFF << 24);
+        graphics.fill(x, y, x + width, y + height, bgColor);
 
         graphics.fill(x, y1, x + width, y2, 0xFF888888);
         graphics.fill(x, y1, x + width - 1, y2 - 1, 0xFFEEEEEE);
@@ -146,14 +146,6 @@ public abstract class AbstractConfigScreen extends Screen {
         }
     }
 
-    protected Screen getFirstNonConfigScreen() {
-        Screen screen = last;
-        while (screen instanceof ConfigScreen configScreen) {
-            screen = configScreen.last;
-        }
-        return screen;
-    }
-
     protected boolean isRoot() {
         return !(last instanceof AbstractConfigScreen);
     }
@@ -191,11 +183,6 @@ public abstract class AbstractConfigScreen extends Screen {
                 val.forceSetDefaultValue();
             }
         });
-    }
-
-    private void backToConfigList() {
-        this.minecraft.setScreen(this.getFirstNonConfigScreen());
-        this.saveConfig();
     }
 
     private void saveConfig() {
@@ -297,6 +284,7 @@ public abstract class AbstractConfigScreen extends Screen {
         }
     }
 
+    @Deprecated // Do not use, value should be already validated and then set to widgets from memory
     protected <T> void initializeGuiValue(ConfigValue<T> value, IValidationHandler handler) {
         T t = value.get();
         value.setWithValidationHandler(t, handler);

@@ -1,6 +1,7 @@
 package dev.toma.configuration.client.screen;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
@@ -93,7 +94,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
             dummy.processFieldData(owner);
             Component label = this.getEntryLabel(dummy, i);
-            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, label, dummy, this.getConfigId()));
+            ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, label, dummy, this.getConfigId(), this.theme));
             widget.setDescriptionRenderer(this::renderEntryDescription);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
@@ -139,13 +140,20 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         renderBackground(graphics, mouseX, mouseY, partialTicks);
-        int titleWidth = this.font.width(this.title);
-        graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
-        graphics.fill(0, 0, width, HEADER_HEIGHT, 0x99 << 24);
-        graphics.fill(0, height - FOOTER_HEIGHT, width, height, 0x99 << 24);
-        graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x55 << 24);
+        ConfigTheme.Header themeHeader = this.theme.getHeader();
+        ConfigTheme.Footer footer = this.theme.getFooter();
+        Component headerLabel = themeHeader.customText() != null ? themeHeader.customText() : this.title;
+        int titleWidth = this.font.width(headerLabel);
+        graphics.drawString(font, headerLabel, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, themeHeader.foregroundColor());
+        graphics.fill(0, 0, width, HEADER_HEIGHT, themeHeader.backgroundColor());
+        graphics.fill(0, height - FOOTER_HEIGHT, width, height, footer.backgroundColor());
+        Integer fillColor = this.theme.getBackgroundFillColor();
+        if (fillColor != null) {
+            graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, fillColor);
+        }
         renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
-        renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, this.getTotalSize(), pageSize);
+        ConfigTheme.Scrollbar scrollbar = this.theme.getScrollbar();
+        renderScrollbar(graphics, width - scrollbar.width(), HEADER_HEIGHT, scrollbar.width(), height - FOOTER_HEIGHT - HEADER_HEIGHT, index, this.getTotalSize(), pageSize, scrollbar.backgroundColor());
     }
 
     @Override

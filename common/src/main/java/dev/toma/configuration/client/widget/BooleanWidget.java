@@ -1,17 +1,12 @@
 package dev.toma.configuration.client.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 
 public class BooleanWidget extends AbstractThemeWidget {
 
@@ -31,8 +26,8 @@ public class BooleanWidget extends AbstractThemeWidget {
         Minecraft minecraft = Minecraft.getInstance();
         this.renderBackground(graphics);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        int i = this.active ? 0xffffff : 0xa0a0a0;
-        this.renderString(graphics, minecraft.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+        int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
+        this.renderString(graphics, minecraft.font, textColor);
     }
 
     private void renderString(GuiGraphics graphics, Font font, int color) {

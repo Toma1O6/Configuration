@@ -33,8 +33,6 @@ public class EditBoxWidget extends AbstractThemeWidget {
     private static final int CURSOR_INSERT_WIDTH = 1;
     private static final int CURSOR_INSERT_COLOR = 0xffd0d0d0;
     private static final String CURSOR_APPEND_CHARACTER = "_";
-    public static final int DEFAULT_TEXT_COLOR = 0xe0e0e0;
-    public static final int DEFAULT_TEXT_COLOR_UNEDITABLE = 0x707070;
     private static final int CURSOR_BLINK_INTERVAL_MS = 300;
     private final Font font;
     private String value;
@@ -44,8 +42,6 @@ public class EditBoxWidget extends AbstractThemeWidget {
     private int displayPos;
     private int cursorPos;
     private int highlightPos;
-    private int textColor;
-    private int textColorUneditable;
     private String suggestion;
     private Consumer<String> responder;
     private Predicate<String> filter;
@@ -61,8 +57,6 @@ public class EditBoxWidget extends AbstractThemeWidget {
         this.maxLength = 32;
         this.bordered = true;
         this.canLoseFocus = true;
-        this.textColor = DEFAULT_TEXT_COLOR;
-        this.textColorUneditable = DEFAULT_TEXT_COLOR_UNEDITABLE;
         this.filter = Objects::nonNull;
         this.formatter = (text, i) -> FormattedCharSequence.forward(text, Style.EMPTY);
         this.focusedTime = Util.getMillis();
@@ -355,7 +349,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
                 this.renderBackground(graphics);
             }
 
-            int textColor = this.isActive() ? this.textColor : this.textColorUneditable;
+            int textColor = this.theme.getWidgetTextColor(this.active, this.isHoveredOrFocused());
             int position = this.cursorPos - this.displayPos;
             String displayValue = this.numberFormatter != null && !this.isFocused() ? this.numberFormatter.applyFormat() : this.value;
             String label = this.font.plainSubstrByWidth(displayValue.substring(this.displayPos), this.getInnerWidth());
@@ -467,14 +461,6 @@ public class EditBoxWidget extends AbstractThemeWidget {
 
     public void setBordered(boolean $$0) {
         this.bordered = $$0;
-    }
-
-    public void setTextColor(int $$0) {
-        this.textColor = $$0;
-    }
-
-    public void setTextColorUneditable(int $$0) {
-        this.textColorUneditable = $$0;
     }
 
     public void setFocused(boolean $$0) {

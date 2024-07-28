@@ -3,6 +3,7 @@ package dev.toma.configuration.client;
 import dev.toma.configuration.client.screen.ConfigGroupScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
 import dev.toma.configuration.client.theme.ConfigTheme;
+import dev.toma.configuration.client.theme.ConfigurationThemes;
 import dev.toma.configuration.client.theme.DefaultConfigTheme;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public final class ConfigurationClient {
@@ -67,12 +69,17 @@ public final class ConfigurationClient {
         return new ConfigGroupScreen(previous, groupId, group);
     }
 
-    public static void setCustomConfigTheme(ConfigHolder<?> holder, UnaryOperator<ConfigTheme> themeBuilder) {
+    public static void setCustomConfigTheme(ConfigHolder<?> holder, Consumer<ConfigTheme> themeConfiguration) {
         ConfigTheme theme = getConfigTheme(holder).copy();
-        CONFIG_THEMES.put(holder.getConfigId(), themeBuilder.apply(theme));
+        themeConfiguration.accept(theme);
+        CONFIG_THEMES.put(holder.getConfigId(), theme);
     }
 
     public static ConfigTheme getConfigTheme(ConfigHolder<?> holder) {
-        return CONFIG_THEMES.computeIfAbsent(holder.getConfigId(), id -> DefaultConfigTheme.DEFAULT);
+        return CONFIG_THEMES.computeIfAbsent(holder.getConfigId(), id -> {
+            ConfigTheme theme = new ConfigTheme();
+            ConfigurationThemes.DEFAULT_THEME.accept(theme);
+            return theme;
+        });
     }
 }

@@ -8,42 +8,42 @@ import dev.toma.configuration.client.widget.render.SolidColorRenderer;
 import dev.toma.configuration.client.widget.render.SpriteRenderer;
 import dev.toma.configuration.config.adapter.TypeMatcher;
 
-public class DefaultConfigTheme extends ConfigTheme {
+public class DefaultConfigTheme {
 
-    public static final ConfigTheme DEFAULT = new DefaultConfigTheme();
+    public static void configure(ConfigTheme theme) {
+        theme.setHeader(new ConfigTheme.Header(null, 0x99 << 24, 0xaaaaaa));
+        theme.setFooter(new ConfigTheme.Footer(0x99 << 24));
+        theme.setScrollbar(new ConfigTheme.Scrollbar(5, 0xFF << 24));
+        theme.setConfigEntry(new ConfigTheme.ConfigEntry(0xFFFFFF, style -> style.withItalic(true), 0x44FFFFFF));
+        theme.setBackgroundFillColor(0x55 << 24);
+        theme.setWidgetTextColor(0xE0E0E0, 0xFFFFFF, 0x707070);
 
-    public DefaultConfigTheme() {
-        setHeader(new Header(null, 35, 0x99 << 24, 0xaaaaaa));
-        setFooter(new Footer(30, 0x99 << 24));
-        setScrollbar(new Scrollbar(false, 5, 0xFF << 24));
-        setBackgroundFillColor(0x55 << 24);
+        theme.registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchCharacter(), new CharacterDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchByte(), new ByteDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchShort(), new ShortDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchInteger(), new IntegerDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchLong(), new LongDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchFloat(), new FloatDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchDouble(), new DoubleDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchString(), new StringDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchBooleanArray(), new BooleanArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchCharacterArray(), new ChararacterArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchByteArray(), new ByteArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchShortArray(), new ShortArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchIntegerArray(), new IntegerArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchLongArray(), new LongArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchFloatArray(), new FloatArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchDoubleArray(), new DoubleArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchStringArray(), new StringArrayDisplayAdapter());
+        theme.registerDisplayAdapter(TypeMatcher.matchEnum(), new EnumDisplayAdapter<>());
+        theme.registerDisplayAdapter(TypeMatcher.matchEnumArray(), new EnumArrayDisplayAdapter<>());
+        theme.registerDisplayAdapter(TypeMatcher.matchObject(), new ObjectDisplayAdapter());
 
-        registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchCharacter(), new CharacterDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchByte(), new ByteDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchShort(), new ShortDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchInteger(), new IntegerDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchLong(), new LongDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchFloat(), new FloatDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchDouble(), new DoubleDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchString(), new StringDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchBooleanArray(), new BooleanArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchCharacterArray(), new ChararacterArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchByteArray(), new ByteArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchShortArray(), new ShortArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchIntegerArray(), new IntegerArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchLongArray(), new LongArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchFloatArray(), new FloatArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchDoubleArray(), new DoubleArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchStringArray(), new StringArrayDisplayAdapter());
-        registerDisplayAdapter(TypeMatcher.matchEnum(), new EnumDisplayAdapter<>());
-        registerDisplayAdapter(TypeMatcher.matchEnumArray(), new EnumArrayDisplayAdapter<>());
-        registerDisplayAdapter(TypeMatcher.matchObject(), new ObjectDisplayAdapter());
-
-        setButtonBackground(t -> new SpriteRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
-        setEditBoxBackground(t -> new SpriteRenderer(() -> EditBoxWidget.SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
-        setSliderBackground(t -> new SpriteRenderer(() -> SliderWidget.SLIDER.get(t.isActive(), t.isHoveredOrFocused())));
-        setSliderHandle(t -> new SpriteRenderer(() -> SliderWidget.HANDLE.get(t.isActive(), t.isFocused())));
-        setColorBackground(t -> new SolidColorRenderer(() -> t.isHoveredOrFocused() ? 0xFFFFFFFF : 0xFFA0A0A0));
+        theme.setButtonBackground(t -> new SpriteRenderer(() -> AbstractConfigScreen.BUTTON_SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
+        theme.setEditBoxBackground(t -> new SpriteRenderer(() -> EditBoxWidget.SPRITES.get(t.isActive(), t.isHoveredOrFocused())));
+        theme.setSliderBackground(t -> new SpriteRenderer(() -> SliderWidget.SLIDER.get(t.isActive(), t.isHoveredOrFocused())));
+        theme.setSliderHandle(t -> new SpriteRenderer(() -> SliderWidget.HANDLE.get(t.isActive(), t.isFocused())));
+        theme.setColorBackground(t -> new SolidColorRenderer(() -> t.isHoveredOrFocused() ? 0xFFFFFFFF : 0xFFA0A0A0));
     }
 }
