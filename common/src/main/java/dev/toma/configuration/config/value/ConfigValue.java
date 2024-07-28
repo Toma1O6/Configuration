@@ -8,8 +8,11 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public abstract class ConfigValue<T> implements IConfigValue<T> {
 
@@ -57,26 +60,47 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         }
     }
 
+    @Override
+    public Component getTitle() {
+        return this.valueData.getTitle();
+    }
+
+    @Override
+    public String[] getFileComments() {
+        return this.valueData.getFileComments();
+    }
+
+    @Override
+    public IConfigValue<?> parent() {
+        return this.valueData.getParent();
+    }
+
+    @Override
+    public String getPath() {
+        return this.valueData.getFullFieldPath();
+    }
+
     public boolean shouldSynchronize() {
         return synchronizeToClient;
     }
 
     @Override
     public final void setValue(T value) {
+        Objects.requireNonNull(value, "Config value cannot be null!");
         if (this.isEditable()) {
-            this.pendingValue = value;
+            this.pendingValue = this.validateValue(value);
             this.valueData.getContext().setValue(value);
         }
     }
 
     @Override
-    public void revertChanges() {
+    public void revertChanges() { // TODO check if this does not allow to bypass update restrictions
         this.pendingValue = null;
         this.valueData.getContext().setValue(this.activeValue);
     }
 
     @Override
-    public void revertChangesToDefault() {
+    public void revertChangesToDefault() { // TODO check if this does not allow to bypass update restrictions
         this.pendingValue = null;
         this.activeValue = this.valueData.getDefaultValue();
         this.valueData.getContext().setValue(this.activeValue);
@@ -123,6 +147,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         this.setValue(value);
     }
 
+    @Override
     public final String getId() {
         return this.valueData.getId();
     }
@@ -158,10 +183,12 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return in;
     }
 
+    @Deprecated
     public void setValueValidator(SetValueCallback<T> callback) {
         this.setValueCallback = callback;
     }
 
+    @Deprecated
     public final void invokeValueValidator(T value, IValidationHandler handler) {
         if (this.setValueCallback != null) {
             this.setValueCallback.processValue(value, handler);
@@ -201,10 +228,6 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     public final ValueData<T> getValueData() {
         return this.valueData;
-    }
-
-    public final String getFullFieldPath() {
-        return this.valueData.getFullFieldPath();
     }
 
     @Override

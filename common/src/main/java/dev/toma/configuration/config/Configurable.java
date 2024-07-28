@@ -16,7 +16,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Configurable {
 
-    LocalizationKey key() default LocalizationKey.SHORT; // TODO docs
+    /**
+     * Allows you to specify how localization key will be generated. Your choices are either
+     * <li> {@link LocalizationKey#SHORT} - old behaviour, only the field name is used for translation key
+     * <li> {@link LocalizationKey#FULL} - For nested fields will prefix field names of all parent values
+     * @return {@link LocalizationKey} to be used by this field. By default, {@link LocalizationKey#SHORT} is used.
+     * @since 3.0
+     */
+    LocalizationKey key() default LocalizationKey.SHORT;
 
     /**
      * Allows you to add description to configurable value.
@@ -32,7 +39,16 @@ public @interface Configurable {
          */
         String[] value();
 
-        // TODO
+        /**
+         * Setting comment localizations to {@code true} will force generation of translation keys for each element from
+         * {@link Comment#value()} array. The translation keys for comments are in following format: {@code <valueLanguageKey>.comment.<index>}.
+         * So for example for field {@code myConfigField} with single comment will generate following language key:
+         * {@code config.config_id.option.myConfigField.comment.0} <br>
+         * When disabled, non-translated comments from {@link Comment#value()} array will be used instead.
+         *
+         * @return {@code true} if localized comments should be generated
+         * @since 3.0
+         */
         boolean localize() default false;
     }
 
@@ -50,6 +66,8 @@ public @interface Configurable {
     /**
      * Allows you to add update restrictions/warnings, as some values may for example require
      * game restart or leaving current server.
+     *
+     * @since 3.0
      */
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
@@ -219,14 +237,30 @@ public @interface Configurable {
             int value() default 32;
         }
 
+        /**
+         * Allows you to mark current config field as slider. Applicable only on Numeric config values.
+         * @since 3.0
+         */
         @Target(ElementType.FIELD)
         @Retention(RetentionPolicy.RUNTIME)
         public @interface Slider {
         }
     }
 
+    /**
+     * Localization key format specification for config values
+     *
+     * @since 3.0
+     */
     enum LocalizationKey {
+
+        /** Generates full translation key - meaning all parent config field names are used as prefix for the translation key */
         FULL,
+
+        /**
+         * Generates partial translation key - only current field name is used for translation key.
+         * This can simplify writing language entries for shared fields
+         */
         SHORT
     }
 }

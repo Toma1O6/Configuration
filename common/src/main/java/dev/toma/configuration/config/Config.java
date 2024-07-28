@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Config marker annotation. Every registered config class must have this annotation.
- * Inside this class you should define all configurable fields <b>(cannot be {@code STATIC})!</b>.
+ * Inside this class you should define all configurable fields <b>(cannot be both {@code static} or {@code final})!</b>.
  * All configurable fields must be annotated with {@link Configurable} annotation, otherwise it will
  * be ignored.
  *

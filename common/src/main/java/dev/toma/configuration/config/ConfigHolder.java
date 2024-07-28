@@ -135,18 +135,30 @@ public final class ConfigHolder<CFG> {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    /**
+     * @return Whether any config value does not match the in memory value
+     */
     public boolean isChanged() {
         return this.values().stream().anyMatch(ConfigValue::isChanged);
     }
 
+    /**
+     * @return Whether any config value does not match the default value
+     */
     public boolean isChangedFromDefault() {
         return this.values().stream().anyMatch(ConfigValue::isChangedFromDefault);
     }
 
+    /**
+     * Saves all pending values in value wrappers as long as their {@link dev.toma.configuration.config.Configurable.UpdateRestriction} allow it
+     */
     public void save() {
         this.values().forEach(ConfigValue::save);
     }
 
+    /**
+     * Restores client saved values and clears network value cache on each value
+     */
     public void restoreClientStoredValues() {
         this.values().forEach(ConfigValue::clearNetworkValues);
     }
@@ -155,6 +167,7 @@ public final class ConfigHolder<CFG> {
      * Register new file refresh listener for this config holder
      * @param listener The file listener
      */
+    @Deprecated
     public void addFileRefreshListener(IFileRefreshListener<CFG> listener) {
         this.fileRefreshListeners.add(Objects.requireNonNull(listener));
     }
@@ -167,7 +180,7 @@ public final class ConfigHolder<CFG> {
      * The path can be also used for array values, for example when you want to get 3rd element in array, specify the path with array
      * index {@code modid.numbers.numberArray.2} <br>
      *
-     * Keep in mind that this method fails quietly with only warning being logged to console!
+     * <b>Keep in mind that this method fails quietly with only warning being logged to console!</b>
      *
      * @param path The path to your variable in config
      * @param expectedType Expected data type of the value
@@ -179,6 +192,29 @@ public final class ConfigHolder<CFG> {
         String[] keys = path.split("\\.");
         Iterator<String> stringIterator = Arrays.asList(keys).iterator();
         return ObjectValue.getChildValue(stringIterator, expectedType, valueMap);
+    }
+
+    /**
+     * Allows you to obtain config value for specific key within your config. For example when you have the following config
+     * structure with integer value on path {@code modid.numbers.myNumber}, and you want to obtain its value wrapper,
+     * you can use this method with path parameter set to {@code myConfigHolder.getConfigValue("modid.numbers.myNumber", Integer.class)}
+     * to obtain the value wrapper. <br>
+     * Unlike the {@link ConfigHolder#getValue(String, Class)} method, array index access will return the entire array wrapper.
+     * This is because internally arrays do not hold config values for each array element. So you will have to use the config value to access
+     * elements manually. So the {@code expectedType} attribute has to be {@code ARRAY}!<br>
+     *
+     * <b>Keep in mind that this method fails quietly with only warning being logged to console!</b>
+     *
+     * @param path The path to your variable in config
+     * @param expectedType Expected data type of the value
+     * @return Optional with the specified value or {@link Optional#empty()} when the value does not exist or has different data type
+     *
+     * @since 3.0
+     */
+    public <V> Optional<IConfigValue<V>> getConfigValue(String path, Class<V> expectedType) {
+        String[] keys = path.split("\\.");
+        Iterator<String> stringIterator = Arrays.asList(keys).iterator();
+        return ObjectValue.getChild(stringIterator, expectedType, valueMap);
     }
 
     /**
@@ -219,6 +255,7 @@ public final class ConfigHolder<CFG> {
     /**
      * @return File format factory for this config
      */
+    @ApiStatus.Internal
     public IConfigFormatHandler getFormat() {
         return format;
     }
@@ -226,6 +263,7 @@ public final class ConfigHolder<CFG> {
     /**
      * @return Collection of mapped config values
      */
+    @ApiStatus.Internal
     public Collection<ConfigValue<?>> values() {
         return this.valueMap.values();
     }
@@ -233,6 +271,7 @@ public final class ConfigHolder<CFG> {
     /**
      * @return Map ID-ConfigValue for this config
      */
+    @ApiStatus.Internal
     public Map<String, ConfigValue<?>> getValueMap() {
         return valueMap;
     }
@@ -240,10 +279,14 @@ public final class ConfigHolder<CFG> {
     /**
      * @return Map ID-ConfigValue for network serialization
      */
+    @ApiStatus.Internal
     public Map<String, ConfigValue<?>> getNetworkSerializedFields() {
         return networkSerializedFields;
     }
 
+    /**
+     * @return Localized component name of this config
+     */
     public Component getTitle() {
         return title;
     }
@@ -251,6 +294,7 @@ public final class ConfigHolder<CFG> {
     /**
      * Dispatches file refresh event to all registered listeners
      */
+    @Deprecated
     public void dispatchFileRefreshEvent() {
         this.fileRefreshListeners.forEach(listener -> listener.onFileRefresh(this));
     }
@@ -258,6 +302,7 @@ public final class ConfigHolder<CFG> {
     /**
      * @return Lock for async operations. Used for IO operations currently
      */
+    @ApiStatus.Internal
     public Object getLock() {
         return lock;
     }
@@ -347,7 +392,7 @@ public final class ConfigHolder<CFG> {
             } else {
                 if (!value.shouldSynchronize())
                     return;
-                String path = value.getFullFieldPath();
+                String path = value.getPath();
                 dest.put(path, value);
             }
         });
@@ -383,6 +428,7 @@ public final class ConfigHolder<CFG> {
      * @param <CFG> Config type
      * @author Toma
      */
+    @Deprecated
     @FunctionalInterface
     public interface IFileRefreshListener<CFG> {
         void onFileRefresh(ConfigHolder<CFG> holder);

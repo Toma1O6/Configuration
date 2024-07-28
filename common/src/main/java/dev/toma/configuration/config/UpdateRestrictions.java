@@ -3,6 +3,9 @@ package dev.toma.configuration.config;
 import dev.toma.configuration.config.io.ConfigIO;
 
 /**
+ * Collection of UpdateRestrictions which can be applied on config values
+ *
+ * @author Toma
  * @since 3.0
  */
 public enum UpdateRestrictions {

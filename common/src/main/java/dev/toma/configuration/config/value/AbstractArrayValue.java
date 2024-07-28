@@ -45,15 +45,26 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
         this.fixedSize = field.isAnnotationPresent(Configurable.FixedSize.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <V> Optional<IConfigValue<V>> getChild(Iterator<String> pathIterator) {
-        throw new UnsupportedOperationException("Not implemented yet"); // TODO
+    public <V> Optional<IConfigValue<V>> getChild(Iterator<String> iterator, Class<V> targetType) {
+        try {
+            return Optional.of((IConfigValue<V>) this); // This will break for object arrays, but since that is currently not supported we can just ignore it. Maybe it will hurt us later
+        } catch (ClassCastException e) {
+            if (Configuration.PLATFORM.isDevelopmentEnvironment()) {
+                Configuration.LOGGER.error(new FormattedMessage("Attempted to load invalid config value class for array {}", this.getId()), e);
+            }
+            return Optional.empty();
+        }
     }
 
     @Override
     public <V> Optional<V> getChildValue(Iterator<String> iterator, Class<V> targetType) {
+        Optional<IConfigValue<V>> optional = this.getChild(iterator, targetType);
+        if (optional.isEmpty())
+            return Optional.empty();
         String key = iterator.next();
-        T[] arrayValue = this.get();
+        T[] arrayValue = this.get(Mode.SAVED);
         try {
             int length = Array.getLength(arrayValue);
             int elementIndex = Integer.parseInt(key);

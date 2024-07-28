@@ -19,20 +19,35 @@ public final class ConfigFormats {
     private static final String EXT_PROPERTIES = "properties";
 
     // Formats
+    /** JSON config format. Does not support comments */
     public static final IConfigFormatHandler JSON = new SimpleFormatImpl(EXT_JSON, GsonFormat::new);
+    /** YAML config format. With comments */
     public static final IConfigFormatHandler YAML = new SimpleFormatImpl(EXT_YAML, YamlFormat::new);
+    /** Properties config format. Does not support comments */
     public static final IConfigFormatHandler PROPERTIES = new SimpleFormatImpl(EXT_PROPERTIES, PropertiesFormat::new);
 
+    /**
+     * @return JSON config format
+     * @deprecated Use the constant field {@link ConfigFormats#JSON} instead
+     */
     @Deprecated(since = "3.0", forRemoval = true)
     public static IConfigFormatHandler json() {
         return JSON;
     }
 
+    /**
+     * @return YAML config format
+     * @deprecated Use the constant field {@link ConfigFormats#YAML} instead
+     */
     @Deprecated(since = "3.0", forRemoval = true)
     public static IConfigFormatHandler yaml() {
         return YAML;
     }
 
+    /**
+     * @return Properties config format
+     * @deprecated Use the constant field {@link ConfigFormats#PROPERTIES} instead
+     */
     @Deprecated(since = "3.0", forRemoval = true)
     public static IConfigFormatHandler properties() {
         return PROPERTIES;

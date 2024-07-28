@@ -4,20 +4,26 @@ import dev.toma.configuration.client.screen.ConfigGroupScreen;
 import dev.toma.configuration.client.screen.ConfigScreen;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.theme.ConfigurationThemes;
-import dev.toma.configuration.client.theme.DefaultConfigTheme;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
+/**
+ * Client API entry point for Configuration. Allows you to obtain config screens or configure custom config themes.
+ *
+ * @author Toma
+ * @since 2.3.0
+ */
 public final class ConfigurationClient {
 
+    @ApiStatus.Internal
     private static final Map<String, ConfigTheme> CONFIG_THEMES = new HashMap<>();
 
     /**
@@ -65,21 +71,34 @@ public final class ConfigurationClient {
         return getConfigScreenByGroup(list, group, previous);
     }
 
-    public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
-        return new ConfigGroupScreen(previous, groupId, group);
-    }
-
+    /**
+     * Allows you to set custom configuration theme for your config holder
+     * @param holder Your config holder
+     * @param themeConfiguration Theme configuration builder. The consumed instance is currently set theme, so default config theme in most cases.
+     * @since 3.0
+     */
     public static void setCustomConfigTheme(ConfigHolder<?> holder, Consumer<ConfigTheme> themeConfiguration) {
         ConfigTheme theme = getConfigTheme(holder).copy();
         themeConfiguration.accept(theme);
         CONFIG_THEMES.put(holder.getConfigId(), theme);
     }
 
+    /**
+     * Get actual config theme for your config
+     * @param holder Your config holder
+     * @return Stored custom config theme
+     * @since 3.0
+     */
     public static ConfigTheme getConfigTheme(ConfigHolder<?> holder) {
         return CONFIG_THEMES.computeIfAbsent(holder.getConfigId(), id -> {
             ConfigTheme theme = new ConfigTheme();
             ConfigurationThemes.DEFAULT_THEME.accept(theme);
             return theme;
         });
+    }
+
+    @ApiStatus.Internal
+    public static Screen getConfigScreenByGroup(List<ConfigHolder<?>> group, String groupId, Screen previous) {
+        return new ConfigGroupScreen(previous, groupId, group);
     }
 }

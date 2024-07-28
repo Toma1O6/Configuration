@@ -13,6 +13,7 @@ import java.util.Map;
  * Handles exporting of data to custom file format
  *
  * @author Toma
+ * @since 2.0
  */
 public interface IConfigFormat {
 

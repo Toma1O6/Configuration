@@ -90,13 +90,30 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
-    public <T> Optional<IConfigValue<T>> getChild(Iterator<String> pathIterator) {
-        return Optional.empty();
+    public <T> Optional<IConfigValue<T>> getChild(Iterator<String> iterator, Class<T> targetType) {
+        return getChild(iterator, targetType, this.get());
     }
 
     @Override
     public boolean shouldSynchronize() {
         return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <V> Optional<IConfigValue<V>> getChild(Iterator<String> iterator, Class<V> targetType, Map<String, ConfigValue<?>> valueMap) {
+        String key = iterator.next();
+        ConfigValue<?> value = valueMap.get(key);
+        if (!iterator.hasNext()) {
+            if (targetType.isAssignableFrom(value.getValueType())) {
+                return Optional.of((IConfigValue<V>) value);
+            }
+            Configuration.LOGGER.warn("Attempted to get invalid value definition {} in config!", key);
+            return Optional.empty();
+        } else if (value instanceof IHierarchical hierarchical) {
+            return hierarchical.getChild(iterator, targetType);
+        }
+        Configuration.LOGGER.warn("Attempted to get non-existing value definition {} in config!", key);
+        return Optional.empty();
     }
 
     public static <V> Optional<V> getChildValue(Iterator<String> iterator, Class<V> targetType, Map<String, ConfigValue<?>> valueMap) {
@@ -107,7 +124,7 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
             if (targetType.isAssignableFrom(value.getValueType())) {
                 return Optional.of(targetType.cast(result));
             }
-            Configuration.LOGGER.warn("Attempted to get invalid value type {} in config!", key);
+            Configuration.LOGGER.warn("Attempted to get invalid value {} in config!", key);
             return Optional.empty();
         } else if (value instanceof IHierarchical hierarchical) {
             return hierarchical.getChildValue(iterator, targetType);

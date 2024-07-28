@@ -9,12 +9,11 @@ import dev.toma.configuration.client.widget.SliderWidget;
 import dev.toma.configuration.client.widget.render.IRenderer;
 import dev.toma.configuration.config.adapter.AdapterHolder;
 import dev.toma.configuration.config.adapter.TypeMatcher;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 public final class ConfigTheme {
@@ -57,26 +56,7 @@ public final class ConfigTheme {
         return theme;
     }
 
-    public ConfigTheme copyOf(ConfigTheme theme) {
-        this.displayAdapters.clear();
-        this.displayAdapters.addAll(theme.displayAdapters);
-        this.header = theme.header;
-        this.footer = theme.footer;
-        this.scrollbar = theme.scrollbar;
-        this.configEntry = theme.configEntry;
-        this.backgroundFillColor = theme.backgroundFillColor;
-        this.widgetTextColor = theme.widgetTextColor;
-        this.widgetTextColorHovered = theme.widgetTextColorHovered;
-        this.widgetTextColorDisabled = theme.widgetTextColorDisabled;
-        this.buttonBackground = theme.buttonBackground;
-        this.editBoxBackground = theme.editBoxBackground;
-        this.sliderBackground = theme.sliderBackground;
-        this.sliderHandle = theme.sliderHandle;
-        this.colorBackground = theme.colorBackground;
-        return this;
-    }
-
-    public final DisplayAdapter getAdapter(Class<?> type) {
+    public DisplayAdapter getAdapter(Class<?> type) {
         Class<?> mappedType = DisplayAdapterManager.mapType(type);
         return this.displayAdapters.stream()
                 .filter(holder -> holder.test(mappedType))
@@ -86,8 +66,10 @@ public final class ConfigTheme {
                 .orElse(null);
     }
 
-    public final void registerDisplayAdapter(TypeMatcher matcher, DisplayAdapter adapter) {
-        this.displayAdapters.add(new AdapterHolder<>(matcher, adapter));
+    public void registerDisplayAdapter(TypeMatcher matcher, DisplayAdapter adapter) {
+        AdapterHolder<DisplayAdapter> adapterHolder = new AdapterHolder<>(matcher, adapter);
+        this.displayAdapters.remove(adapterHolder); // clear existing value when updating
+        this.displayAdapters.add(adapterHolder);
     }
 
     public void setHeader(Header header) {
