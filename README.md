@@ -1,4 +1,4 @@
-# Configuration ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Toma1O6/Configuration?style=for-the-badge&color=red) ![CurseForge Downloads](https://img.shields.io/curseforge/dt/444699?style=for-the-badge&color=blue) ![Discord](https://img.shields.io/discord/799354846125096960?style=for-the-badge&link=https%3A%2F%2Fdiscord.gg%2FWEFYxwS8E3)
+# Configuration ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Toma1O6/Configuration?style=for-the-badge&color=red) ![CurseForge Downloads](https://img.shields.io/curseforge/dt/444699?style=for-the-badge&color=blue) ![Discord](https://img.shields.io/discord/799354846125096960?style=for-the-badge&link=https%3A%2F%2Fdiscord.gg%2FWEFYxwS8E3&label=Discord)
 Library mod which aims to simplify config creation for mod developers while also being
 easy to use for general users.
 
@@ -50,12 +50,12 @@ Then repeat the same process for each subproject, but do not forget to change th
 
 ### Config registration
 Declare your config class and annotate it with `@Config` annotation
-```jshelllanguage
+```java
 @Config(id = "my_config_id")
 public final class MyConfig {}
 ```
 Now you need to register the config - inside your mod constructor call the `registerConfig` method
-```jshelllanguage
+```java
 public class MyMod {
     
     public static MyConfig config;
@@ -69,7 +69,7 @@ public class MyMod {
 }
 ```
 And now we can start adding configurable parameters
-```jshelllanguage
+```java
 @Config(id = "my_config_id")
 public final class MyConfig {
 
