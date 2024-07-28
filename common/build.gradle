@@ -39,10 +39,10 @@ publishing {
 
     repositories {
         maven {
-            url = uri("${MAVEN_PUBLIC_URL}")
+            url = uri(project.findProperty("MAVEN_PUBLIC_URL") ?: "")
             credentials {
-                username MAVEN_USERNAME
-                password MAVEN_PASSWORD
+                username project.findProperty("MAVEN_USERNAME") ?: ""
+                password project.findProperty("MAVEN_PASSWORD") ?: ""
             }
         }
     }
