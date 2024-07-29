@@ -8,13 +8,15 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.validate.*;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class ConfigValue<T> implements IConfigValue<T> {
+
+    public static final Component GAME_RESTART_REQUIRED = Component.translatable("text.configuration.validation.restart_required");
 
     protected final ValueData<T> valueData;
     private T pendingValue;
@@ -23,6 +25,8 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private boolean synchronizeToClient;
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
     private SetValueCallback<T> setValueCallback;
+    private List<IConfigValueValidator<T>> validators = new ArrayList<>();
+    private AggregatedValidationResult validationResultHolder;
 
     public ConfigValue(ValueData<T> valueData) {
         this.valueData = valueData;
@@ -37,7 +41,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         if (this.pendingValue == null) {
             return this.activeValue;
         }
-        return mode == Mode.SAVED ? this.activeValue : this.pendingValue;
+        return mode == Mode.SAVED && this.updateRestriction != UpdateRestrictions.GAME_RESTART ? this.activeValue : this.pendingValue;
     }
 
     @Override
@@ -76,6 +80,11 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     @Override
+    public Collection<String> getChildrenKeys() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public String getPath() {
         return this.valueData.getFullFieldPath();
     }
@@ -88,19 +97,19 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     public final void setValue(T value) {
         Objects.requireNonNull(value, "Config value cannot be null!");
         if (this.isEditable()) {
-            this.pendingValue = this.validateValue(value);
+            this.pendingValue = this.validateType(value);
             this.valueData.getContext().setValue(value);
         }
     }
 
     @Override
-    public void revertChanges() { // TODO check if this does not allow to bypass update restrictions
+    public void revertChanges() {
         this.pendingValue = null;
         this.valueData.getContext().setValue(this.activeValue);
     }
 
     @Override
-    public void revertChangesToDefault() { // TODO check if this does not allow to bypass update restrictions
+    public void revertChangesToDefault() {
         this.pendingValue = null;
         this.activeValue = this.valueData.getDefaultValue();
         this.valueData.getContext().setValue(this.activeValue);
@@ -138,10 +147,21 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         T corrected = this.validateValue(in);
         if (corrected == null) {
             corrected = this.valueData.getDefaultValue();
+            this.validationResultHolder = null;
+        }
+        AggregatedValidationResult validationResult = this.performAdditionalValidations(in);
+        if (validationResult.severity() != IValidationResult.Severity.NONE) {
+            this.validationResultHolder = validationResult;
+            if (!validationResult.isValid()) {
+                corrected = this.valueData.getDefaultValue();
+            }
+        } else {
+            this.validationResultHolder = null;
         }
         return corrected;
     }
 
+    @Deprecated
     public final void setWithValidationHandler(T value, IValidationHandler handler) {
         this.invokeValueValidator(value, handler);
         this.setValue(value);
@@ -164,6 +184,10 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
             if (this.updateRestriction == UpdateRestrictions.GAME_RESTART && this.shouldSynchronize()) {
                 throw new IllegalArgumentException("Config value which can be updated only on game restart cannot be synchronized! Field " + field.getDeclaringClass().getCanonicalName() + "." + field.getName());
             }
+
+            if (this.updateRestriction == UpdateRestrictions.GAME_RESTART) {
+                this.validators.addFirst((t, wrapper) -> isChanged(t, this.activeValue) ? IValidationResult.warning(GAME_RESTART_REQUIRED) : IValidationResult.success());
+            }
         }
         if (this.shouldSynchronize()) {
             this.updateRestriction = UpdateRestrictions.MAIN_MENU;
@@ -172,7 +196,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     protected boolean isChanged(T saved, T pending) {
-        return !saved.equals(pending);
+        return this.isEditable() && !saved.equals(pending);
     }
 
     protected void readFieldData(Field field) {
@@ -233,6 +257,26 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     @Override
     public String toString() {
         return this.activeValue.toString();
+    }
+
+    @Override
+    public AggregatedValidationResult getValidationResult() {
+        return this.validationResultHolder;
+    }
+
+    @Override
+    public final void addValidator(IConfigValueValidator<T> validator) {
+        if (this instanceof ObjectValue) {
+            throw new UnsupportedOperationException("Cannot register value validator for object config values");
+        }
+        this.validators.add(Objects.requireNonNull(validator));
+    }
+
+    private AggregatedValidationResult performAdditionalValidations(T value) {
+        List<IValidationResult> results = this.validators.stream()
+                .map(validator -> validator.validate(value, this))
+                .toList();
+        return AggregatedValidationResult.aggregate(results);
     }
 
     @FunctionalInterface

@@ -7,13 +7,16 @@ import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
+import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.service.ServiceHelper;
 import dev.toma.configuration.service.services.Platform;
+import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -22,6 +25,7 @@ import java.util.Optional;
  * @since 2.0
  * @author Toma
  */
+// TODO command to save server config values
 public final class Configuration {
 
     public static final String MODID = "configuration";
@@ -34,7 +38,21 @@ public final class Configuration {
     @ApiStatus.Internal
     public static void setup() {
         if (PLATFORM.isDevelopmentEnvironment()) {
-            registerConfig(TestingConfig.class, ConfigFormats.YAML);
+            ConfigHolder<TestingConfig> holder = registerConfig(TestingConfig.class, ConfigFormats.YAML);
+
+            IConfigValue<Boolean> boolValue = holder.getConfigValue("bool", Boolean.class).orElseThrow();
+            boolValue.addValidator((newValue, wrapper) -> !newValue ? IValidationResult.warning(Component.literal("False")) : IValidationResult.success());
+
+            IConfigValue<Integer> nestedInt = holder.getConfigValue("nestedTest.testInt2", Integer.class).orElseThrow();
+            nestedInt.addValidator((newValue, wrapper) -> {
+                if (newValue > 127) {
+                    return new ValidationResult(IValidationResult.Severity.ERROR, Component.literal("Cannot be higher than 128"));
+                }
+                if (newValue < 0) {
+                    return new ValidationResult(IValidationResult.Severity.WARNING, Component.literal("Value is below 0"));
+                }
+                return IValidationResult.success();
+            });
         }
 
     }

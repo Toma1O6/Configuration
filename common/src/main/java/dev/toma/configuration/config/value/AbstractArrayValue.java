@@ -92,13 +92,18 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
     }
 
     @Override
+    public IConfigValue<?> getChildById(String childId) {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return Arrays.toString(this.get());
     }
 
     @Override
     protected boolean isChanged(T[] saved, T[] pending) {
-        return !Arrays.equals(saved, pending);
+        return this.isEditable() && !Arrays.equals(saved, pending);
     }
 
     public static <T> void saveToBuffer(T[] value, FriendlyByteBuf buf, BiConsumer<FriendlyByteBuf, T> encoder) {

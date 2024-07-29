@@ -3,8 +3,7 @@ package dev.toma.configuration.client.widget;
 import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.client.theme.ConfigTheme;
-import dev.toma.configuration.config.validate.NotificationSeverity;
-import dev.toma.configuration.config.validate.ValidationResult;
+import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -12,12 +11,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -36,8 +35,8 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     private final List<Component> description;
     private final ConfigTheme theme;
 
-    private ValidationResult result = ValidationResult.ok();
-    private IDescriptionRenderer renderer;
+    private IValidationResult result = IValidationResult.success();
+    private IValidationRenderer renderer;
     private boolean lastHoverState;
     private long hoverTimeStart;
 
@@ -49,14 +48,13 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         super(x, y, w, h, label);
         this.configValue = value;
         this.configId = configId;
-        // TODO apply correct config styles for comments
         this.description = value.getValueData().getDescription().stream()
                 .map(text -> Component.literal(text.getString()).withStyle(ChatFormatting.GRAY))
                 .collect(Collectors.toList());
         this.theme = theme;
     }
 
-    public void setDescriptionRenderer(IDescriptionRenderer renderer) {
+    public void setDescriptionRenderer(IValidationRenderer renderer) {
         this.renderer = renderer;
     }
 
@@ -81,7 +79,8 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
                 graphics.fill(this.getX() - 30, this.getY() - 2, this.getRight() + 30, this.getBottom() + 2, configEntry.hoveredColorBackground());
             }
         }
-        boolean isError = !this.result.isOk();
+        IValidationResult validationResult = this.getValidationResult();
+        boolean isError = this.hasGuiError();
         MutableComponent label = Component.literal(this.getMessage().getString()).withStyle(this.getMessage().getStyle());
         UnaryOperator<Style> modifiedStyle = configEntry.modifiedValueStyle();
         if (this.configValue.isChanged() && modifiedStyle != null) {
@@ -90,21 +89,30 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         int entryLeft = WidgetPlacerHelper.getLeft(this.getX(), this.width);
         drawScrollingString(graphics, font, label, this.getX(), entryLeft - 5, this.getY() + (this.height - font.lineHeight) / 2, configEntry.color());
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+        IValidationResult.Severity severity = validationResult.severity();
+        boolean validationRendering = false;
+        if (severity.isWarningOrError()) {
+            validationRendering = true;
+            this.renderer.drawIcon(graphics, this, severity);
+        }
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {
-                NotificationSeverity severity = this.result.severity();
-                MutableComponent textComponent = this.result.text().withStyle(severity.getExtraFormatting());
-                List<Component> desc = isError ? Collections.singletonList(textComponent) : this.description;
-                List<FormattedCharSequence> split = desc.stream().flatMap(text -> font.split(text, this.width / 2).stream()).collect(Collectors.toList());
-                renderer.drawDescription(graphics, this, severity, split);
+                List<Component> messages = validationRendering ? validationResult.messages() : this.description;
+                List<FormattedCharSequence> lines = messages.stream()
+                        .flatMap(text -> font.split(text, this.width / 2).stream())
+                        .toList();
+                boolean hasDescription = lines.size() > 1 || (lines.size() == 1 && !lines.getFirst().equals(CommonComponents.EMPTY));
+                if (hasDescription) {
+                    this.renderer.drawDescription(graphics, this, lines, severity, severity.textColor);
+                }
             }
         }
         this.lastHoverState = isHovered;
     }
 
     @Override
-    public void setValidationResult(ValidationResult result) {
+    public void setValidationResult(IValidationResult result) {
         this.result = result;
     }
 
@@ -126,8 +134,19 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         }
     }
 
-    @FunctionalInterface
-    public interface IDescriptionRenderer {
-        void drawDescription(GuiGraphics graphics, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text);
+    private IValidationResult getValidationResult() {
+        return this.configValue.getValidationResult() != null ? this.configValue.getValidationResult() : this.result;
+    }
+
+    private boolean hasGuiError() {
+        return this.configValue.getValidationResult() == null && !this.result.severity().isValid();
+    }
+
+
+    public interface IValidationRenderer {
+
+        void drawIcon(GuiGraphics graphics, AbstractWidget widget, IValidationResult.Severity severity);
+
+        void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, IValidationResult.Severity severity, int textColor);
     }
 }

@@ -6,10 +6,11 @@ import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.config.ConfigHolder;
+import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.CharValue;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IConfigValue;
+import dev.toma.configuration.config.value.IConfigValueReadable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 
@@ -34,13 +35,13 @@ public class CharacterDisplayAdapter extends AbstractDisplayAdapter {
                 char val = text.charAt(0);
                 charValue.setValue(val);
             } else {
-                container.setValidationResult(ValidationResult.error(ClientErrors.CHAR_VALUE_EMPTY));
+                container.setValidationResult(IValidationResult.error(ClientErrors.CHAR_VALUE_EMPTY));
             }
             editBoxWidget.setChanged();
         });
         editBoxWidget.setBackgroundRenderer(theme.getEditBoxBackground(editBoxWidget));
 
-        ValueReverter valueReverter = useDefault -> editBoxWidget.setValue(String.valueOf(useDefault ? charValue.getValueData().getDefaultValue() : charValue.get(IConfigValue.Mode.SAVED)));
+        ValueReverter valueReverter = useDefault -> editBoxWidget.setValue(String.valueOf(useDefault ? charValue.getValueData().getDefaultValue() : charValue.get(IConfigValueReadable.Mode.SAVED)));
         createControls(editBoxWidget, charValue, theme, container, valueReverter);
     }
 }

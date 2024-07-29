@@ -51,10 +51,12 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
+    @Configurable.Comment(value = "Requires game restart", localize = true)
     public int intGameRestartRestriction = 99;
 
     @Configurable
     @Configurable.Synchronized
+    @Configurable.Comment("Synchronized value")
     public int intSynchronized = 123;
 
     @Configurable

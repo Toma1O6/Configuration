@@ -10,6 +10,7 @@ import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValue;
+import dev.toma.configuration.config.value.IConfigValueReadable;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
@@ -387,7 +388,7 @@ public final class ConfigHolder<CFG> {
     private void loadNetworkFields(Map<String, ConfigValue<?>> src, Map<String, ConfigValue<?>> dest) {
         src.values().forEach(value -> {
             if (value instanceof ObjectValue objValue) {
-                Map<String, ConfigValue<?>> data = objValue.get(IConfigValue.Mode.SAVED);
+                Map<String, ConfigValue<?>> data = objValue.get(IConfigValueReadable.Mode.SAVED);
                 loadNetworkFields(data, dest);
             } else {
                 if (!value.shouldSynchronize())

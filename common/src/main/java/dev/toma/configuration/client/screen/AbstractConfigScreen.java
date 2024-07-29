@@ -11,16 +11,16 @@ import dev.toma.configuration.client.widget.ThemedButtonWidget;
 import dev.toma.configuration.client.widget.render.TextureRenderer;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
-import dev.toma.configuration.config.validate.NotificationSeverity;
+import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractConfigScreen extends Screen {
+public abstract class AbstractConfigScreen extends Screen implements ConfigEntryWidget.IValidationRenderer {
 
     public static final int HEADER_HEIGHT = 35;
     public static final int FOOTER_HEIGHT = 30;
@@ -169,7 +169,7 @@ public abstract class AbstractConfigScreen extends Screen {
     private void buttonRevertChangesClicked() {
         DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_CHANGES, new Component[] {ConfigEntryWidget.REVERT_CHANGES_DIALOG_TEXT}, this);
         dialog.onConfirmed(screen -> {
-            ConfigIO.reloadClientValues(this.holder);
+            ConfigIO.reloadClientValues(this.holder); // TODO drop pending changes instead reloading the file
             dialog.displayPreviousScreen();
         });
         minecraft.setScreen(dialog);
@@ -179,7 +179,7 @@ public abstract class AbstractConfigScreen extends Screen {
         configValues.forEach(val -> {
             if (val instanceof ObjectValue objVal) {
                 this.revertToDefault(objVal.get().values());
-            } else {
+            } else if (val.isChangedFromDefault()) {
                 val.forceSetDefaultValue();
             }
         });
@@ -195,20 +195,30 @@ public abstract class AbstractConfigScreen extends Screen {
         }
     }
 
-    public void renderNotification(NotificationSeverity severity, GuiGraphics graphics, List<FormattedCharSequence> texts, int mouseX, int mouseY) {
+    @Override
+    public void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, IValidationResult.Severity severity, int textColor) {
+        this.renderValidationText(severity, graphics, text, widget.getX() + 5, widget.getY() + widget.getHeight() + 10, textColor);
+    }
+
+    @Override
+    public void drawIcon(GuiGraphics graphics, AbstractWidget widget, IValidationResult.Severity severity) {
+        this.renderValidationIcon(severity, graphics, widget, widget.getX() - 22, widget.getY() + 1);
+    }
+
+    public void renderValidationIcon(IValidationResult.Severity severity, GuiGraphics graphics, AbstractWidget widget, int x, int y) {
+        ResourceLocation icon = severity.iconPath;
+        graphics.blit(icon, x, y, 0, 0.0F, 0.0F, 16, 16, 16, 16);
+    }
+
+    public void renderValidationText(IValidationResult.Severity severity, GuiGraphics graphics, List<FormattedCharSequence> texts, int mouseX, int mouseY, int textColor) {
         if (!texts.isEmpty()) {
             int maxTextWidth = 0;
-            int iconOffset = 13;
             for(FormattedCharSequence textComponent : texts) {
                 int textWidth = this.font.width(textComponent);
-                if (!severity.isOkStatus()) {
-                    textWidth += iconOffset;
-                }
                 if (textWidth > maxTextWidth) {
                     maxTextWidth = textWidth;
                 }
             }
-
             int startX = mouseX + 12;
             int startY = mouseY - 12;
             int heightOffset = 8;
@@ -219,18 +229,16 @@ public abstract class AbstractConfigScreen extends Screen {
             if (startX + maxTextWidth > this.width) {
                 startX -= 28 + maxTextWidth;
             }
-
             if (startY + heightOffset + 6 > this.height) {
                 startY = this.height - heightOffset - 6;
             }
 
             PoseStack stack = graphics.pose();
             stack.pushPose();
-            int background = severity.background;
-            int fadeMin = severity.fadeMin;
-            int fadeMax = severity.fadeMax;
+            int background = severity.backgroundColor;
+            int fadeMin = severity.backgroundFadeMinColor;
+            int fadeMax = severity.backgroundFadeMaxColor;
             int zIndex = 400;
-            Matrix4f matrix4f = stack.last().pose();
             graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
             graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
             graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, background, background);
@@ -240,46 +248,17 @@ public abstract class AbstractConfigScreen extends Screen {
             graphics.fillGradient(startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
             graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, zIndex, fadeMin, fadeMin);
             graphics.fillGradient(startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, fadeMax, fadeMax);
-            RenderSystem.enableDepthTest();
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
 
-            if (!severity.isOkStatus()) {
-                Tesselator tessellator = Tesselator.getInstance();
-                RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                ResourceLocation icon = severity.getIcon();
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderTexture(0, icon);
-                float min = -0.5f;
-                float max = 8.5f;
-                bufferbuilder.addVertex(matrix4f, startX + min, startY + min, zIndex).setUv(0.0F, 0.0F);
-                bufferbuilder.addVertex(matrix4f, startX + min, startY + max, zIndex).setUv(0.0F, 1.0F);
-                bufferbuilder.addVertex(matrix4f, startX + max, startY + max, zIndex).setUv(1.0F, 1.0F);
-                bufferbuilder.addVertex(matrix4f, startX + max, startY + min, zIndex).setUv(1.0F, 0.0F);
-                BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
-            }
-
-
-            RenderSystem.disableBlend();
-            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            // Draw descriptions in batch, should refactor this too?
             stack.translate(0.0D, 0.0D, zIndex);
-
-            int textOffset = severity.isOkStatus() ? 0 : iconOffset;
             for(int i = 0; i < texts.size(); i++) {
                 FormattedCharSequence textComponent = texts.get(i);
-                if (textComponent != null) {
-                    this.font.drawInBatch(textComponent, (float)startX + textOffset, (float)startY, -1, true, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, 0xf000f0);
-                }
-
+                graphics.drawString(font, textComponent, startX, startY, textColor, false);
                 if (i == 0) {
                     startY += 2;
                 }
-
                 startY += 10;
             }
-
-            bufferSource.endBatch();
             stack.popPose();
         }
     }

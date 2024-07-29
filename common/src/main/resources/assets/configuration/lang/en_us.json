@@ -20,9 +20,14 @@
   "text.configuration.screen.color.green": "Green: %s",
   "text.configuration.screen.color.blue": "Blue: %s",
   "text.configuration.screen.color.alpha": "Alpha: %s",
+  "text.configuration.validation.restart_required": "Requires game restart to be applied",
+  "text.configuration.validation.child_failed.warning": "Child value contains warnings",
+  "text.configuration.validation.child_failed.error": "Child value validation failed",
 
   "text.configuration.error.character_value_empty": "Character field cannot be empty!",
   "text.configuration.error.nan": "Value '%s' is not a valid number!",
   "text.configuration.error.num_bounds": "Value '%s' is not from interval <%s;%s>!",
-  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!"
+  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!",
+
+  "config.configuration-test.option.intGameRestartRestriction.comment.0": "I am a translated comment!"
 }

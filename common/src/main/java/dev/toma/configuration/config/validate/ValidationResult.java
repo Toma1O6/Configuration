@@ -1,25 +1,21 @@
 package dev.toma.configuration.config.validate;
 
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 
-public record ValidationResult(NotificationSeverity severity, MutableComponent text) {
+import java.util.Collections;
+import java.util.List;
 
-    private static final ValidationResult OK = new ValidationResult(NotificationSeverity.INFO, (MutableComponent) CommonComponents.EMPTY);
+public record ValidationResult(IValidationResult.Severity severity, List<Component> messages) implements IValidationResult {
 
-    public static ValidationResult ok() {
-        return OK;
+    static final ValidationResult SUCCESS = new ValidationResult(IValidationResult.Severity.NONE, CommonComponents.EMPTY);
+
+    public ValidationResult(IValidationResult.Severity severity, List<Component> messages) {
+        this.severity = severity;
+        this.messages = Collections.unmodifiableList(messages);
     }
 
-    public static ValidationResult warn(MutableComponent text) {
-        return new ValidationResult(NotificationSeverity.WARNING, text);
-    }
-
-    public static ValidationResult error(MutableComponent text) {
-        return new ValidationResult(NotificationSeverity.ERROR, text);
-    }
-
-    public boolean isOk() {
-        return this.severity.isOkStatus();
+    public ValidationResult(IValidationResult.Severity severity, Component message) {
+        this(severity, Collections.singletonList(message));
     }
 }

@@ -5,23 +5,18 @@ import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
-import dev.toma.configuration.client.widget.render.SpriteRenderer;
 import dev.toma.configuration.client.widget.render.TextureRenderer;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapterManager;
-import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.AbstractArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ValueData;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
@@ -95,7 +90,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             dummy.processFieldData(owner);
             Component label = this.getEntryLabel(dummy, i);
             ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, label, dummy, this.getConfigId(), this.theme));
-            widget.setDescriptionRenderer(this::renderEntryDescription);
+            widget.setDescriptionRenderer(this);
             if (adapter == null) {
                 Configuration.LOGGER.error(MARKER, "Missing display adapter for {} type, will not be displayed in GUI", compType.getSimpleName());
                 continue;
@@ -129,12 +124,6 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         String languageKey = valueData.getLanguageKey(valueData.getAttributes()) + ".entry";
         Component translated = Component.translatable(languageKey);
         return Component.literal("[" + index + "] " + translated.getString());
-    }
-
-    private void renderEntryDescription(GuiGraphics graphics, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
-        if (!severity.isOkStatus()) {
-            this.renderNotification(severity, graphics, text, widget.getX() + 5, widget.getY() + widget.getHeight() + 10);
-        }
     }
 
     @Override

@@ -5,9 +5,11 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.validate.AggregatedValidationResult;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -75,6 +77,18 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
+    public AggregatedValidationResult getValidationResult() {
+        AggregatedValidationResult result = super.getValidationResult();
+        for (ConfigValue<?> value : this.get().values()) {
+            AggregatedValidationResult valueResult = value.getValidationResult();
+            if (valueResult != null && valueResult.severity().isWarningOrError()) {
+                return AggregatedValidationResult.joinChild(result, valueResult);
+            }
+        }
+        return result;
+    }
+
+    @Override
     protected void deserialize(IConfigFormat format) throws ConfigValueMissingException {
         format.readMap(this.getId(), this.get().values());
     }
@@ -92,6 +106,17 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     @Override
     public <T> Optional<IConfigValue<T>> getChild(Iterator<String> iterator, Class<T> targetType) {
         return getChild(iterator, targetType, this.get());
+    }
+
+    @Override
+    public IConfigValue<?> getChildById(String childId) {
+        Map<String, ConfigValue<?>> map = this.get();
+        return map.get(childId);
+    }
+
+    @Override
+    public Collection<String> getChildrenKeys() {
+        return this.get().keySet();
     }
 
     @Override

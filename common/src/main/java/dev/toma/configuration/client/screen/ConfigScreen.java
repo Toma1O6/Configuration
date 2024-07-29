@@ -6,13 +6,10 @@ import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.validate.NotificationSeverity;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
@@ -47,7 +44,7 @@ public class ConfigScreen extends AbstractConfigScreen {
             offset += correct;
             ConfigValue<?> value = values.get(i);
             ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * 25 + offset, this.width - 60, 20, value, this.getConfigId(), this.theme));
-            widget.setDescriptionRenderer(this::renderEntryDescription);
+            widget.setDescriptionRenderer(this);
             TypeAdapter.AdapterContext context = value.getSerializationContext();
             Field field = context.getOwner();
             DisplayAdapter adapter = this.theme.getAdapter(field.getType());
@@ -63,16 +60,6 @@ public class ConfigScreen extends AbstractConfigScreen {
             }
         }
         this.addFooter();
-    }
-
-    private void renderEntryDescription(GuiGraphics graphics, AbstractWidget widget, NotificationSeverity severity, List<FormattedCharSequence> text) {
-        int x = widget.getX() + 5;
-        int y = widget.getY() + widget.getHeight() + 10;
-        if (!severity.isOkStatus()) {
-            this.renderNotification(severity, graphics, text, x, y);
-        } else {
-            this.renderNotification(NotificationSeverity.INFO, graphics, text, x, y);
-        }
     }
 
     @Override

@@ -22,7 +22,7 @@ public abstract class AbstractArrayDisplayAdapter<T> extends AbstractDisplayAdap
 
     protected <C extends AbstractArrayValue<T>> ValueReverter createReverter(C array, AbstractThemeWidget widget) {
         return def -> {
-            array.setValue(def ? array.getValueData().getDefaultValue() : array.get(IConfigValue.Mode.SAVED));
+            array.setValue(def ? array.getValueData().getDefaultValue() : array.get(IConfigValueReadable.Mode.SAVED));
             widget.setChanged();
         };
     }
