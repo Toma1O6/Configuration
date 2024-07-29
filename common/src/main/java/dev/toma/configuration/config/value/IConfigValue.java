@@ -1,5 +1,6 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.config.util.IDescriptionProvider;
 import dev.toma.configuration.config.validate.IConfigValueValidator;
 
 /**
@@ -44,6 +45,12 @@ public interface IConfigValue<T> extends IConfigValueReadable<T> {
      * @return Parent value of this config value or {@code null} for top level config values
      */
     IConfigValue<?> parent();
+
+    /**
+     * Allows you to attach custom description provider for this config value.
+     * @param provider The new description provider
+     */
+    void addDescriptionProvider(IDescriptionProvider<T> provider);
 
     /**
      * Allows you to register custom value validator for this config value. All value assignments are validated via

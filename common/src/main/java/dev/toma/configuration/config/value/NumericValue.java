@@ -1,6 +1,7 @@
 package dev.toma.configuration.config.value;
 
 import dev.toma.configuration.config.ConfigUtils;
+import dev.toma.configuration.config.util.NumericRangeDescription;
 import dev.toma.configuration.config.validate.NumberRange;
 
 import java.lang.reflect.Field;
@@ -48,6 +49,7 @@ public abstract class NumericValue<T extends Number & Comparable<T>> extends Con
     @Override
     protected void readFieldData(Field field) {
         this.range = this.getValueRange(field, this.minValue, this.maxValue);
+        this.addDescriptionProvider(NumericRangeDescription.create());
     }
 
     @Override

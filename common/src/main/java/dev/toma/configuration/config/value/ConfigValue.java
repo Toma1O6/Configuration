@@ -7,6 +7,8 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.util.IDescriptionProvider;
+import dev.toma.configuration.config.util.NoteDescriptionProvider;
 import dev.toma.configuration.config.validate.AggregatedValidationResult;
 import dev.toma.configuration.config.validate.IConfigValueValidator;
 import dev.toma.configuration.config.validate.IValidationResult;
@@ -27,6 +29,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
     private final List<IConfigValueValidator<T>> validators = new ArrayList<>();
     private AggregatedValidationResult validationResultHolder;
+    private final List<IDescriptionProvider<T>> descriptionProviders = new ArrayList<>();
 
     public ConfigValue(ValueData<T> valueData) {
         this.valueData = valueData;
@@ -193,6 +196,9 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         }
         if (this.shouldSynchronize()) {
             this.updateRestriction = UpdateRestrictions.MAIN_MENU;
+            this.addDescriptionProvider(NoteDescriptionProvider.note(NoteDescriptionProvider.SYNCHRONIZED));
+        } else if (this.updateRestriction.isRestricted()) {
+            this.addDescriptionProvider(NoteDescriptionProvider.note(NoteDescriptionProvider.RESTRICTION.apply(this.updateRestriction)));
         }
         this.readFieldData(field);
     }
@@ -255,11 +261,31 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     @Override
+    public final void addDescriptionProvider(IDescriptionProvider<T> provider) {
+        this.descriptionProviders.add(provider);
+    }
+
+    @Override
     public final void addValidator(IConfigValueValidator<T> validator) {
         if (this instanceof ObjectValue) {
             throw new UnsupportedOperationException("Cannot register value validator for object config values");
         }
         this.validators.add(Objects.requireNonNull(validator));
+    }
+
+    @Override
+    public final List<Component> getDescription() {
+        List<Component> description = new ArrayList<>(this.valueData.getDescription());
+        if (!this.descriptionProviders.isEmpty()) {
+            List<Component> generated = new ArrayList<>();
+            for (IDescriptionProvider<T> provider : this.descriptionProviders) {
+                if (provider.replaceDefaultDescription())
+                    description.clear();
+                generated.addAll(provider.generate(this));
+            }
+            description.addAll(generated);
+        }
+        return description;
     }
 
     private AggregatedValidationResult performAdditionalValidations(T value) {

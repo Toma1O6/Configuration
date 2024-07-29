@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public final class ValueData<T> {
 
@@ -112,6 +113,6 @@ public final class ValueData<T> {
             Component localizedComment = Component.translatable(prefix + ".comment." + i);
             comments.add(localizedComment);
         }
-        return comments;
+        return Collections.unmodifiableList(comments);
     }
 }

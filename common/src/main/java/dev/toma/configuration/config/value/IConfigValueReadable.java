@@ -1,10 +1,10 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.validate.AggregatedValidationResult;
 import dev.toma.configuration.config.validate.IValidationResult;
 import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -81,6 +81,8 @@ public interface IConfigValueReadable<T> extends Supplier<T> {
      * @return Validation result of this config value or {@code null} when value is valid
      */
     IValidationResult getValidationResult();
+
+    List<Component> getDescription();
 
     /**
      * Save state modes for config values.

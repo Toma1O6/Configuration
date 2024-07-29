@@ -3,9 +3,9 @@ package dev.toma.configuration.client.widget;
 import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.client.theme.ConfigTheme;
+import dev.toma.configuration.config.validate.AggregatedValidationResult;
 import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +19,6 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
@@ -48,9 +47,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         super(x, y, w, h, label);
         this.configValue = value;
         this.configId = configId;
-        this.description = value.getValueData().getDescription().stream()
-                .map(text -> Component.literal(text.getString()).withStyle(ChatFormatting.GRAY))
-                .collect(Collectors.toList());
+        this.description = value.getDescription();
         this.theme = theme;
     }
 
@@ -135,11 +132,13 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     private IValidationResult getValidationResult() {
-        return this.configValue.getValidationResult() != null ? this.configValue.getValidationResult() : this.result;
+        IValidationResult valueResult = this.configValue.getValidationResult() != null ? this.configValue.getValidationResult() : IValidationResult.success();
+        return valueResult.severity().isHigherSeverityThan(this.result.severity()) ? valueResult : this.result;
     }
 
     private boolean hasGuiError() {
-        return this.configValue.getValidationResult() == null && !this.result.severity().isValid();
+        IValidationResult result = this.getValidationResult();
+        return !result.severity().isValid() && !(result instanceof AggregatedValidationResult);
     }
 
 

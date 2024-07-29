@@ -42,16 +42,18 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.Range(min = 0, max = 255)
+    @Configurable.Comment("Ranged value")
     public int intRanged = 10;
 
     @Configurable
-    @Configurable.Range(min = 0, max = 1000)
+    @Configurable.Range(min = 0)
     @Configurable.Gui.Slider
     public int intSlider = 15;
 
     @Configurable
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     @Configurable.Comment(value = "Requires game restart", localize = true)
+    @Configurable.Range(max = 50)
     public int intGameRestartRestriction = 99;
 
     @Configurable
@@ -68,6 +70,7 @@ public final class TestingConfig {
     public float floatNumber = 151.3123F;
 
     @Configurable
+    @Configurable.DecimalRange(max = 1024)
     public double doubleNumber = 316.15646556D;
 
     @Configurable

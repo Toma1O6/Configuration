@@ -1,6 +1,10 @@
 package dev.toma.configuration.config;
 
 import dev.toma.configuration.config.io.ConfigIO;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+
+import java.util.Locale;
 
 /**
  * Collection of UpdateRestrictions which can be applied on config values
@@ -27,6 +31,12 @@ public enum UpdateRestrictions {
      */
     GAME_RESTART;
 
+    private final Component label;
+
+    UpdateRestrictions() {
+        this.label = Component.translatable("text.configuration.description.restriction." + this.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.DARK_GRAY);
+    }
+
     public boolean canApplyChangeInEnvironment(ConfigIO.ConfigEnvironment environment) {
         return switch (this) {
             case NONE -> true;
@@ -40,5 +50,13 @@ public enum UpdateRestrictions {
             case NONE -> true;
             case MAIN_MENU, GAME_RESTART -> environment != ConfigIO.ConfigEnvironment.PLAYING;
         };
+    }
+
+    public boolean isRestricted() {
+        return this != NONE;
+    }
+
+    public Component getLabel() {
+        return label;
     }
 }

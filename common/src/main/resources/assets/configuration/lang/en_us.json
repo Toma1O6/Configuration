@@ -23,6 +23,12 @@
   "text.configuration.validation.restart_required": "Requires game restart to be applied",
   "text.configuration.validation.child_failed.warning": "Child value contains warnings",
   "text.configuration.validation.child_failed.error": "Child value validation failed",
+  "text.configuration.description.range": "Range: [%s;%s]",
+  "text.configuration.description.synchronized": "Synchronized",
+  "text.configuration.description.update_on": "Saved: %s",
+  "text.configuration.description.restriction.none": "Always",
+  "text.configuration.description.restriction.main_menu": "In main menu",
+  "text.configuration.description.restriction.game_restart": "After game restart",
 
   "text.configuration.error.character_value_empty": "Character field cannot be empty!",
   "text.configuration.error.nan": "Value '%s' is not a valid number!",
