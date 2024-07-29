@@ -9,7 +9,10 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
-import dev.toma.configuration.config.value.*;
+import dev.toma.configuration.config.value.AbstractArrayValue;
+import dev.toma.configuration.config.value.ConfigValue;
+import dev.toma.configuration.config.value.IConfigValueReadable;
+import dev.toma.configuration.config.value.ValueData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 

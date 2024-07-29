@@ -4,7 +4,9 @@ import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.value.*;
+import dev.toma.configuration.config.value.CharArrayValue;
+import dev.toma.configuration.config.value.CharValue;
+import dev.toma.configuration.config.value.ConfigValue;
 
 import java.lang.reflect.Field;
 

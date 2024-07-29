@@ -1,10 +1,8 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.ConfigurationClient;
-import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
@@ -14,14 +12,11 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +24,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.joml.Matrix4f;
 
 import java.time.Duration;
 import java.util.Collection;

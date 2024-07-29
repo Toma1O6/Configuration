@@ -7,7 +7,6 @@ import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.validate.IValidationResult;
-import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.CharValue;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValueReadable;

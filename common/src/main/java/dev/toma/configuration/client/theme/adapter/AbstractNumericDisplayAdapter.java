@@ -11,7 +11,6 @@ import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.validate.NumberRange;
-import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValueReadable;
 import dev.toma.configuration.config.value.NumericValue;
