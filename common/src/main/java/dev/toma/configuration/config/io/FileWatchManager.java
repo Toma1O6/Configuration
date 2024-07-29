@@ -73,7 +73,6 @@ public final class FileWatchManager {
                         ConfigHolder<?> holder = this.configPaths.get(strPath);
                         if (holder != null) {
                             ConfigIO.reloadClientValues(holder);
-                            holder.dispatchFileRefreshEvent();
                             this.processCache.add(strPath);
                         }
                     });

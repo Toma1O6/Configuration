@@ -20,7 +20,6 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -97,7 +96,6 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             }
             try {
                 adapter.placeWidgets(this.holder, dummy, owner, this.theme, widget);
-                initializeGuiValue(dummy, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", compType.getSimpleName()), e);
             }

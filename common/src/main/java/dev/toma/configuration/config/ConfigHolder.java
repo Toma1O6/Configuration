@@ -1,7 +1,6 @@
 package dev.toma.configuration.config;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapterManager;
 import dev.toma.configuration.config.adapter.TypeAttributes;
@@ -17,7 +16,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,8 +48,6 @@ public final class ConfigHolder<CFG> {
     private final Map<String, ConfigValue<?>> valueMap = new LinkedHashMap<>();
     // Map of fields which will be synced to client upon login
     private final Map<String, ConfigValue<?>> networkSerializedFields = new LinkedHashMap<>();
-    // Set of file refresh listeners
-    private final Set<IFileRefreshListener<CFG>> fileRefreshListeners = new HashSet<>();
     // Title component for GUI displays
     private final Component title;
     // Lock for async operations
@@ -162,15 +158,6 @@ public final class ConfigHolder<CFG> {
      */
     public void restoreClientStoredValues() {
         this.values().forEach(ConfigValue::clearNetworkValues);
-    }
-
-    /**
-     * Register new file refresh listener for this config holder
-     * @param listener The file listener
-     */
-    @Deprecated
-    public void addFileRefreshListener(IFileRefreshListener<CFG> listener) {
-        this.fileRefreshListeners.add(Objects.requireNonNull(listener));
     }
 
     /**
@@ -293,14 +280,6 @@ public final class ConfigHolder<CFG> {
     }
 
     /**
-     * Dispatches file refresh event to all registered listeners
-     */
-    @Deprecated
-    public void dispatchFileRefreshEvent() {
-        this.fileRefreshListeners.forEach(listener -> listener.onFileRefresh(this));
-    }
-
-    /**
      * @return Lock for async operations. Used for IO operations currently
      */
     @ApiStatus.Internal
@@ -342,10 +321,6 @@ public final class ConfigHolder<CFG> {
             TypeAdapter.AdapterContext context = this.getAdapterContext(adapter, type, field, mapper, instance);
             TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(this.configId, field.getName(), (T) migratedField, context, localizationType, comments, localizeComments);
             ConfigValue<?> cfgValue = adapter.serialize(typeAttributes, migratedField, (t, i) -> this.serializeType(t, i, false));
-            Configurable.ValueUpdateCallback callback = field.getAnnotation(Configurable.ValueUpdateCallback.class);
-            if (callback != null) {
-                this.processCallback(callback, type, instance, cfgValue);
-            }
             cfgValue.processFieldData(field);
             map.put(field.getName(), cfgValue);
             if (saveValue) {
@@ -353,32 +328,6 @@ public final class ConfigHolder<CFG> {
             }
         }
         return map;
-    }
-
-    private <T> void processCallback(Configurable.ValueUpdateCallback callback, Class<?> type, Object instance, ConfigValue<T> value) {
-        String methodName = callback.method();
-        try {
-            Class<?> valueType = value.getValueType();
-            if (callback.allowPrimitivesMapping()) {
-                valueType = ConfigUtils.remapPrimitiveType(valueType);
-            }
-            Method method = type.getDeclaredMethod(methodName, valueType, IValidationHandler.class);
-            ConfigValue.SetValueCallback<T> setValueCallback = (val, handler) -> {
-                try {
-                    method.setAccessible(true);
-                    method.invoke(instance, val, handler);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    Configuration.LOGGER.error(ConfigIO.MARKER, "Error occurred while invoking {} method: {}", method, e);
-                }
-            };
-            value.setValueValidator(setValueCallback);
-            Configuration.LOGGER.debug(ConfigIO.MARKER, "Attached new value listener method '{}' for config value {}", methodName, value.getId());
-        } catch (NoSuchMethodException e) {
-            Configuration.LOGGER.error(ConfigIO.MARKER, "Unable to map method {} for config value {} due to {}", methodName, value.getId(), e);
-        } catch (Exception e) {
-            Configuration.LOGGER.fatal(ConfigIO.MARKER, "Fatal error occurred while trying to map value listener for {} method", methodName);
-            throw new RuntimeException("Value listener map failed", e);
-        }
     }
 
     private <T> void assignValue(ConfigValue<T> value) {
@@ -422,16 +371,5 @@ public final class ConfigHolder<CFG> {
                 }
             }
         };
-    }
-
-    /**
-     * Listener which is triggered when config file changes on disk
-     * @param <CFG> Config type
-     * @author Toma
-     */
-    @Deprecated
-    @FunctionalInterface
-    public interface IFileRefreshListener<CFG> {
-        void onFileRefresh(ConfigHolder<CFG> holder);
     }
 }

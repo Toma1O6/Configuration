@@ -1,6 +1,5 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.client.IValidationHandler;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
@@ -8,7 +7,9 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
-import dev.toma.configuration.config.validate.*;
+import dev.toma.configuration.config.validate.AggregatedValidationResult;
+import dev.toma.configuration.config.validate.IConfigValueValidator;
+import dev.toma.configuration.config.validate.IValidationResult;
 import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
@@ -24,8 +25,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private T networkSavedValue;
     private boolean synchronizeToClient;
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
-    private SetValueCallback<T> setValueCallback;
-    private List<IConfigValueValidator<T>> validators = new ArrayList<>();
+    private final List<IConfigValueValidator<T>> validators = new ArrayList<>();
     private AggregatedValidationResult validationResultHolder;
 
     public ConfigValue(ValueData<T> valueData) {
@@ -161,12 +161,6 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return corrected;
     }
 
-    @Deprecated
-    public final void setWithValidationHandler(T value, IValidationHandler handler) {
-        this.invokeValueValidator(value, handler);
-        this.setValue(value);
-    }
-
     @Override
     public final String getId() {
         return this.valueData.getId();
@@ -186,7 +180,15 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
             }
 
             if (this.updateRestriction == UpdateRestrictions.GAME_RESTART) {
-                this.validators.addFirst((t, wrapper) -> isChanged(t, this.activeValue) ? IValidationResult.warning(GAME_RESTART_REQUIRED) : IValidationResult.success());
+                this.validators.addFirst((t, wrapper) -> {
+                    if (ConfigIO.getEnvironment() == ConfigIO.ConfigEnvironment.LOADING)
+                        return IValidationResult.success();
+                    if (this.isChanged(t, this.activeValue)) {
+                        return IValidationResult.warning(GAME_RESTART_REQUIRED);
+                    } else {
+                        return IValidationResult.success();
+                    }
+                });
             }
         }
         if (this.shouldSynchronize()) {
@@ -205,18 +207,6 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     protected T validateValue(T in) {
         return in;
-    }
-
-    @Deprecated
-    public void setValueValidator(SetValueCallback<T> callback) {
-        this.setValueCallback = callback;
-    }
-
-    @Deprecated
-    public final void invokeValueValidator(T value, IValidationHandler handler) {
-        if (this.setValueCallback != null) {
-            this.setValueCallback.processValue(value, handler);
-        }
     }
 
     protected abstract void serialize(IConfigFormat format);
@@ -277,11 +267,5 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
                 .map(validator -> validator.validate(value, this))
                 .toList();
         return AggregatedValidationResult.aggregate(results);
-    }
-
-    @FunctionalInterface
-    public interface SetValueCallback<V> {
-
-        void processValue(V value, IValidationHandler handler);
     }
 }

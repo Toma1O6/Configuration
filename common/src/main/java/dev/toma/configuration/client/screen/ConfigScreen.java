@@ -54,7 +54,6 @@ public class ConfigScreen extends AbstractConfigScreen {
             }
             try {
                 adapter.placeWidgets(this.holder, value, field, this.theme, widget);
-                initializeGuiValue(value, widget);
             } catch (ClassCastException e) {
                 Configuration.LOGGER.error(MARKER, new FormattedMessage("Unable to create config field for {}", field.getType().getSimpleName()), e);
             }

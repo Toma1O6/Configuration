@@ -26,6 +26,7 @@ import java.util.Optional;
  * @author Toma
  */
 // TODO command to save server config values
+// TODO common validations???
 public final class Configuration {
 
     public static final String MODID = "configuration";
@@ -38,21 +39,7 @@ public final class Configuration {
     @ApiStatus.Internal
     public static void setup() {
         if (PLATFORM.isDevelopmentEnvironment()) {
-            ConfigHolder<TestingConfig> holder = registerConfig(TestingConfig.class, ConfigFormats.YAML);
-
-            IConfigValue<Boolean> boolValue = holder.getConfigValue("bool", Boolean.class).orElseThrow();
-            boolValue.addValidator((newValue, wrapper) -> !newValue ? IValidationResult.warning(Component.literal("False")) : IValidationResult.success());
-
-            IConfigValue<Integer> nestedInt = holder.getConfigValue("nestedTest.testInt2", Integer.class).orElseThrow();
-            nestedInt.addValidator((newValue, wrapper) -> {
-                if (newValue > 127) {
-                    return new ValidationResult(IValidationResult.Severity.ERROR, Component.literal("Cannot be higher than 128"));
-                }
-                if (newValue < 0) {
-                    return new ValidationResult(IValidationResult.Severity.WARNING, Component.literal("Value is below 0"));
-                }
-                return IValidationResult.success();
-            });
+            registerConfig(TestingConfig.class, ConfigFormats.YAML);
         }
 
     }

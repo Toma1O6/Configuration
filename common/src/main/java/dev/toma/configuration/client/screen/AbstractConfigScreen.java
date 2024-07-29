@@ -262,10 +262,4 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
             stack.popPose();
         }
     }
-
-    @Deprecated // Do not use, value should be already validated and then set to widgets from memory
-    protected <T> void initializeGuiValue(ConfigValue<T> value, IValidationHandler handler) {
-        T t = value.get();
-        value.setWithValidationHandler(t, handler);
-    }
 }

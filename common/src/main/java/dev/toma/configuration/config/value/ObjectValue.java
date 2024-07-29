@@ -94,11 +94,6 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
-    public void setValueValidator(SetValueCallback<Map<String, ConfigValue<?>>> callback) {
-        throw new UnsupportedOperationException("Cannot attach value validator to Object types!");
-    }
-
-    @Override
     public <T> Optional<T> getChildValue(Iterator<String> iterator, Class<T> targetType) {
         return getChildValue(iterator, targetType, this.get());
     }
