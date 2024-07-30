@@ -55,6 +55,9 @@ public interface IConfigValueReadable<T> extends Supplier<T> {
      */
     IConfigValueReadable<?> parent();
 
+    /**
+     * @return Collection of all children config value IDs or empty collection when no children values exist
+     */
     Collection<String> getChildrenKeys();
 
     /**
@@ -82,6 +85,9 @@ public interface IConfigValueReadable<T> extends Supplier<T> {
      */
     IValidationResult getValidationResult();
 
+    /**
+     * @return Description to be rendered for this config value
+     */
     List<Component> getDescription();
 
     /**

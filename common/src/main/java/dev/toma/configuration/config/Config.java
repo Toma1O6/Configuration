@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
  * Config marker annotation. Every registered config class must have this annotation.
  * Inside this class you should define all configurable fields <b>(cannot be both {@code static} or {@code final})!</b>.
  * All configurable fields must be annotated with {@link Configurable} annotation, otherwise it will
- * be ignored.
+ * be ignored. <br>
+ * <b>If your {@code configID} is different from your {@code modID}, you need to define {@link Config#group()} attribute to equal your
+ * {@code modID} otherwise your config GUI won't be linked.</b>
  *
  * @author Toma
  * @since 2.0
@@ -39,7 +41,7 @@ public @interface Config {
 
     /**
      * Allows you to group multiple configs under one identifier.
-     * Useful when you have 2 or more config files which should be accessible via GUI.
+     * Useful when you have 2 or more config files which should be accessible via GUI or also config ID which does not match your mod ID.
      *
      * @return Custom config group identifier. By default, value defined by {@link Config#id()} will be used.
      */

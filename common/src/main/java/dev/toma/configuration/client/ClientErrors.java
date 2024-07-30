@@ -18,14 +18,6 @@ public final class ClientErrors {
         return Component.translatable(KEY_NAN, value);
     }
 
-    public static MutableComponent outOfBoundsInt(Number number, NumberRange<?> range) {
-        return Component.translatable(KEY_NUM_BOUNDS, number.longValue(), range.min().longValue(), range.max().longValue());
-    }
-
-    public static MutableComponent outOfBoundsDecimal(Number number, NumberRange<?> range) {
-        return Component.translatable(KEY_NUM_BOUNDS, number.doubleValue(), range.min().doubleValue(), range.max().doubleValue());
-    }
-
     public static MutableComponent outOfBounds(Number number, NumberRange<?> range) {
         return Component.translatable(KEY_NUM_BOUNDS, number, range.min(), range.max());
     }
