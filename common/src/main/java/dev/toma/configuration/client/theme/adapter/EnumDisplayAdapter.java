@@ -7,7 +7,6 @@ import dev.toma.configuration.client.widget.EnumWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.EnumValue;
-import dev.toma.configuration.config.value.IConfigValueReadable;
 
 import java.lang.reflect.Field;
 
@@ -23,7 +22,7 @@ public class EnumDisplayAdapter<E extends Enum<E>> extends AbstractDisplayAdapte
             return new EnumWidget<>(left, y, widgetWidth, height, theme, enumValue);
         });
         widget.setBackgroundRenderer(theme.getButtonBackground(widget));
-        ValueReverter reverter = def -> widget.setValue(def ? enumValue.getValueData().getDefaultValue() : enumValue.get(IConfigValueReadable.Mode.SAVED));
+        ValueReverter reverter = def -> widget.setValue(def ? enumValue.getValueData().getDefaultValue() : enumValue.getActiveValue());
         createControls(widget, enumValue, theme, container, reverter);
     }
 }

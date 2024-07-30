@@ -12,7 +12,6 @@ import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IConfigValueReadable;
 import dev.toma.configuration.config.value.StringValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -46,7 +45,7 @@ public class StringDisplayAdapter extends AbstractDisplayAdapter {
         editBox.setBackgroundRenderer(theme.getEditBoxBackground(editBox));
         ConfigUtils.adjustCharacterLimit(field, editBox);
 
-        ValueReverter reverter = useDefault -> editBox.setValue(useDefault ? stringValue.getValueData().getDefaultValue() : stringValue.get(IConfigValueReadable.Mode.SAVED));
+        ValueReverter reverter = useDefault -> editBox.setValue(useDefault ? stringValue.getValueData().getDefaultValue() : stringValue.getActiveValue());
         ThemedButtonWidget revert = this.createRevertButton(editBox, value, theme, container, reverter);
         ThemedButtonWidget revertDefault = this.createRevertToDefaultButton(editBox, value, theme, container, reverter);
         attachDefaultChangeListeners(stringValue, editBox, revert, revertDefault);

@@ -20,6 +20,7 @@ public abstract class AbstractDisplayAdapter implements DisplayAdapter {
         attachDefaultChangeListeners(value, widget, revertButton, revertDefaultButton);
     }
 
+    // TODO unable to revert game restart values after applying configs!
     protected ThemedButtonWidget createRevertButton(AbstractThemeWidget linkedTo, ConfigValue<?> value, ConfigTheme theme, WidgetAdder adder, ValueReverter reverter) {
         return adder.addConfigWidget(false, (x, y, width, height, id) -> {
             int left = linkedTo.getRight() + 1;

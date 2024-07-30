@@ -12,7 +12,6 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.validate.NumberRange;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IConfigValueReadable;
 import dev.toma.configuration.config.value.NumericValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -43,12 +42,12 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
     protected abstract void placeSlider(ConfigHolder<?> holder, ConfigValue<?> value, Field field, ConfigTheme theme, WidgetAdder container);
 
     protected <T extends Number & Comparable<T>> void placeEditBoxControls(NumericValue<T> value, ConfigTheme theme, EditBoxWidget widget, WidgetAdder container) {
-        ValueReverter reverter = useDefault -> widget.setValue(String.valueOf(useDefault ? value.getValueData().getDefaultValue() : value.get(IConfigValueReadable.Mode.SAVED)));
+        ValueReverter reverter = useDefault -> widget.setValue(String.valueOf(useDefault ? value.getValueData().getDefaultValue() : value.getActiveValue()));
         createControls(widget, value, theme, container, reverter);
     }
 
     protected <T extends Number & Comparable<T>> void placeSliderControls(NumericValue<T> value, ConfigTheme theme, SliderWidget<T> widget, WidgetAdder container) {
-        ValueReverter reverter = useDefault -> widget.setValue(value.getSliderValue(useDefault ? value.getValueData().getDefaultValue() : value.get(IConfigValueReadable.Mode.SAVED)));
+        ValueReverter reverter = useDefault -> widget.setValue(value.getSliderValue(useDefault ? value.getValueData().getDefaultValue() : value.getActiveValue()));
         createControls(widget, value, theme, container, reverter);
     }
 

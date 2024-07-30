@@ -47,6 +47,10 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return mode == Mode.SAVED && this.updateRestriction != UpdateRestrictions.GAME_RESTART ? this.activeValue : this.pendingValue;
     }
 
+    public T getActiveValue() {
+        return this.activeValue;
+    }
+
     @Override
     public boolean isChanged() {
         return this.pendingValue != null && this.isChanged(this.activeValue, this.pendingValue);

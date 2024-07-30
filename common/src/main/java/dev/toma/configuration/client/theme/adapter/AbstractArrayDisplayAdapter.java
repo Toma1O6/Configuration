@@ -11,7 +11,6 @@ import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.value.AbstractArrayValue;
 import dev.toma.configuration.config.value.ConfigValue;
-import dev.toma.configuration.config.value.IConfigValueReadable;
 import dev.toma.configuration.config.value.ValueData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,7 +24,7 @@ public abstract class AbstractArrayDisplayAdapter<T> extends AbstractDisplayAdap
 
     protected <C extends AbstractArrayValue<T>> ValueReverter createReverter(C array, AbstractThemeWidget widget) {
         return def -> {
-            array.setValue(def ? array.getValueData().getDefaultValue() : array.get(IConfigValueReadable.Mode.SAVED));
+            array.setValue(def ? array.getValueData().getDefaultValue() : array.getActiveValue());
             widget.setChanged();
         };
     }
