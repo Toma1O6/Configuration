@@ -1,10 +1,13 @@
 package dev.toma.configuration;
 
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.toma.configuration.client.ConfigurationClient;
+import dev.toma.configuration.command.ConfigSaveCommand;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.network.NeoforgeNetworkManager;
+import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -13,6 +16,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
@@ -32,6 +36,7 @@ public class ConfigurationNeoforge {
         eventBus.addListener(NeoforgeNetworkManager.INSTANCE::registerMessages);
         NeoForge.EVENT_BUS.addListener(this::serverStopping);
         NeoForge.EVENT_BUS.addListener(this::serverStarted);
+        NeoForge.EVENT_BUS.addListener(this::registerCommands);
     }
 
     private void clientInit(FMLClientSetupEvent event) {
@@ -63,5 +68,10 @@ public class ConfigurationNeoforge {
     private void serverStopping(ServerStoppingEvent event) {
         ConfigIO.FILE_WATCH_MANAGER.stop();
         ConfigIO.serverStopping();
+    }
+
+    private void registerCommands(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        ConfigSaveCommand.register(dispatcher);
     }
 }

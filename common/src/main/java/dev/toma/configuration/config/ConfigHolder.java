@@ -287,6 +287,11 @@ public final class ConfigHolder<CFG> {
         return lock;
     }
 
+    @ApiStatus.Internal
+    public static Collection<String> getRegisteredConfigs() {
+        return REGISTERED_CONFIGS.keySet();
+    }
+
     @SuppressWarnings("unchecked")
     private <T> Map<String, ConfigValue<?>> serializeType(Class<?> type, Object instance, boolean saveValue) throws IllegalAccessException {
         Map<String, ConfigValue<?>> map = new LinkedHashMap<>();

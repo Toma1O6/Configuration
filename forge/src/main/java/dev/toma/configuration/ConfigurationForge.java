@@ -1,11 +1,15 @@
 package dev.toma.configuration;
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.toma.configuration.client.ConfigurationClient;
+import dev.toma.configuration.command.ConfigSaveCommand;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.network.ForgeNetworkManager;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -33,6 +37,7 @@ public class ConfigurationForge {
         IEventBus eventBus = MinecraftForge.EVENT_BUS;
         eventBus.addListener(this::serverStopping);
         eventBus.addListener(this::serverStarting);
+        eventBus.addListener(this::registerCommands);
     }
 
     private void init(FMLCommonSetupEvent event) {
@@ -47,6 +52,11 @@ public class ConfigurationForge {
     private void serverStopping(ServerStoppingEvent event) {
         ConfigIO.FILE_WATCH_MANAGER.stop();
         ConfigIO.serverStopping();
+    }
+
+    private void registerCommands(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        ConfigSaveCommand.register(dispatcher);
     }
 
     private void clientInit(FMLClientSetupEvent event) {

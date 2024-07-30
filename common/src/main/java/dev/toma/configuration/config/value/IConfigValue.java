@@ -12,8 +12,6 @@ import dev.toma.configuration.config.validate.IConfigValueValidator;
  */
 public interface IConfigValue<T> extends IConfigValueReadable<T> {
 
-    // TODO assign custom description provider
-
     /**
      * Set new value for config file. Value is not applied until succesfully saved, which may be blocked given
      * {@link dev.toma.configuration.config.Configurable.UpdateRestriction} value and current configuration environment.

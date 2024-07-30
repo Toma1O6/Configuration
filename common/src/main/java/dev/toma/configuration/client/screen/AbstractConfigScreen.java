@@ -163,7 +163,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     private void buttonRevertChangesClicked() {
         DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_CHANGES, new Component[] {ConfigEntryWidget.REVERT_CHANGES_DIALOG_TEXT}, this);
         dialog.onConfirmed(screen -> {
-            ConfigIO.reloadClientValues(this.holder); // TODO drop pending changes instead reloading the file
+            ConfigIO.reloadClientValues(this.holder);
             dialog.displayPreviousScreen();
         });
         minecraft.setScreen(dialog);

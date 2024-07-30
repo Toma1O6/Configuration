@@ -21,8 +21,6 @@ import java.util.Optional;
  * @since 2.0
  * @author Toma
  */
-// TODO command to save server config values
-// TODO common validations???
 public final class Configuration {
 
     public static final String MODID = "configuration";
