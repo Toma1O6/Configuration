@@ -82,4 +82,14 @@ subprojects {
         it.options.encoding = "UTF-8"
         it.options.getRelease().set(project.java_version.toInteger())
     }
+
+    task publishCurseForge(dependsOn: [':fabric:publishToCurseForge', ':forge:publishToCurseForge', ':neoforge:publishToCurseForge']) {
+    }
+
+    task publishModrinth(dependsOn: [':fabric:modrinth', ':forge:modrinth', ':neoforge:modrinth']) {
+    }
+
+    task publishMod(dependsOn: ['publish', 'publishCurseForge', 'publishModrinth']) {
+
+    }
 }

@@ -1,3 +1,5 @@
+import net.darkhax.curseforgegradle.*
+
 buildscript {
     repositories {
         mavenCentral()
@@ -11,6 +13,8 @@ plugins {
     id 'fabric-loom' version "${fabric_loom}"
     id 'idea'
     id 'maven-publish'
+    id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
+    id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
 }
 
 version = "${project.version}"
@@ -88,6 +92,39 @@ processResources {
 tasks.withType(JavaCompile) {
     source(project(":common").sourceSets.main.allSource)
 }
+
+tasks.register('publishToCurseForge', TaskPublishCurseForge) {
+    dependsOn(tasks.remapJar)
+    apiToken = CURSEFORGE_TOKEN
+    debugMode = debug.toBoolean()
+
+    def uploadFile = upload(curseforge_project_id, tasks.remapJar.archiveFile)
+    uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
+    uploadFile.changelog = file("../CHANGELOG.md").exists() ? file('../CHANGELOG.md').text : "-- No changelog provided --"
+    uploadFile.releaseType = Constants.RELEASE_TYPE_RELEASE
+    uploadFile.displayName = "${mod_id}-fabric-${minecraft_version}-${version}"
+    uploadFile.addModLoader('Fabric')
+    uploadFile.addEnvironment('Client', 'Server')
+    uploadFile.addJavaVersion("Java 21")
+    compatible_mc_versions.split(",").each { gameVersion ->
+        uploadFile.addGameVersion(gameVersion)
+    }
+}
+
+List compatibleVersions = compatible_mc_versions.split(",")
+modrinth {
+    token = MODRINTH_TOKEN
+    projectId = modrinth_project_id
+    versionNumber = "${version}"
+    versionName = "${mod_id}-fabric-${minecraft_version}-${version}"
+    versionType = "release"
+    uploadFile = remapJar
+    gameVersions = compatibleVersions
+    debugMode = debug.toBoolean()
+    changelog = file("../CHANGELOG.md").exists() ? file("../CHANGELOG.md").text : "-- No changelog provided --"
+    loaders = ["fabric"]
+}
+tasks.modrinth.dependsOn(tasks.remapJar)
 
 publishing {
     publications {
