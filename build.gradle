@@ -84,12 +84,14 @@ subprojects {
     }
 
     task publishCurseForge(dependsOn: [':fabric:publishToCurseForge', ':forge:publishToCurseForge', ':neoforge:publishToCurseForge']) {
+        group = "publishing"
     }
 
     task publishModrinth(dependsOn: [':fabric:modrinth', ':forge:modrinth', ':neoforge:modrinth']) {
+        group = "publishing"
     }
 
     task publishMod(dependsOn: ['publish', 'publishCurseForge', 'publishModrinth']) {
-
+        group = "publishing"
     }
 }
