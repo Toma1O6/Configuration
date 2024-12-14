@@ -51,7 +51,13 @@ public final class GsonFormat implements IConfigFormat {
 
     @Override
     public char readChar(String field) throws ConfigValueMissingException {
-        return this.tryRead(field, JsonElement::getAsCharacter);
+        return this.tryRead(field, element -> {
+            String fieldValue = element.getAsString();
+            if (fieldValue.isBlank()) {
+                throw new UnsupportedOperationException("String value is empty");
+            }
+            return fieldValue.charAt(0);
+        });
     }
 
     @Override
@@ -141,7 +147,13 @@ public final class GsonFormat implements IConfigFormat {
 
     @Override
     public Character[] readCharArray(String field) throws ConfigValueMissingException {
-        return readArray(field, Character[]::new, JsonElement::getAsCharacter);
+        return readArray(field, Character[]::new, element -> {
+            String fieldValue = element.getAsString();
+            if (fieldValue.isBlank()) {
+                throw new UnsupportedOperationException("String value is empty");
+            }
+            return fieldValue.charAt(0);
+        });
     }
 
     @Override
