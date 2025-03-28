@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.render.IRenderer;
 import dev.toma.configuration.config.value.NumericValue;
@@ -55,9 +54,6 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTick) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
         this.renderBackground(guiGraphics);
         this.applyRenderer(this.handleRenderer, guiGraphics, this.getX() + (int)(this.value * (this.width - 8.0D)), this.getY(), 8, this.getHeight());
         int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
