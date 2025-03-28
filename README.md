@@ -22,6 +22,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 - ![1.21.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.1)
 - ![1.21.3](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.3%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.3)
 - ![1.21.4](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.4%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.4)
+- ![1.21.5](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.5%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.5)
 
 
 First add maven repository into your root project `build.gradle` and into all subprojects

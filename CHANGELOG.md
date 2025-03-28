@@ -1,2 +1,2 @@
-# 3.1.1
-- Added zh_cn localization (credits to [@Number_Sir](https://github.com/NumberSir))
+# 1.21.5-3.1.1
+- Update to 1.21.5
