@@ -24,7 +24,7 @@
   "text.configuration.validation.child_failed.warning": "Child value contains warnings",
   "text.configuration.validation.child_failed.error": "Child value validation failed",
   "text.configuration.description.range": "Range: [%s;%s]",
-  "text.configuration.description.synchronized": "Synchronized",
+  "text.configuration.description.synchronized": "Server-side controlled",
   "text.configuration.description.update_on": "Saved: %s",
   "text.configuration.description.visibility.advanced": "Advanced",
   "text.configuration.description.restriction.none": "Always",
