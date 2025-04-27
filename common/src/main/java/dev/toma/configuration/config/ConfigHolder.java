@@ -319,12 +319,13 @@ public final class ConfigHolder<CFG> {
                 localizeComments = comment.localize();
             }
             Configurable.LocalizationKey localizationType = value.key();
+            String customTranslationKey = value.value();
             field.setAccessible(true);
             Object fieldValue = field.get(instance);
             TypeMapper<T, Object> mapper = attributes.mapper();
             Object migratedField = mapper.migrate((T) fieldValue);
             TypeAdapter.AdapterContext context = this.getAdapterContext(adapter, type, field, mapper, instance);
-            TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(this.configId, field.getName(), (T) migratedField, context, localizationType, comments, localizeComments);
+            TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(this.configId, field.getName(), (T) migratedField, context, localizationType, customTranslationKey, comments, localizeComments);
             ConfigValue<?> cfgValue = adapter.serialize(typeAttributes, migratedField, (t, i) -> this.serializeType(t, i, false));
             cfgValue.processFieldData(field);
             map.put(field.getName(), cfgValue);

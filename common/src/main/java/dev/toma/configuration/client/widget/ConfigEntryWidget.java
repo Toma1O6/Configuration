@@ -1,6 +1,7 @@
 package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.WidgetAdder;
+import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.validate.AggregatedValidationResult;
@@ -66,7 +67,8 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        Font font = Minecraft.getInstance().font;
+        Minecraft minecraft = Minecraft.getInstance();
+        Font font = minecraft.font;
         ConfigTheme.ConfigEntry configEntry = this.theme.getConfigEntry();
         if (isHovered) {
             if (!lastHoverState) {
@@ -84,7 +86,10 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
             label.withStyle(modifiedStyle.apply(label.getStyle()));
         }
         int entryLeft = WidgetPlacerHelper.getLeft(this.getX(), this.width);
-        drawScrollingString(graphics, font, label, this.getX(), entryLeft - 5, this.getY() + (this.height - font.lineHeight) / 2, configEntry.color());
+        boolean backgroundRenderMode = AbstractConfigScreen.canRenderBackground(minecraft);
+        if (backgroundRenderMode || isHovered) {
+            drawScrollingString(graphics, font, label, this.getX(), entryLeft - 5, this.getY() + (this.height - font.lineHeight) / 2, backgroundRenderMode ? configEntry.color() : 0xFFFFFF);
+        }
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         IValidationResult.Severity severity = validationResult.severity();
         boolean validationRendering = false;

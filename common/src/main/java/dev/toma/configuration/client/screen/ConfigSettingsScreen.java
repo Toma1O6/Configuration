@@ -30,7 +30,7 @@ public final class ConfigSettingsScreen extends Screen {
     protected void init() {
         ConfigurationSettings settings = ConfigurationSettings.getInstance();
         // Advanced mode
-        Checkbox checkbox = this.addRenderableWidget(
+        Checkbox advancedMode = this.addRenderableWidget(
                 Checkbox.builder(Component.translatable("text.configuration.options.advanced_mode"), this.font)
                         .pos(10, 40)
                         .maxWidth(this.width - 20)
@@ -39,7 +39,19 @@ public final class ConfigSettingsScreen extends Screen {
                         .tooltip(Tooltip.create(Component.translatable("text.configuration.options.advanced_mode.tooltip")))
                         .build()
         );
-        checkbox.setTooltipDelay(Duration.ofMillis(500));
+        advancedMode.setTooltipDelay(Duration.ofMillis(500));
+
+        // Hide background
+        Checkbox hideBackground = this.addRenderableWidget(
+                Checkbox.builder(Component.translatable("text.configuration.options.hide_background"), this.font)
+                        .pos(10, 60)
+                        .maxWidth(this.width - 20)
+                        .selected(settings.isHideBackground())
+                        .onValueChange((checkbox1, b) -> settings.setHideBackground(b))
+                        .tooltip(Tooltip.create(Component.translatable("text.configuration.options.hide_background.tooltip")))
+                        .build()
+        );
+        hideBackground.setTooltipDelay(Duration.ofMillis(500));
 
         // Back button
         this.addRenderableWidget(

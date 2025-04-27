@@ -35,6 +35,8 @@
   "text.configuration.command.configs_saved": "Saved successfully",
   "text.configuration.options.advanced_mode": "Advanced mode",
   "text.configuration.options.advanced_mode.tooltip": "Will toggle rendering of advanced configuration fields for all mods",
+  "text.configuration.options.hide_background": "Hide background",
+  "text.configuration.options.hide_background.tooltip": "Hides config screen background, can be useful for various HUD element configuration adjustments. Does nothing in main menu",
 
   "text.configuration.error.character_value_empty": "Character field cannot be empty!",
   "text.configuration.error.nan": "Value '%s' is not a valid number!",

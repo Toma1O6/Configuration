@@ -16,6 +16,8 @@ public final class ConfigurationSettings {
 
     /** Allows you to display advanced fields defined by mod configs in GUI */
     private boolean advancedMode = false;
+    /** Allows to hide config screen background, can be useful for overlay configurations and so on. Does nothing in main menu */
+    private boolean hideBackground = false;
 
     public static ConfigurationSettings getInstance() {
         return INSTANCE;
@@ -31,6 +33,7 @@ public final class ConfigurationSettings {
             try (FileReader reader = new FileReader(OPTIONS_FILE)) {
                 ConfigurationSettings settings = GSON.fromJson(reader, ConfigurationSettings.class);
                 INSTANCE.setAdvancedMode(settings.isAdvancedMode());
+                INSTANCE.setHideBackground(settings.isHideBackground());
             }
         } catch (Exception e) {
             Configuration.LOGGER.error("Failed to load configuration options, defaults will be used", e);
@@ -54,5 +57,13 @@ public final class ConfigurationSettings {
 
     public boolean isAdvancedMode() {
         return advancedMode;
+    }
+
+    public void setHideBackground(boolean hideBackground) {
+        this.hideBackground = hideBackground;
+    }
+
+    public boolean isHideBackground() {
+        return hideBackground;
     }
 }

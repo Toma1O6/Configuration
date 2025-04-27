@@ -100,6 +100,10 @@ public final class ValueData<T> {
 
     public String getLanguageKey(TypeAdapter.TypeAttributes<T> attributes) {
         String owner = attributes.configOwner();
+        String customKey = attributes.translationKey();
+        if (customKey != null && !customKey.isBlank()) {
+            return customKey;
+        }
         String path = attributes.localization() == Configurable.LocalizationKey.FULL
                 ? getFullFieldPath()
                 : attributes.id();

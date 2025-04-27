@@ -13,6 +13,7 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
@@ -270,5 +271,9 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
             }
             stack.popPose();
         }
+    }
+
+    public static boolean canRenderBackground(Minecraft minecraft) {
+        return minecraft.level == null || !ConfigurationSettings.getInstance().isHideBackground();
     }
 }

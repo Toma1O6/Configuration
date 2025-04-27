@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 @Config(id = Configuration.MODID)
 public final class TestingConfig {
 
-    @Configurable
+    @Configurable("configuration.global.test")
     public boolean bool = true;
 
     @Configurable

@@ -26,6 +26,14 @@ public @interface Configurable {
     LocalizationKey key() default LocalizationKey.SHORT;
 
     /**
+     * Allows specification of custom translation keys, may be useful for reusable config objects for example.
+     *
+     * @return Custom translation key to be used for this field
+     * @since 3.2.0
+     */
+    String value() default "";
+
+    /**
      * Allows you to add description to configurable value.
      * This description will be visible on hover in GUI or as
      * comment if config file (if supported by file format)
