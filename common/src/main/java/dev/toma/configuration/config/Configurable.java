@@ -57,7 +57,7 @@ public @interface Configurable {
          * @return {@code true} if localized comments should be generated
          * @since 3.0
          */
-        boolean localize() default false;
+        boolean localize() default true;
     }
 
     /**
