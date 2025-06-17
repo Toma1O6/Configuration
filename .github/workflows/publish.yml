@@ -94,8 +94,8 @@ jobs:
                       inline: true
                     },
                     {
-                      name: "Wiki",
-                      value: "[GitHub](<https://github.com/Toma1O6/Configuration/wiki>)",
+                      name: "Documentation",
+                      value: "[Wiki](<https://github.com/Toma1O6/Configuration/wiki>)",
                       inline: true
                     }
                   ],
