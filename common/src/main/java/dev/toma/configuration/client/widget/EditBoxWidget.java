@@ -384,7 +384,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
             }
 
             if (!$$15 && this.suggestion != null) {
-                graphics.drawString(this.font, this.suggestion, $$16 - 1, top, -8355712);
+                graphics.drawString(this.font, this.suggestion, $$16 - 1, top, 0xFF808080);
             }
 
             int var10003;

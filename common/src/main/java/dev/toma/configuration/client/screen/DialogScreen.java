@@ -93,10 +93,10 @@ public class DialogScreen extends Screen {
 
     protected void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int headerWidth = this.font.width(this.title);
-        graphics.drawString(font, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2, this.dialogTop + 5, 0xFFFFFF);
+        graphics.drawString(font, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2, this.dialogTop + 5, 0xFFFFFFFF);
         int line = 0;
         for (FormattedCharSequence textLine : this.splitText) {
-            graphics.drawString(font, textLine, this.dialogLeft + 5, this.dialogTop + 20 + line * 10, 0xFFFFFF);
+            graphics.drawString(font, textLine, this.dialogLeft + 5, this.dialogTop + 20 + line * 10, 0xFFFFFFFF);
             ++line;
         }
     }

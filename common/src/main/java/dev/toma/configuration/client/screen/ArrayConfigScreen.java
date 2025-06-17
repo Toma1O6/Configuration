@@ -135,8 +135,8 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             ConfigTheme.Footer footer = this.theme.getFooter();
             Component headerLabel = themeHeader.customText() != null ? themeHeader.customText() : this.title;
             int titleWidth = this.font.width(headerLabel);
-            graphics.drawString(font, headerLabel, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, themeHeader.foregroundColor());
             graphics.fill(0, 0, width, HEADER_HEIGHT, themeHeader.backgroundColor());
+            graphics.drawString(font, headerLabel, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, themeHeader.foregroundColor());
             graphics.fill(0, height - FOOTER_HEIGHT, width, height, footer.backgroundColor());
             Integer fillColor = this.theme.getBackgroundFillColor();
             if (fillColor != null) {

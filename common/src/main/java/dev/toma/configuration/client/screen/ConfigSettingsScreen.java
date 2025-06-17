@@ -70,7 +70,7 @@ public final class ConfigSettingsScreen extends Screen {
         // Footer BG
         graphics.fill(0, this.height - 30, this.width, this.height, 0x99 << 24);
         // Header text
-        graphics.drawString(this.font, TITLE, (this.width - this.font.width(TITLE)) / 2, (30 - this.font.lineHeight) / 2, 0xFFFFFF);
+        graphics.drawString(this.font, TITLE, (this.width - this.font.width(TITLE)) / 2, (30 - this.font.lineHeight) / 2, 0xFFFFFFFF);
     }
 
     private void close() {

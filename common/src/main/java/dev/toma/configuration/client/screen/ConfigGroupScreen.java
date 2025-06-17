@@ -70,8 +70,8 @@ public class ConfigGroupScreen extends Screen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int titleWidth = this.font.width(this.title);
-        graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
         graphics.fill(0, 0, width, HEADER_HEIGHT, 0x99 << 24);
+        graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFFFF);
         graphics.fill(0, height - FOOTER_HEIGHT, width, height, 0x99 << 24);
         graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x55 << 24);
         AbstractConfigScreen.renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, configHolders.size(), pageSize, 0xFF << 24);
@@ -112,7 +112,7 @@ public class ConfigGroupScreen extends Screen {
 
         @Override
         public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            graphics.drawString(font, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2, 0xAAAAAA);
+            graphics.drawString(font, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2, 0xFFAAAAAA);
         }
 
         @Override
