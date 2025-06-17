@@ -74,7 +74,6 @@ public class ConfigScreen extends AbstractConfigScreen {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (canRenderBackground(minecraft)) {
-            renderBackground(graphics, mouseX, mouseY, partialTicks);
             // HEADER
             ConfigTheme.Header themeHeader = this.theme.getHeader();
             ConfigTheme.Footer footer = this.theme.getFooter();

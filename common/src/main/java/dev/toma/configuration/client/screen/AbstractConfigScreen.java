@@ -1,6 +1,5 @@
 package dev.toma.configuration.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.ConfigurationSettings;
 import dev.toma.configuration.client.ConfigurationClient;
@@ -19,7 +18,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -217,7 +216,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
 
     public void renderValidationIcon(IValidationResult.Severity severity, GuiGraphics graphics, AbstractWidget widget, int x, int y) {
         ResourceLocation icon = severity.iconPath;
-        graphics.blit(RenderType::guiTextured, icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 
     public void renderValidationText(IValidationResult.Severity severity, GuiGraphics graphics, List<FormattedCharSequence> texts, int mouseX, int mouseY, int textColor) {
@@ -243,24 +242,22 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
                 startY = this.height - heightOffset - 6;
             }
 
-            PoseStack stack = graphics.pose();
-            stack.pushPose();
+            // TODO verify functionality
             int background = severity.backgroundColor;
             int fadeMin = severity.backgroundFadeMinColor;
             int fadeMax = severity.backgroundFadeMaxColor;
-            int zIndex = 400;
-            graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, zIndex, background, background);
-            graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, zIndex, background, background);
-            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, background, background);
-            graphics.fillGradient(startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, zIndex, background, background);
-            graphics.fillGradient(startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, zIndex, background, background);
-            graphics.fillGradient(startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
-            graphics.fillGradient(startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, zIndex, fadeMin, fadeMax);
-            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, zIndex, fadeMin, fadeMin);
-            graphics.fillGradient(startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, zIndex, fadeMax, fadeMax);
+            graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, background, background);
+            graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, background, background);
+            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, background, background);
+            graphics.fillGradient(startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, background, background);
+            graphics.fillGradient(startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, background, background);
+            graphics.fillGradient(startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, fadeMin, fadeMax);
+            graphics.fillGradient(startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, fadeMin, fadeMax);
+            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, fadeMin, fadeMin);
+            graphics.fillGradient(startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, fadeMax, fadeMax);
 
             // Draw descriptions in batch, should refactor this too?
-            stack.translate(0.0D, 0.0D, zIndex);
+            graphics.nextStratum();
             for(int i = 0; i < texts.size(); i++) {
                 FormattedCharSequence textComponent = texts.get(i);
                 graphics.drawString(font, textComponent, startX, startY, textColor, false);
@@ -269,11 +266,17 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
                 }
                 startY += 10;
             }
-            stack.popPose();
         }
     }
 
     public static boolean canRenderBackground(Minecraft minecraft) {
         return minecraft.level == null || !ConfigurationSettings.getInstance().isHideBackground();
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float renderDelta) {
+        if (canRenderBackground(minecraft)) {
+            super.renderBackground(graphics, mouseX, mouseY, renderDelta);
+        }
     }
 }

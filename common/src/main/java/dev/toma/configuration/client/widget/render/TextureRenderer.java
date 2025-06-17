@@ -1,7 +1,7 @@
 package dev.toma.configuration.client.widget.render;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 
 public class TextureRenderer implements IRenderer {
@@ -22,6 +22,6 @@ public class TextureRenderer implements IRenderer {
 
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, boolean hovered) {
-        graphics.blit(RenderType::guiTextured, this.texture, x + this.xOffset, y + this.yOffset, 0.0F, 0.0F, this.textureWidth, this.textureHeight, this.textureWidth, this.textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, x + this.xOffset, y + this.yOffset, 0.0F, 0.0F, this.textureWidth, this.textureHeight, this.textureWidth, this.textureHeight);
     }
 }

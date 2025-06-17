@@ -9,7 +9,7 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -357,28 +357,30 @@ public class EditBoxWidget extends AbstractThemeWidget {
             boolean blink = this.isFocused() && (Util.getMillis() - this.focusedTime) / CURSOR_BLINK_INTERVAL_MS % 2L == 0L && cursorAtEnd;
             int left = this.bordered ? this.getX() + 4 : this.getX();
             int top = this.bordered ? this.getY() + (this.height - 8) / 2 : this.getY();
-            int $$12 = left;
+            int textLeft = left;
             int $$13 = Mth.clamp(this.highlightPos - this.displayPos, 0, label.length());
             if (!label.isEmpty()) {
-                String $$14 = cursorAtEnd ? label.substring(0, position) : label;
-                $$12 = graphics.drawString(this.font, this.formatter.apply($$14, this.displayPos), $$12, top, textColor);
+                String renderString = cursorAtEnd ? label.substring(0, position) : label;
+                FormattedCharSequence sequence = this.formatter.apply(renderString, this.displayPos);
+                graphics.drawString(this.font, sequence, textLeft, top, textColor);
+                textLeft += this.font.width(sequence) + 1;
             }
 
             boolean $$15 = this.cursorPos < displayValue.length() || displayValue.length() >= this.getMaxLength();
-            int $$16 = $$12;
+            int $$16 = textLeft;
             if (!cursorAtEnd) {
                 $$16 = position > 0 ? left + this.width : left;
             } else if ($$15) {
                 --$$16;
-                --$$12;
+                --textLeft;
             }
 
             if (!label.isEmpty() && cursorAtEnd && position < label.length()) {
-                graphics.drawString(this.font, this.formatter.apply(label.substring(position), this.cursorPos), $$12, top, textColor);
+                graphics.drawString(this.font, this.formatter.apply(label.substring(position), this.cursorPos), textLeft, top, textColor);
             }
 
             if (this.hint != null && label.isEmpty() && !this.isFocused()) {
-                graphics.drawString(this.font, this.hint, $$12, top, textColor);
+                graphics.drawString(this.font, this.hint, textLeft, top, textColor);
             }
 
             if (!$$15 && this.suggestion != null) {
@@ -390,12 +392,10 @@ public class EditBoxWidget extends AbstractThemeWidget {
             int var10005;
             if (blink) {
                 if ($$15) {
-                    RenderType var10001 = RenderType.guiOverlay();
                     var10003 = top - 1;
                     var10004 = $$16 + 1;
                     var10005 = top + 1;
-                    Objects.requireNonNull(this.font);
-                    graphics.fill(var10001, $$16, var10003, var10004, var10005 + 9, CURSOR_INSERT_COLOR);
+                    graphics.fill($$16, var10003, var10004, var10005 + 9, CURSOR_INSERT_COLOR);
                 } else {
                     graphics.drawString(this.font, CURSOR_APPEND_CHARACTER, $$16, top, textColor);
                 }
@@ -406,36 +406,35 @@ public class EditBoxWidget extends AbstractThemeWidget {
                 var10003 = top - 1;
                 var10004 = $$17 - 1;
                 var10005 = top + 1;
-                Objects.requireNonNull(this.font);
                 this.renderHighlight(graphics, $$16, var10003, var10004, var10005 + 9);
             }
 
         }
     }
 
-    private void renderHighlight(GuiGraphics $$0, int $$1, int $$2, int $$3, int $$4) {
+    private void renderHighlight(GuiGraphics graphics, int x1, int y1, int x2, int y2) {
         int $$6;
-        if ($$1 < $$3) {
-            $$6 = $$1;
-            $$1 = $$3;
-            $$3 = $$6;
+        if (x1 < x2) {
+            $$6 = x1;
+            x1 = x2;
+            x2 = $$6;
         }
 
-        if ($$2 < $$4) {
-            $$6 = $$2;
-            $$2 = $$4;
-            $$4 = $$6;
+        if (y1 < y2) {
+            $$6 = y1;
+            y1 = y2;
+            y2 = $$6;
         }
 
-        if ($$3 > this.getX() + this.width) {
-            $$3 = this.getX() + this.width;
+        if (x2 > this.getX() + this.width) {
+            x2 = this.getX() + this.width;
         }
 
-        if ($$1 > this.getX() + this.width) {
-            $$1 = this.getX() + this.width;
+        if (x1 > this.getX() + this.width) {
+            x1 = this.getX() + this.width;
         }
 
-        $$0.fill(RenderType.guiTextHighlight(), $$1, $$2, $$3, $$4, -16776961);
+        graphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, x1, y1, x2, y2, 0xff0000ff);
     }
 
     public void setMaxLength(int $$0) {

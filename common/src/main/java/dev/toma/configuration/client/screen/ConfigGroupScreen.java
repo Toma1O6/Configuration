@@ -69,7 +69,6 @@ public class ConfigGroupScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
         int titleWidth = this.font.width(this.title);
         graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFF);
         graphics.fill(0, 0, width, HEADER_HEIGHT, 0x99 << 24);

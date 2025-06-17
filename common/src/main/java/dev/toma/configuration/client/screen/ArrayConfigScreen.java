@@ -131,7 +131,6 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (canRenderBackground(minecraft)) {
-            renderBackground(graphics, mouseX, mouseY, partialTicks);
             ConfigTheme.Header themeHeader = this.theme.getHeader();
             ConfigTheme.Footer footer = this.theme.getFooter();
             Component headerLabel = themeHeader.customText() != null ? themeHeader.customText() : this.title;

@@ -26,33 +26,6 @@ public final class ConfigFormats {
     /** Properties config format. Does not support comments */
     public static final IConfigFormatHandler PROPERTIES = new SimpleFormatImpl(EXT_PROPERTIES, PropertiesFormat::new);
 
-    /**
-     * @return JSON config format
-     * @deprecated Use the constant field {@link ConfigFormats#JSON} instead
-     */
-    @Deprecated(since = "3.0", forRemoval = true)
-    public static IConfigFormatHandler json() {
-        return JSON;
-    }
-
-    /**
-     * @return YAML config format
-     * @deprecated Use the constant field {@link ConfigFormats#YAML} instead
-     */
-    @Deprecated(since = "3.0", forRemoval = true)
-    public static IConfigFormatHandler yaml() {
-        return YAML;
-    }
-
-    /**
-     * @return Properties config format
-     * @deprecated Use the constant field {@link ConfigFormats#PROPERTIES} instead
-     */
-    @Deprecated(since = "3.0", forRemoval = true)
-    public static IConfigFormatHandler properties() {
-        return PROPERTIES;
-    }
-
     private record SimpleFormatImpl(String fileExt, Supplier<IConfigFormat> factory) implements IConfigFormatHandler {
 
         @Override

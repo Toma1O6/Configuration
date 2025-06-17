@@ -11,12 +11,12 @@ import dev.toma.configuration.config.adapter.TypeMatcher;
 public class DefaultConfigTheme {
 
     public static void configure(ConfigTheme theme) {
-        theme.setHeader(new ConfigTheme.Header(null, 0x99 << 24, 0xaaaaaa));
+        theme.setHeader(new ConfigTheme.Header(null, 0x99 << 24, 0xFFAAAAAA));
         theme.setFooter(new ConfigTheme.Footer(0x99 << 24));
         theme.setScrollbar(new ConfigTheme.Scrollbar(5, 0xFF << 24));
-        theme.setConfigEntry(new ConfigTheme.ConfigEntry(0xAAAAAA, style -> style.withItalic(true), 0x44FFFFFF));
+        theme.setConfigEntry(new ConfigTheme.ConfigEntry(0xFFAAAAAA, style -> style.withItalic(true), 0x44FFFFFF));
         theme.setBackgroundFillColor(0x55 << 24);
-        theme.setWidgetTextColor(0xE0E0E0, 0xFFFFFF, 0x707070);
+        theme.setWidgetTextColor(0xFFE0E0E0, 0xFFFFFFFF, 0xFF707070);
 
         theme.registerDisplayAdapter(TypeMatcher.matchBoolean(), new BooleanDisplayAdapter());
         theme.registerDisplayAdapter(TypeMatcher.matchCharacter(), new CharacterDisplayAdapter());

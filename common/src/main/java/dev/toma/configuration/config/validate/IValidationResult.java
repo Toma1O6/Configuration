@@ -52,11 +52,11 @@ public interface IValidationResult {
     enum Severity {
 
         /** Marks that everything is okay */
-        NONE(0xFFFFFF, 0xF0030319, 0x502493E5, 0x502469E5),
+        NONE(0xFFFFFFFF, 0xF0030319, 0x502493E5, 0x502469E5),
         /** Marks that the value is potentionally dangerous, but does not prevent config update */
-        WARNING(0xFFAA00, 0xF0563900, 0x50FFB200, 0x509E6900),
+        WARNING(0xFFFFAA00, 0xF0563900, 0x50FFB200, 0x509E6900),
         /** Marks that the value is incorrect and cannot be saved */
-        ERROR(0xFF5555, 0xF0270006, 0x50FF0000, 0x50880000);
+        ERROR(0xFFFF5555, 0xF0270006, 0x50FF0000, 0x50880000);
 
         public final int textColor;
         public final int backgroundColor;
