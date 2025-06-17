@@ -264,7 +264,6 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
                     startY = height - heightOffset - 6;
                 }
 
-                // TODO verify functionality
                 int background = severity.backgroundColor;
                 int fadeMin = severity.backgroundFadeMinColor;
                 int fadeMax = severity.backgroundFadeMaxColor;
