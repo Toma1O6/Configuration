@@ -13,6 +13,7 @@ import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
@@ -56,6 +57,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     private ThemedButtonWidget applyButton;
     private ThemedButtonWidget revertButton;
     private ThemedButtonWidget revertDefaultButton;
+    private DeferredDescription deferredDescription;
 
     public AbstractConfigScreen(Component title, Screen previous, ConfigHolder<?> configHolder) {
         super(title);
@@ -206,7 +208,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
 
     @Override
     public void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, IValidationResult.Severity severity, int textColor) {
-        this.renderValidationText(severity, graphics, text, widget.getX() + 5, widget.getY() + widget.getHeight() + 10, textColor);
+        this.deferredDescription = new DeferredDescription(severity, text, textColor, widget.getX() + 5, widget.getY() + widget.getHeight() + 10);
     }
 
     @Override
@@ -219,56 +221,6 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         graphics.blit(RenderPipelines.GUI_TEXTURED, icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 
-    public void renderValidationText(IValidationResult.Severity severity, GuiGraphics graphics, List<FormattedCharSequence> texts, int mouseX, int mouseY, int textColor) {
-        if (!texts.isEmpty()) {
-            int maxTextWidth = 0;
-            for(FormattedCharSequence textComponent : texts) {
-                int textWidth = this.font.width(textComponent);
-                if (textWidth > maxTextWidth) {
-                    maxTextWidth = textWidth;
-                }
-            }
-            int startX = mouseX + 12;
-            int startY = mouseY - 12;
-            int heightOffset = 8;
-            if (texts.size() > 1) {
-                heightOffset += 2 + (texts.size() - 1) * 10;
-            }
-
-            if (startX + maxTextWidth > this.width) {
-                startX -= 28 + maxTextWidth;
-            }
-            if (startY + heightOffset + 6 > this.height) {
-                startY = this.height - heightOffset - 6;
-            }
-
-            // TODO verify functionality
-            int background = severity.backgroundColor;
-            int fadeMin = severity.backgroundFadeMinColor;
-            int fadeMax = severity.backgroundFadeMaxColor;
-            graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, background, background);
-            graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, background, background);
-            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, background, background);
-            graphics.fillGradient(startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, background, background);
-            graphics.fillGradient(startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, background, background);
-            graphics.fillGradient(startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, fadeMin, fadeMax);
-            graphics.fillGradient(startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, fadeMin, fadeMax);
-            graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, fadeMin, fadeMin);
-            graphics.fillGradient(startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, fadeMax, fadeMax);
-
-            // Draw descriptions in batch, should refactor this too?
-            graphics.nextStratum();
-            for(int i = 0; i < texts.size(); i++) {
-                FormattedCharSequence textComponent = texts.get(i);
-                graphics.drawString(font, textComponent, startX, startY, textColor, false);
-                if (i == 0) {
-                    startY += 2;
-                }
-                startY += 10;
-            }
-        }
-    }
-
     public static boolean canRenderBackground(Minecraft minecraft) {
         return minecraft.level == null || !ConfigurationSettings.getInstance().isHideBackground();
     }
@@ -277,6 +229,66 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float renderDelta) {
         if (canRenderBackground(minecraft)) {
             super.renderBackground(graphics, mouseX, mouseY, renderDelta);
+        }
+    }
+
+    protected void renderPost(GuiGraphics graphics, float renderDelta) {
+        if (this.deferredDescription != null) {
+            this.deferredDescription.render(graphics, this.font, this.width, this.height, renderDelta);
+            this.deferredDescription = null;
+        }
+    }
+
+    public record DeferredDescription(IValidationResult.Severity severity, List<FormattedCharSequence> texts, int textColor, int x, int y) {
+
+        public void render(GuiGraphics graphics, Font font, int width, int height, float renderDelta) {
+            if (!texts.isEmpty()) {
+                int maxTextWidth = 0;
+                for(FormattedCharSequence textComponent : texts) {
+                    int textWidth = font.width(textComponent);
+                    if (textWidth > maxTextWidth) {
+                        maxTextWidth = textWidth;
+                    }
+                }
+                int startX = x + 12;
+                int startY = y - 12;
+                int heightOffset = 8;
+                if (texts.size() > 1) {
+                    heightOffset += 2 + (texts.size() - 1) * 10;
+                }
+
+                if (startX + maxTextWidth > width) {
+                    startX -= 28 + maxTextWidth;
+                }
+                if (startY + heightOffset + 6 > height) {
+                    startY = height - heightOffset - 6;
+                }
+
+                // TODO verify functionality
+                int background = severity.backgroundColor;
+                int fadeMin = severity.backgroundFadeMinColor;
+                int fadeMax = severity.backgroundFadeMaxColor;
+                graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, background, background);
+                graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, background, background);
+                graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, background, background);
+                graphics.fillGradient(startX - 4, startY - 3, startX - 3, startY + heightOffset + 3, background, background);
+                graphics.fillGradient(startX + maxTextWidth + 3, startY - 3, startX + maxTextWidth + 4, startY + heightOffset + 3, background, background);
+                graphics.fillGradient(startX - 3, startY - 3 + 1, startX - 3 + 1, startY + heightOffset + 3 - 1, fadeMin, fadeMax);
+                graphics.fillGradient(startX + maxTextWidth + 2, startY - 3 + 1, startX + maxTextWidth + 3, startY + heightOffset + 3 - 1, fadeMin, fadeMax);
+                graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY - 3 + 1, fadeMin, fadeMin);
+                graphics.fillGradient(startX - 3, startY + heightOffset + 2, startX + maxTextWidth + 3, startY + heightOffset + 3, fadeMax, fadeMax);
+
+                // Draw descriptions in batch, should refactor this too?
+                graphics.nextStratum();
+                for(int i = 0; i < texts.size(); i++) {
+                    FormattedCharSequence textComponent = texts.get(i);
+                    graphics.drawString(font, textComponent, startX, startY, textColor, false);
+                    if (i == 0) {
+                        startY += 2;
+                    }
+                    startY += 10;
+                }
+            }
         }
     }
 }

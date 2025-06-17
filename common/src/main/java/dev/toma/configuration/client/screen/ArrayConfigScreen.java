@@ -146,6 +146,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
         ConfigTheme.Scrollbar scrollbar = this.theme.getScrollbar();
         renderScrollbar(graphics, width - scrollbar.width(), HEADER_HEIGHT, scrollbar.width(), height - FOOTER_HEIGHT - HEADER_HEIGHT, index, this.getTotalSize(), pageSize, scrollbar.backgroundColor());
+        this.renderPost(graphics, partialTicks);
     }
 
     @Override
