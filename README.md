@@ -23,6 +23,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 - ![1.21.3](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.3%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.3)
 - ![1.21.4](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.4%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.4)
 - ![1.21.5](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.5%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.5)
+- ![1.21.5](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.6%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.6)
 
 
 First add maven repository into your root project `build.gradle` and into all subprojects
@@ -80,17 +81,17 @@ public final class MyConfig {
     // All values have to be non-final instance fields!
 
     @Configurable
-    @Configurable.Comment(value = "Random boolean value", localize = true)
+    @Configurable.Comment("Random boolean value")
     public boolean randomBool = false; // The assigned value is treated as default value
 
     @Configurable
-    @Configurable.Comment(value = "This value will be synchronized to all clients", localize = true)
+    @Configurable.Comment("This value will be synchronized to all clients")
     @Configurable.Synchronized // sent to all clients on log in, value cannot be modified by player while playing on server
     @Configurable.Gui.Slider // render value as slider in GUI
     public int synchronizedIntValue = 132;
     
     @Configurable
-    @Configurable.Comment(value = "This value will be updated only after game restart", localize = true)
+    @Configurable.Comment("This value will be updated only after game restart")
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     public String text = "Text";
     
@@ -106,7 +107,7 @@ public final class MyConfig {
         // However in most cases using the default SHORT value should be sufficient
         @Configurable(key = Configurable.LocalizationKey.FULL)
         @Configurable.Range(min = 0, max = 9) // Only values between 0-9 (inclusive) are allowed
-        @Configurable.Comment("This value is within subcategory. Use this for config value grouping and organization") // Non-translated comment
+        @Configurable.Comment(value = "This value is within subcategory. Use this for config value grouping and organization", localize = false) // Non-translated comment
         public int subcategoryNumber = 1;
     }
 }
