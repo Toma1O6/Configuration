@@ -49,7 +49,7 @@ minecraft {
             taskName 'Client'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            property 'eventbus.api.strictRuntimeChecks', 'false' // TODO enable once Forge resolves their issues
+            property 'eventbus.api.strictRuntimeChecks', 'true'
             mods {
                 modClientRun {
                     source sourceSets.main
@@ -64,7 +64,7 @@ minecraft {
             taskName 'Server'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            property 'eventbus.api.strictRuntimeChecks', 'false' // TODO enable once Forge resolves their issues
+            property 'eventbus.api.strictRuntimeChecks', 'true'
             mods {
                 modServerRun {
                     source sourceSets.main
