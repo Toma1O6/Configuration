@@ -83,7 +83,7 @@ jar {
 
 tasks.register('publishToCurseForge', TaskPublishCurseForge) {
     dependsOn(tasks.jar)
-    apiToken = CURSEFORGE_TOKEN
+    apiToken = project.findProperty("CURSEFORGE_TOKEN").toString() ?: ""
     debugMode = debug.toBoolean()
 
     def uploadFile = upload(curseforge_project_id, tasks.jar.archiveFile)
@@ -101,7 +101,7 @@ tasks.register('publishToCurseForge', TaskPublishCurseForge) {
 
 List compatibleVersions = compatible_mc_versions.split(",")
 modrinth {
-    token = MODRINTH_TOKEN
+    token = project.findProperty("MODRINTH_TOKEN").toString() ?: ""
     projectId = modrinth_project_id
     versionNumber = "${version}"
     versionName = "${mod_id}-fabric-${minecraft_version}-${version}"
@@ -126,10 +126,10 @@ publishing {
 
     repositories {
         maven {
-            url = uri(project.findProperty("MAVEN_PUBLIC_URL") ?: "")
+            url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
             credentials {
-                username project.findProperty("MAVEN_USERNAME") ?: ""
-                password project.findProperty("MAVEN_PASSWORD") ?: ""
+                username project.findProperty("MAVEN_USERNAME").toString() ?: ""
+                password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
             }
         }
     }
