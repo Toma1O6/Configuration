@@ -13,9 +13,9 @@ jobs:
         id: read_changelog
         run: |
           {
-            echo "changelog_snippet<<EOF"
+            echo 'changelog_snippet<<EOF'
             head -n 11 ./CHANGELOG.md
-            echo "EOF"
+            echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
       - name: Trigger webhook
