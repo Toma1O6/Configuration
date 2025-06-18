@@ -25,13 +25,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Publish
-        run: './gradlew publishMod \
-          -PCURSEFORGE_TOKEN=${{ secrets.CF_TOKEN }} \
-          -PMODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }} \
-          -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_URL }} \
-          -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} \
-          -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} \
-          --no-configuration-cache'
+        run: ./gradlew publishMod -PCURSEFORGE_TOKEN=${{ secrets.CF_TOKEN }} -PMODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }} -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_URL }} -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} --no-configuration-cache'
 
   notify:
     runs-on: ubuntu-latest
