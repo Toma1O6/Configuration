@@ -52,10 +52,10 @@ public @interface Configurable {
          * {@link Comment#value()} array. The translation keys for comments are in following format: {@code <valueLanguageKey>.comment.<index>}.
          * So for example for field {@code myConfigField} with single comment will generate following language key:
          * {@code config.config_id.option.myConfigField.comment.0} <br>
-         * When disabled, non-translated comments from {@link Comment#value()} array will be used instead.
+         * When disabled, non-translated comments from {@link Comment#value()} array will be used instead. <br>
+         * Default value {@code true} used since {@code 3.3.0} version
          *
          * @return {@code true} if localized comments should be generated
-         * @apiNote default value {@code true} used since {@code 3.3.0} version
          * @since 3.0
          */
         boolean localize() default true;
@@ -65,8 +65,7 @@ public @interface Configurable {
      * Field values annotated by this will be automatically
      * synchronized to client when joining server.
      * Does not rewrite client config file, all values
-     * are recovered when leaving server. </br>
-     *
+     * are recovered when leaving server.
      * Beware that this cannot be used along with {@linkplain UpdateRestrictions#GAME_RESTART}
      */
     @Target(ElementType.FIELD)
