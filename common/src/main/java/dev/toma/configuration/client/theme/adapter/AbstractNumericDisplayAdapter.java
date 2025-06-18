@@ -47,7 +47,10 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
     }
 
     protected <T extends Number & Comparable<T>> void placeSliderControls(NumericValue<T> value, ConfigTheme theme, SliderWidget<T> widget, WidgetAdder container) {
-        ValueReverter reverter = useDefault -> widget.setValue(value.getSliderValue(useDefault ? value.getValueData().getDefaultValue() : value.getActiveValue()));
+        ValueReverter reverter = useDefault -> {
+            T newValue = useDefault ? value.getValueData().getDefaultValue() : value.getActiveValue();
+            widget.setValue(value.getSliderValue(newValue));
+        };
         createControls(widget, value, theme, container, reverter);
     }
 

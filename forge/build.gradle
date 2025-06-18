@@ -49,6 +49,7 @@ minecraft {
             taskName 'Client'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            property 'eventbus.api.strictRuntimeChecks', 'false' // TODO enable once Forge resolves their issues
             mods {
                 modClientRun {
                     source sourceSets.main
@@ -63,6 +64,7 @@ minecraft {
             taskName 'Server'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            property 'eventbus.api.strictRuntimeChecks', 'false' // TODO enable once Forge resolves their issues
             mods {
                 modServerRun {
                     source sourceSets.main
@@ -82,6 +84,7 @@ dependencies {
     implementation('net.sf.jopt-simple:jopt-simple:5.0.4') { version { strictly '5.0.4' } }
 
     annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
+    annotationProcessor("net.minecraftforge:eventbus-validator:7.0-beta.7")
 
     compileOnly project(":common")
 }

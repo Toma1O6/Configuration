@@ -22,7 +22,10 @@ public class EnumDisplayAdapter<E extends Enum<E>> extends AbstractDisplayAdapte
             return new EnumWidget<>(left, y, widgetWidth, height, theme, enumValue);
         });
         widget.setBackgroundRenderer(theme.getButtonBackground(widget));
-        ValueReverter reverter = def -> widget.setValue(def ? enumValue.getValueData().getDefaultValue() : enumValue.getActiveValue());
+        ValueReverter reverter = def -> {
+            E newValue = def ? enumValue.getValueData().getDefaultValue() : enumValue.getActiveValue();
+            widget.setValue(newValue);
+        };
         createControls(widget, enumValue, theme, container, reverter);
     }
 }

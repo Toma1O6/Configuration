@@ -8,11 +8,10 @@ import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.network.ForgeNetworkManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -22,7 +21,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Mod(Configuration.MODID)
 public class ConfigurationForge {
@@ -30,14 +28,13 @@ public class ConfigurationForge {
     public ConfigurationForge(FMLJavaModLoadingContext context) {
         Configuration.setup();
 
-        IEventBus modEventBus = context.getModEventBus();
-        modEventBus.addListener(this::init);
-        modEventBus.addListener(this::clientInit);
+        BusGroup modBusGroup = context.getModBusGroup();
+        FMLCommonSetupEvent.getBus(modBusGroup).addListener(this::init);
+        FMLClientSetupEvent.getBus(modBusGroup).addListener(this::clientInit);
 
-        IEventBus eventBus = MinecraftForge.EVENT_BUS;
-        eventBus.addListener(this::serverStopping);
-        eventBus.addListener(this::serverStarting);
-        eventBus.addListener(this::registerCommands);
+        ServerStoppingEvent.BUS.addListener(this::serverStopping);
+        ServerStartedEvent.BUS.addListener(this::serverStarting);
+        RegisterCommandsEvent.BUS.addListener(this::registerCommands);
     }
 
     private void init(FMLCommonSetupEvent event) {
@@ -64,16 +61,16 @@ public class ConfigurationForge {
         ModList modList = ModList.get();
         for (Map.Entry<String, List<ConfigHolder<?>>> entry : groups.entrySet()) {
             String modId = entry.getKey();
-            Optional<? extends ModContainer> optional = modList.getModContainerById(modId);
-            optional.ifPresent(modContainer -> {
+            ModContainer container = modList.getModContainerById(modId).orElse(null);
+            if (container != null) {
                 List<ConfigHolder<?>> list = entry.getValue();
-                modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> {
+                container.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> {
                     if (list.size() == 1) {
                         return ConfigurationClient.getConfigScreen(list.getFirst().getConfigId(), screen);
                     }
                     return ConfigurationClient.getConfigScreenByGroup(list, modId, screen);
                 }));
-            });
+            }
         }
     }
 }

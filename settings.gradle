@@ -32,5 +32,5 @@ rootProject.name = "${root_project}"
 include("common")
 include("neoforge")
 include("fabric")
-//include("forge")
+include("forge")
 

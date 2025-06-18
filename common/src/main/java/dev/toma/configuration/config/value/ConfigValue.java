@@ -49,6 +49,11 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return mode == Mode.SAVED && this.updateRestriction != UpdateRestrictions.GAME_RESTART ? this.activeValue : this.pendingValue;
     }
 
+    @Override // thank you Forge for requiring this pointless implementation...
+    public T get() {
+        return IConfigValue.super.get();
+    }
+
     public T getActiveValue() {
         return this.activeValue;
     }
