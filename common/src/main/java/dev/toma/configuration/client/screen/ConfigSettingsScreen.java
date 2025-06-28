@@ -1,6 +1,9 @@
 package dev.toma.configuration.client.screen;
 
-import dev.toma.configuration.ConfigurationSettings;
+import dev.toma.configuration.Configuration;
+import dev.toma.configuration.ConfigurationOptions;
+import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -28,14 +31,14 @@ public final class ConfigSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        ConfigurationSettings settings = ConfigurationSettings.getInstance();
+        ConfigurationOptions options = Configuration.options.getConfigInstance();
         // Advanced mode
         Checkbox advancedMode = this.addRenderableWidget(
                 Checkbox.builder(Component.translatable("text.configuration.options.advanced_mode"), this.font)
                         .pos(10, 40)
                         .maxWidth(this.width - 20)
-                        .selected(settings.isAdvancedMode())
-                        .onValueChange((checkbox1, b) -> settings.setAdvancedMode(b))
+                        .selected(options.advancedMode)
+                        .onValueChange((checkbox1, b) -> Configuration.options.getConfigValue("advancedMode", Boolean.class).ifPresent(value -> ((BooleanValue) value).forceSetValue(b)))
                         .tooltip(Tooltip.create(Component.translatable("text.configuration.options.advanced_mode.tooltip")))
                         .build()
         );
@@ -46,8 +49,8 @@ public final class ConfigSettingsScreen extends Screen {
                 Checkbox.builder(Component.translatable("text.configuration.options.hide_background"), this.font)
                         .pos(10, 60)
                         .maxWidth(this.width - 20)
-                        .selected(settings.isHideBackground())
-                        .onValueChange((checkbox1, b) -> settings.setHideBackground(b))
+                        .selected(options.hideBackground)
+                        .onValueChange((checkbox1, b) -> Configuration.options.getConfigValue("hideBackground", Boolean.class).ifPresent(value -> ((BooleanValue) value).forceSetValue(b)))
                         .tooltip(Tooltip.create(Component.translatable("text.configuration.options.hide_background.tooltip")))
                         .build()
         );
@@ -74,7 +77,7 @@ public final class ConfigSettingsScreen extends Screen {
     }
 
     private void close() {
-        ConfigurationSettings.saveSettings();
+        ConfigIO.saveClientValues(Configuration.options);
         this.minecraft.setScreen(this.parent);
     }
 }

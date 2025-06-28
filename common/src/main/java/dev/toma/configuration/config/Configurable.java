@@ -1,5 +1,7 @@
 package dev.toma.configuration.config;
 
+import org.intellij.lang.annotations.RegExp;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -140,6 +142,7 @@ public @interface Configurable {
          * @return Regular expression used for value checking
          * @throws IllegalArgumentException When value is not valid regex syntax
          */
+        @RegExp
         String value();
 
         /**

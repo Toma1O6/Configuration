@@ -41,5 +41,8 @@
   "text.configuration.error.character_value_empty": "Character field cannot be empty!",
   "text.configuration.error.nan": "Value '%s' is not a valid number!",
   "text.configuration.error.num_bounds": "Value '%s' is not from interval <%s;%s>!",
-  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!"
+  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!",
+
+  "config.screen.configuration": "Configuration options",
+  "config.screen.configuration-test": "Development-only test config"
 }

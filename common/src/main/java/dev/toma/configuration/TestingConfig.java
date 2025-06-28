@@ -4,10 +4,11 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.FieldVisibility;
 import dev.toma.configuration.config.UpdateRestrictions;
+import dev.toma.configuration.util.ConfigurationHelper;
 
 import java.util.regex.Pattern;
 
-@Config(id = Configuration.MODID)
+@Config(id = Configuration.MODID + "-test", group = Configuration.MODID)
 public final class TestingConfig {
 
     @Configurable("configuration.global.test")
@@ -81,12 +82,12 @@ public final class TestingConfig {
     public String string = "random text";
 
     @Configurable
-    @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,6}")
+    @Configurable.StringPattern(ConfigurationHelper.SIMPLE_RGB_PATTERN)
     @Configurable.Gui.ColorValue
     public String color = "#33AADD";
 
     @Configurable
-    @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
+    @Configurable.StringPattern(ConfigurationHelper.SIMPLE_ARGB_PATTERN)
     @Configurable.Gui.ColorValue(isARGB = true)
     public String color2 = "#66771166";
 
@@ -115,6 +116,7 @@ public final class TestingConfig {
     public TestEnum[] testEnumArray = { TestEnum.A, TestEnum.C };
 
     @Configurable
+    @Configurable.Comment("Nested values can be used as categories etc")
     public NestedTest nestedTest = new NestedTest();
 
     public enum TestEnum {
@@ -130,6 +132,7 @@ public final class TestingConfig {
         public int testInt2 = 15;
 
         @Configurable
+        @Configurable.Comment("Nested values can contain other nested values")
         public AnotherNestedTest test = new AnotherNestedTest();
     }
 
@@ -137,7 +140,7 @@ public final class TestingConfig {
 
         @Configurable(key = Configurable.LocalizationKey.FULL)
         @Configurable.Synchronized
-        @Configurable.Comment(localize = true, value = "Nested boolean value")
+        @Configurable.Comment("Nested boolean value")
         public boolean bool = true;
     }
 }

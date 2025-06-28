@@ -31,11 +31,14 @@ public final class Configuration {
     public static final Platform PLATFORM = ServiceHelper.loadService(Platform.class);
 
     @ApiStatus.Internal
+    public static ConfigHolder<ConfigurationOptions> options;
+
+    @ApiStatus.Internal
     public static void setup() {
         if (PLATFORM.isDevelopmentEnvironment()) {
-            registerConfig(TestingConfig.class, ConfigFormats.YAML);
+            registerSimpleJsonConfig(TestingConfig.class);
         }
-        ConfigurationSettings.loadSettings();
+        options = registerIniConfig(ConfigurationOptions.class);
     }
 
     /**
@@ -82,6 +85,42 @@ public final class Configuration {
             ConfigIO.FILE_WATCH_MANAGER.addTrackedConfig(holder);
         }
         return holder;
+    }
+
+    public static <CFG> CFG registerSimpleConfig(Class<CFG> cfgClass, IConfigFormatHandler formatFactory) {
+        return registerConfig(cfgClass, formatFactory).getConfigInstance();
+    }
+
+    public static <CFG> ConfigHolder<CFG> registerJsonConfig(Class<CFG> cfgClass) {
+        return registerConfig(cfgClass, ConfigFormats.JSON);
+    }
+
+    public static <CFG> CFG registerSimpleJsonConfig(Class<CFG> cfgClass) {
+        return registerJsonConfig(cfgClass).getConfigInstance();
+    }
+
+    public static <CFG> ConfigHolder<CFG> registerPropertiesConfig(Class<CFG> cfgClass) {
+        return registerConfig(cfgClass, ConfigFormats.PROPERTIES);
+    }
+
+    public static <CFG> CFG registerSimplePropertiesConfig(Class<CFG> cfgClass) {
+        return registerPropertiesConfig(cfgClass).getConfigInstance();
+    }
+
+    public static <CFG> ConfigHolder<CFG> registerYmlConfig(Class<CFG> cfgClass) {
+        return registerConfig(cfgClass, ConfigFormats.YML);
+    }
+
+    public static <CFG> CFG registerSimpleYmlConfig(Class<CFG> cfgClass) {
+        return registerYmlConfig(cfgClass).getConfigInstance();
+    }
+
+    public static <CFG> ConfigHolder<CFG> registerIniConfig(Class<CFG> cfgClass) {
+        return registerConfig(cfgClass, ConfigFormats.INI);
+    }
+
+    public static <CFG> CFG registerSimpleIniConfig(Class<CFG> cfgClass) {
+        return registerIniConfig(cfgClass).getConfigInstance();
     }
 
     /**

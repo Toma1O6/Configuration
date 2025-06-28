@@ -1,7 +1,7 @@
 package dev.toma.configuration.client.screen;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.ConfigurationSettings;
+import dev.toma.configuration.ConfigurationOptions;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
@@ -14,7 +14,10 @@ import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ConfigScreen extends AbstractConfigScreen {
 
@@ -31,10 +34,10 @@ public class ConfigScreen extends AbstractConfigScreen {
         final int viewportMin = HEADER_HEIGHT;
         final int viewportHeight = this.height - viewportMin - FOOTER_HEIGHT;
         this.valueMap.clear();
-        ConfigurationSettings settings = ConfigurationSettings.getInstance();
+        ConfigurationOptions options = Configuration.options.getConfigInstance();
         for (Map.Entry<String, ConfigValue<?>> entry : this.configValueMap.entrySet()) {
             ConfigValue<?> value = entry.getValue();
-            if (value.getFieldVisibility().isVisible(settings)) {
+            if (value.getFieldVisibility().isVisible(options)) {
                 this.valueMap.put(entry.getKey(), value);
             }
         }

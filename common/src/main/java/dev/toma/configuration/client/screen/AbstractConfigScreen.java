@@ -1,7 +1,6 @@
 package dev.toma.configuration.client.screen;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.ConfigurationSettings;
 import dev.toma.configuration.client.ConfigurationClient;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
@@ -64,8 +63,6 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         this.holder = configHolder;
         this.theme = ConfigurationClient.getConfigTheme(configHolder);
         this.last = previous;
-
-        ConfigurationSettings.loadSettings(); // Force load settings to memory
     }
 
     public String getConfigId() {
@@ -222,7 +219,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     }
 
     public static boolean canRenderBackground(Minecraft minecraft) {
-        return minecraft.level == null || !ConfigurationSettings.getInstance().isHideBackground();
+        return minecraft.level == null || !Configuration.options.getConfigInstance().hideBackground;
     }
 
     @Override

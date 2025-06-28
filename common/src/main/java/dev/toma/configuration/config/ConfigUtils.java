@@ -4,12 +4,14 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigIO;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Objects;
 
+@ApiStatus.Internal
 public final class ConfigUtils {
 
     public static void logCorrectedMessage(String field, Object prevValue, Object corrected) {

@@ -1,5 +1,10 @@
 package dev.toma.configuration.config.format;
 
+import dev.toma.configuration.config.format.ini.IniFormat;
+import dev.toma.configuration.config.format.json.GsonFormat;
+import dev.toma.configuration.config.format.properties.PropertiesFormat;
+import dev.toma.configuration.config.format.yaml.YamlFormat;
+
 import java.util.function.Supplier;
 
 /**
@@ -16,15 +21,21 @@ public final class ConfigFormats {
     // file extensions
     private static final String EXT_JSON = "json";
     private static final String EXT_YAML = "yaml";
+    private static final String EXT_YML = "yml";
     private static final String EXT_PROPERTIES = "properties";
+    private static final String EXT_INI = "ini";
+    private static final String EXT_TOML = "toml";
 
     // Formats
     /** JSON config format. Does not support comments */
     public static final IConfigFormatHandler JSON = new SimpleFormatImpl(EXT_JSON, GsonFormat::new);
     /** YAML config format. With comments */
     public static final IConfigFormatHandler YAML = new SimpleFormatImpl(EXT_YAML, YamlFormat::new);
+    /** YAML config format. With comments */
+    public static final IConfigFormatHandler YML = new SimpleFormatImpl(EXT_YML, YamlFormat::new);
     /** Properties config format. Does not support comments */
     public static final IConfigFormatHandler PROPERTIES = new SimpleFormatImpl(EXT_PROPERTIES, PropertiesFormat::new);
+    public static final IConfigFormatHandler INI = new SimpleFormatImpl(EXT_INI, IniFormat::new);
 
     private record SimpleFormatImpl(String fileExt, Supplier<IConfigFormat> factory) implements IConfigFormatHandler {
 
