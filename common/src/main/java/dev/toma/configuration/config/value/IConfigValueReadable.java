@@ -1,6 +1,6 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
 import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
@@ -39,6 +39,11 @@ public interface IConfigValueReadable<T> extends Supplier<T> {
      * @return Whether current config value is not saved
      */
     boolean isChanged();
+
+    /**
+     * @return Whether current config value can be edited
+     */
+    boolean isEditable();
 
     /**
      * @return Whether current config value does not match default value
@@ -83,7 +88,7 @@ public interface IConfigValueReadable<T> extends Supplier<T> {
      * so ability to define "valid" (non-null in this case) validation results does not make sense.
      * @return Validation result of this config value or {@code null} when value is valid
      */
-    IValidationResult getValidationResult();
+    ValidationResult getValidationResult();
 
     /**
      * @return Description to be rendered for this config value

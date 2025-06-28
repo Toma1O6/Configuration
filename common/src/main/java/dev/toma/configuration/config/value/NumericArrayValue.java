@@ -15,28 +15,15 @@ public abstract class NumericArrayValue<T extends Number & Comparable<T>> extend
         super(valueData);
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.addFixer(this::fixValue);
     }
 
     public abstract NumberRange<T> getValueRange(Field field);
 
     @Override
-    protected void readFieldData(Field field) {
-        super.readFieldData(field);
+    protected void processAdditionalAnnotations(Field field) {
+        super.processAdditionalAnnotations(field);
         this.range = this.getValueRange(field);
-    }
-
-    @Override
-    protected T[] validateValue(T[] in) {
-        T[] updatedArray = super.validateValue(in);
-        for (int i = 0; i < updatedArray.length; i++) {
-            T num = updatedArray[i];
-            if (this.range != null && !this.range.isWithinRange(num)) {
-                T clamped = this.range.clamp(num);
-                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", num, clamped);
-                updatedArray[i] = clamped;
-            }
-        }
-        return updatedArray;
     }
 
     @Override
@@ -52,5 +39,17 @@ public abstract class NumericArrayValue<T extends Number & Comparable<T>> extend
     @Override
     public final NumberRange<T> getRange() {
         return this.range;
+    }
+
+    private T[] fixValue(T[] in) {
+        for (int i = 0; i < in.length; i++) {
+            T num = in[i];
+            if (this.range != null && !this.range.isWithinRange(num)) {
+                T clamped = this.range.clamp(num);
+                ConfigUtils.logCorrectedMessage(this.getId() + "[" + i + "]", num, clamped);
+                in[i] = clamped;
+            }
+        }
+        return in;
     }
 }

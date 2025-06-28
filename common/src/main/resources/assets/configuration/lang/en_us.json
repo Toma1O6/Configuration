@@ -23,6 +23,12 @@
   "text.configuration.validation.restart_required": "Requires game restart to be applied",
   "text.configuration.validation.child_failed.warning": "Child value contains warnings",
   "text.configuration.validation.child_failed.error": "Child value validation failed",
+  "text.configuration.validation.missing_mod": "Mod '%s' is required for this functionality",
+  "text.configuration.validation.active_mod": "Mod '%s' disables this functionality",
+  "text.configuration.validation.config_not_found": "Config '%s' is required for this functionality, but no such config was found",
+  "text.configuration.validation.field_not_found": "Unable to locate required field '%s' in config '%s'",
+  "text.configuration.validation.value_not_found": "No value found for '%s' in config '%s'",
+  "text.configuration.validation.value_required": "This functionality requires one of these following values in '%s' field in '%s' config:",
   "text.configuration.description.range": "Range: [%s;%s]",
   "text.configuration.description.synchronized": "Server-side controlled",
   "text.configuration.description.update_on": "Saved: %s",
@@ -41,5 +47,8 @@
   "text.configuration.error.character_value_empty": "Character field cannot be empty!",
   "text.configuration.error.nan": "Value '%s' is not a valid number!",
   "text.configuration.error.num_bounds": "Value '%s' is not from interval <%s;%s>!",
-  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!"
+  "text.configuration.error.pattern_mismatch": "Value '%s' does not match pattern \\%s\\!",
+
+  "config.screen.configuration": "Configuration options",
+  "config.screen.configuration-test": "Development-only test config"
 }

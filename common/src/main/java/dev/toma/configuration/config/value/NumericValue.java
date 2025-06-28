@@ -16,6 +16,7 @@ public abstract class NumericValue<T extends Number & Comparable<T>> extends Con
         super(data);
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.addFixer(this::fixValue);
     }
 
     @Override
@@ -47,19 +48,17 @@ public abstract class NumericValue<T extends Number & Comparable<T>> extends Con
     protected abstract NumberRange<T> getValueRange(Field field, T min, T max);
 
     @Override
-    protected void readFieldData(Field field) {
+    protected void processAdditionalAnnotations(Field field) {
         this.range = this.getValueRange(field, this.minValue, this.maxValue);
         this.addDescriptionProvider(NumericRangeDescription.create());
     }
 
-    @Override
-    protected T validateValue(T in) {
-        T value = super.validateValue(in);
-        if (this.range != null && !this.range.isWithinRange(value)) {
-            T clamped = this.range.clamp(value);
-            ConfigUtils.logCorrectedMessage(this.getId(), value, clamped);
+    private T fixValue(T in) {
+        if (this.range != null && !this.range.isWithinRange(in)) {
+            T clamped = this.range.clamp(in);
+            ConfigUtils.logCorrectedMessage(this.getId(), in, clamped);
             return clamped;
         }
-        return value;
+        return in;
     }
 }

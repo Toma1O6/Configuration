@@ -1,5 +1,6 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.FieldVisibility;
@@ -7,20 +8,20 @@ import dev.toma.configuration.config.UpdateRestrictions;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
+import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.util.IDescriptionProvider;
 import dev.toma.configuration.config.util.NoteDescriptionProvider;
-import dev.toma.configuration.config.validate.AggregatedValidationResult;
-import dev.toma.configuration.config.validate.IConfigValueValidator;
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.*;
 import net.minecraft.network.chat.Component;
+import org.apache.logging.log4j.message.FormattedMessage;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public abstract class ConfigValue<T> implements IConfigValue<T> {
-
-    public static final Component GAME_RESTART_REQUIRED = Component.translatable("text.configuration.validation.restart_required");
 
     protected final ValueData<T> valueData;
     private T pendingValue;
@@ -28,8 +29,10 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private T networkSavedValue;
     private boolean synchronizeToClient;
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
-    private final List<IConfigValueValidator<T>> validators = new ArrayList<>();
-    private AggregatedValidationResult validationResultHolder;
+    private final List<ValueFixer<T>> correctors = new ArrayList<>();
+    private final List<Validator<T>> validators = new ArrayList<>();
+    private final List<ValueListener<T>> listeners = new ArrayList<>();
+    private ValidationResult validationResultHolder;
     private final List<IDescriptionProvider<T>> descriptionProviders = new ArrayList<>();
     private FieldVisibility fieldVisibility = FieldVisibility.NORMAL;
 
@@ -71,7 +74,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     @Override
     public void save() {
-        ConfigIO.ConfigEnvironment environment = ConfigIO.getEnvironment();
+        ConfigurationFileManager.ConfigEnvironment environment = ConfigurationFileManager.getEnvironment();
         if (this.pendingValue != null && this.updateRestriction.canApplyChangeInEnvironment(environment)) {
             this.forceSetValue(this.pendingValue);
             this.pendingValue = null;
@@ -111,7 +114,8 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     public final void setValue(T value) {
         Objects.requireNonNull(value, "Config value cannot be null!");
         if (this.isEditable()) {
-            this.pendingValue = this.validateType(value);
+            this.pendingValue = this.processNewValue(value);
+            this.notifyListeners(this.pendingValue);
             this.valueData.getContext().setValue(value);
         }
     }
@@ -119,6 +123,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     @Override
     public void revertChanges() {
         this.pendingValue = null;
+        this.notifyListeners(this.activeValue);
         this.valueData.getContext().setValue(this.activeValue);
     }
 
@@ -126,30 +131,39 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     public void revertChangesToDefault() {
         this.pendingValue = null;
         this.activeValue = this.valueData.getDefaultValue();
+        this.notifyListeners(this.activeValue);
         this.valueData.getContext().setValue(this.activeValue);
     }
 
     public void clearNetworkValues() {
         this.networkSavedValue = null;
+        this.notifyListeners(this.activeValue);
         this.valueData.setValueToMemory(this.activeValue);
     }
 
     @Override
     public final boolean isEditable() {
-        ConfigIO.ConfigEnvironment environment = ConfigIO.getEnvironment();
+        ConfigurationFileManager.ConfigEnvironment environment = ConfigurationFileManager.getEnvironment();
         return this.updateRestriction.isEditableInEnvironment(environment);
     }
 
+    public final void runGameInitEvents() {
+        this.validators.forEach(validator -> validator.onGameLoaded(this));
+        this.validateAndStoreResult(this.activeValue);
+    }
+
     public final void forceSetValue(T value) {
-        T corrected = this.validateType(value);
+        T corrected = this.processNewValue(value);
         this.pendingValue = null;
         this.activeValue = corrected;
+        this.notifyListeners(this.activeValue);
         this.valueData.setValueToMemory(corrected);
     }
 
     public final void setFromNetwork(T value) {
-        value = this.validateType(value);
+        value = this.processNewValue(value);
         this.networkSavedValue = value;
+        this.notifyListeners(this.networkSavedValue);
         this.valueData.setValueToMemory(value);
     }
 
@@ -157,22 +171,29 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         this.forceSetValue(this.valueData.getDefaultValue());
     }
 
-    public final T validateType(T in) {
-        T corrected = this.validateValue(in);
-        if (corrected == null) {
-            corrected = this.valueData.getDefaultValue();
+    public final T processNewValue(T in) {
+        T fixedValue = in;
+        for (ValueFixer<T> fixer : this.correctors) {
+            fixedValue = fixer.fixValue(fixedValue);
+        }
+        if (fixedValue == null) {
+            fixedValue = this.valueData.getDefaultValue();
             this.validationResultHolder = null;
         }
-        AggregatedValidationResult validationResult = this.performAdditionalValidations(in);
-        if (validationResult.severity() != IValidationResult.Severity.NONE) {
-            this.validationResultHolder = validationResult;
-            if (!validationResult.isValid()) {
-                corrected = this.valueData.getDefaultValue();
-            }
+        this.validateAndStoreResult(in);
+        if (this.validationResultHolder != null && !this.validationResultHolder.isValid()) {
+            fixedValue = this.valueData.getDefaultValue();
+        }
+        return fixedValue;
+    }
+
+    public final void validateAndStoreResult(T value) {
+        ValidationResult result = this.performAdditionalValidations(value);
+        if (result.isWarningOrError()) {
+            this.validationResultHolder = result;
         } else {
             this.validationResultHolder = null;
         }
-        return corrected;
     }
 
     @Override
@@ -184,7 +205,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         this.valueData.setParent(parent);
     }
 
-    public final void processFieldData(Field field) {
+    public final void processAnnotations(Field field) {
         this.synchronizeToClient = field.isAnnotationPresent(Configurable.Synchronized.class);
         Configurable.UpdateRestriction restriction = field.getAnnotation(Configurable.UpdateRestriction.class);
         if (restriction != null) {
@@ -193,24 +214,19 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
                 throw new IllegalArgumentException("Config value which can be updated only on game restart cannot be synchronized! Field " + field.getDeclaringClass().getCanonicalName() + "." + field.getName());
             }
 
+            // Shows warning about game restart being needed before the value is actually applied
             if (this.updateRestriction == UpdateRestrictions.GAME_RESTART) {
-                this.validators.addFirst((t, wrapper) -> {
-                    if (ConfigIO.getEnvironment() == ConfigIO.ConfigEnvironment.LOADING)
-                        return IValidationResult.success();
-                    if (this.isChanged(t, this.activeValue)) {
-                        return IValidationResult.warning(GAME_RESTART_REQUIRED);
-                    } else {
-                        return IValidationResult.success();
-                    }
-                });
+                this.addValidator(new GameRestartValidator<>());
             }
         }
+        // Network value processing
         if (this.shouldSynchronize()) {
             this.updateRestriction = UpdateRestrictions.MAIN_MENU;
             this.addDescriptionProvider(NoteDescriptionProvider.note(NoteDescriptionProvider.SYNCHRONIZED));
         } else if (this.updateRestriction.isRestricted()) {
             this.addDescriptionProvider(NoteDescriptionProvider.note(NoteDescriptionProvider.RESTRICTION.apply(this.updateRestriction)));
         }
+        // Visibility annotation processing
         Configurable.Gui.Visibility visibility = field.getAnnotation(Configurable.Gui.Visibility.class);
         if (visibility != null && visibility.value() != FieldVisibility.NORMAL) {
             this.fieldVisibility = visibility.value();
@@ -218,19 +234,43 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
                 this.addDescriptionProvider(NoteDescriptionProvider.note(FieldVisibility.ADVANCED.getLabel()));
             }
         }
-        this.readFieldData(field);
+        // Additional type annotation processing by children implementations
+        this.processAdditionalAnnotations(field);
+        // Dependencies
+        Configurable.DependsOn dependsOn = field.getAnnotation(Configurable.DependsOn.class);
+        if (dependsOn != null) {
+            Configurable.DependsOn.ActiveMod[] modRequirements = dependsOn.mods();
+            for (Configurable.DependsOn.ActiveMod mod : modRequirements) {
+                this.addValidator(new RequiredModValidator<>(mod));
+            }
+            Configurable.DependsOn.ConfigValue[] valueRequirements = dependsOn.configValues();
+            for (Configurable.DependsOn.ConfigValue configValue : valueRequirements) {
+                this.addValidator(new SpecificValueValidator<>(configValue));
+            }
+        }
+        // Auto-registration of validators
+        Configurable.Validate validate = field.getAnnotation(Configurable.Validate.class);
+        if (validate != null) {
+            Class<? extends Validator<?>>[] types = validate.value();
+            for (Class<? extends Validator<?>> validatorType : types) {
+                try {
+                    this.autoRegisterValidator(validatorType);
+                } catch (Exception e) {
+                    Configuration.LOGGER.error(new FormattedMessage("Failed to register config value validator for field '{}', skipping", this.getId()), e);
+                    if (Configuration.PLATFORM.isDevelopmentEnvironment()) {
+                        throw new RuntimeException("Failed to register validator", e);
+                    }
+                }
+            }
+        }
     }
 
     protected boolean isChanged(T saved, T pending) {
         return this.isEditable() && !saved.equals(pending);
     }
 
-    protected void readFieldData(Field field) {
+    protected void processAdditionalAnnotations(Field field) {
 
-    }
-
-    protected T validateValue(T in) {
-        return in;
     }
 
     protected abstract void serialize(IConfigFormat format);
@@ -270,11 +310,11 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     @Override
     public String toString() {
-        return this.activeValue.toString();
+        return Objects.toString(this.getActiveValue());
     }
 
     @Override
-    public AggregatedValidationResult getValidationResult() {
+    public ValidationResult getValidationResult() {
         return this.validationResultHolder;
     }
 
@@ -284,11 +324,22 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     @Override
-    public final void addValidator(IConfigValueValidator<T> validator) {
-        if (this instanceof ObjectValue) {
-            throw new UnsupportedOperationException("Cannot register value validator for object config values");
-        }
+    public final void addValidator(Validator<T> validator) {
         this.validators.add(Objects.requireNonNull(validator));
+    }
+
+    @Override
+    public final void addFixer(ValueFixer<T> corrector) {
+        this.correctors.add(Objects.requireNonNull(corrector));
+    }
+
+    @Override
+    public void addListener(ValueListener<T> listener) {
+        this.listeners.add(Objects.requireNonNull(listener));
+    }
+
+    public void notifyListeners(T value) {
+        this.listeners.forEach(listener -> listener.onValueChanged(this, value));
     }
 
     @Override
@@ -310,10 +361,29 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return this.fieldVisibility;
     }
 
-    private AggregatedValidationResult performAdditionalValidations(T value) {
-        List<IValidationResult> results = this.validators.stream()
+    private ValidationResult performAdditionalValidations(T value) {
+        List<ValidationResult> results = this.validators.stream()
                 .map(validator -> validator.validate(value, this))
+                .filter(ValidationResult::isWarningOrError)
                 .toList();
-        return AggregatedValidationResult.aggregate(results);
+        return ValidationHelper.aggregate(results);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void autoRegisterValidator(Class<? extends Validator<?>> type) throws Exception {
+        try {
+            Constructor<? extends Validator<?>> constructor = type.getConstructor();
+            Validator<?> instance = constructor.newInstance();
+            this.addValidator((Validator<T>) instance);
+        } catch (NoSuchMethodException e) {
+            Configuration.LOGGER.fatal(new FormattedMessage("No default constructor found for {}", type.getSimpleName()), e);
+            throw e;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            Configuration.LOGGER.fatal(new FormattedMessage("Could not instantiate default constructor for {}", type.getSimpleName()), e);
+            throw e;
+        } catch (ClassCastException e) {
+            Configuration.LOGGER.fatal(new FormattedMessage("Invalid validator data type {}", type.getSimpleName()), e);
+            throw e;
+        }
     }
 }

@@ -4,10 +4,11 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.FieldVisibility;
 import dev.toma.configuration.config.UpdateRestrictions;
+import dev.toma.configuration.util.ConfigurationHelper;
 
 import java.util.regex.Pattern;
 
-@Config(id = Configuration.MODID)
+@Config(id = Configuration.MODID + "-test", group = Configuration.MODID)
 public final class TestingConfig {
 
     @Configurable("configuration.global.test")
@@ -57,7 +58,7 @@ public final class TestingConfig {
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     @Configurable.Comment(value = "Requires game restart", localize = true)
     @Configurable.Range(max = 50)
-    public int intGameRestartRestriction = 99;
+    public int intGameRestartRestriction = 45;
 
     @Configurable
     @Configurable.Synchronized
@@ -78,15 +79,19 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.StringPattern(value = "[a-z\\s]+", flags = Pattern.CASE_INSENSITIVE)
+    @Configurable.DependsOn(
+            mods = @Configurable.DependsOn.ActiveMod("examplemod"),
+            configValues = @Configurable.DependsOn.ConfigValue(location = "configuration-test:color", accepts = "#FFFFFF")
+    )
     public String string = "random text";
 
     @Configurable
-    @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,6}")
+    @Configurable.StringPattern(ConfigurationHelper.SIMPLE_RGB_PATTERN)
     @Configurable.Gui.ColorValue
     public String color = "#33AADD";
 
     @Configurable
-    @Configurable.StringPattern(value = "#[0-9a-fA-F]{1,8}")
+    @Configurable.StringPattern(ConfigurationHelper.SIMPLE_ARGB_PATTERN)
     @Configurable.Gui.ColorValue(isARGB = true)
     public String color2 = "#66771166";
 
@@ -103,7 +108,7 @@ public final class TestingConfig {
 
     @Configurable(key = Configurable.LocalizationKey.FULL)
     @Configurable.DecimalRange(min = 500.0F)
-    public float[] floatArray = {135.32F, 1561.23F};
+    public float[] floatArray = {650.32F, 1561.23F};
 
     @Configurable
     public String[] stringArray = {"minecraft:test"};
@@ -115,6 +120,7 @@ public final class TestingConfig {
     public TestEnum[] testEnumArray = { TestEnum.A, TestEnum.C };
 
     @Configurable
+    @Configurable.Comment("Nested values can be used as categories etc")
     public NestedTest nestedTest = new NestedTest();
 
     public enum TestEnum {
@@ -130,6 +136,7 @@ public final class TestingConfig {
         public int testInt2 = 15;
 
         @Configurable
+        @Configurable.Comment("Nested values can contain other nested values")
         public AnotherNestedTest test = new AnotherNestedTest();
     }
 
@@ -137,7 +144,7 @@ public final class TestingConfig {
 
         @Configurable(key = Configurable.LocalizationKey.FULL)
         @Configurable.Synchronized
-        @Configurable.Comment(localize = true, value = "Nested boolean value")
+        @Configurable.Comment("Nested boolean value")
         public boolean bool = true;
     }
 }

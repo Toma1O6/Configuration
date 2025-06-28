@@ -1,11 +1,12 @@
-package dev.toma.configuration.config.format;
+package dev.toma.configuration.config.format.json;
 
 import com.google.gson.*;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.exception.ConfigReadException;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.format.IConfigFormat;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.config.value.ConfigValue;
 
 import java.io.File;
@@ -319,7 +320,7 @@ public final class GsonFormat implements IConfigFormat {
         try {
             return function.apply(element);
         } catch (Exception e) {
-            Configuration.LOGGER.error(ConfigIO.MARKER, "Error loading value for field {} - {}", field, e);
+            Configuration.LOGGER.error(ConfigurationFileManager.MARKER, "Error loading value for field {} - {}", field, e);
             throw new ConfigValueMissingException("Invalid value");
         }
     }
@@ -338,7 +339,7 @@ public final class GsonFormat implements IConfigFormat {
             }
             return arr;
         } catch (Exception e) {
-            Configuration.LOGGER.error(ConfigIO.MARKER, "Error loading value for field {} - {}", field, e);
+            Configuration.LOGGER.error(ConfigurationFileManager.MARKER, "Error loading value for field {} - {}", field, e);
             throw new ConfigValueMissingException("Invalid value");
         }
     }

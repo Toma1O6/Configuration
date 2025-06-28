@@ -21,6 +21,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
 
     public AbstractArrayValue(ValueData<T[]> valueData) {
         super(valueData);
+        this.addFixer(this::fixValue);
     }
 
     @Override
@@ -29,19 +30,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
     }
 
     @Override
-    protected T[] validateValue(T[] in) {
-        T[] defaultArray = this.valueData.getDefaultValue();
-        int defaultSize = defaultArray.length;
-        int valueSize = in.length;
-        if (this.fixedSize && valueSize != defaultSize) {
-            ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
-            return defaultArray;
-        }
-        return in;
-    }
-
-    @Override
-    protected void readFieldData(Field field) {
+    protected void processAdditionalAnnotations(Field field) {
         this.fixedSize = field.isAnnotationPresent(Configurable.FixedSize.class);
     }
 
@@ -64,7 +53,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
         if (optional.isEmpty())
             return Optional.empty();
         String key = iterator.next();
-        T[] arrayValue = this.get(Mode.SAVED);
+        T[] arrayValue = this.get();
         try {
             int length = Array.getLength(arrayValue);
             int elementIndex = Integer.parseInt(key);
@@ -99,12 +88,23 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
 
     @Override
     public String toString() {
-        return Arrays.toString(this.get());
+        return Arrays.toString(this.getActiveValue());
     }
 
     @Override
     protected boolean isChanged(T[] saved, T[] pending) {
         return this.isEditable() && !Arrays.equals(saved, pending);
+    }
+
+    private T[] fixValue(T[] in) {
+        T[] defaultArray = this.valueData.getDefaultValue();
+        int defaultSize = defaultArray.length;
+        int valueSize = in.length;
+        if (this.fixedSize && valueSize != defaultSize) {
+            ConfigUtils.logArraySizeCorrectedMessage(this.getId(), Arrays.toString(in), Arrays.toString(defaultArray));
+            return defaultArray;
+        }
+        return in;
     }
 
     public static <T> void saveToBuffer(T[] value, FriendlyByteBuf buf, BiConsumer<FriendlyByteBuf, T> encoder) {

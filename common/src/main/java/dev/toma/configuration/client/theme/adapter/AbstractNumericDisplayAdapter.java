@@ -9,8 +9,8 @@ import dev.toma.configuration.client.widget.SliderWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.validate.NumberRange;
+import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.NumericValue;
 import net.minecraft.client.Minecraft;
@@ -65,6 +65,7 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
         editBoxWidget.setBackgroundRenderer(theme.getEditBoxBackground(editBoxWidget));
         ConfigUtils.adjustCharacterLimit(field, editBoxWidget);
         DecimalFormat decimalFormat = ConfigUtils.getDecimalFormat(field);
+        value.getRange().setCustomFormat(decimalFormat);
         editBoxWidget.setFormatter(decimalFormat, value::get);
         return editBoxWidget;
     }
@@ -79,6 +80,7 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
         slider.setBackgroundRenderer(theme.getSliderBackground(slider));
         slider.setHandleRenderer(theme.getSliderHandle(slider));
         DecimalFormat decimalFormat = ConfigUtils.getDecimalFormat(field);
+        value.getRange().setCustomFormat(decimalFormat);
         slider.setFormatter(decimalFormat);
         return slider;
     }
@@ -89,12 +91,12 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
             try {
                 parsed = parser.apply(text);
             } catch (NumberFormatException e) {
-                container.setValidationResult(IValidationResult.error(ClientErrors.notANumber(text)));
+                container.setValidationResult(ValidationResult.error(ClientErrors.notANumber(text)));
                 return;
             }
             NumberRange<T> range = value.getRange();
             if (!range.isWithinRange(parsed)) {
-                container.setValidationResult(IValidationResult.error(ClientErrors.outOfBounds(parsed, range)));
+                container.setValidationResult(ValidationResult.error(ClientErrors.outOfBounds(parsed, range)));
                 return;
             }
             container.setOkStatus();

@@ -9,13 +9,15 @@ import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
-public final class ConfigIO {
+public final class ConfigurationFileManager {
 
-    public static final Marker MARKER = MarkerManager.getMarker("IO");
+    public static final Marker MARKER = MarkerManager.getMarker("ConfigurationFileManager");
     public static final FileWatchManager FILE_WATCH_MANAGER = new FileWatchManager();
     private static ConfigEnvironment environment = ConfigEnvironment.LOADING;
 
@@ -61,13 +63,19 @@ public final class ConfigIO {
         });
     }
 
+    public static void runGameInitEvents() {
+        for (ConfigHolder<?> holder : ConfigHolder.configs()) {
+            processSafely(holder, holder::runGameInitEvents);
+        }
+    }
+
     private static void processSafely(ConfigHolder<?> holder, Runnable action) {
         try {
             synchronized (holder.getLock()) {
                 action.run();
             }
         } catch (Exception e) {
-            Configuration.LOGGER.fatal(MARKER, "Error loading config {} due to critical error '{}'. Report this issue to this config's owner!", holder.getConfigId(), e.getMessage());
+            Configuration.LOGGER.fatal(MARKER, new FormattedMessage("Error loading config {} due to critical error. Report this issue to this config's owner!", holder.getConfigId()), e);
             throw new ReportedException(CrashReport.forThrowable(e, "Config " + holder.getConfigId() + " failed. Report issue to config owner"));
         }
     }
@@ -107,8 +115,8 @@ public final class ConfigIO {
 
     public static File getConfigFile(ConfigHolder<?> holder) {
         IConfigFormatHandler handler = holder.getFormat();
-        String filename = holder.getFilename();
-        return new File("./config/" + filename + "." + handler.fileExt());
+        String filename = holder.getFilename() + "." + handler.fileExt();
+        return Paths.get("config", filename).toFile();
     }
 
     public static void serverStarted() {
@@ -124,7 +132,7 @@ public final class ConfigIO {
     }
 
     public static void setEnvironment(ConfigEnvironment environment) {
-        ConfigIO.environment = environment;
+        ConfigurationFileManager.environment = environment;
         Configuration.LOGGER.debug(MARKER, "Setting configuration environment to {}", environment);
     }
 

@@ -5,7 +5,8 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
-import dev.toma.configuration.config.validate.AggregatedValidationResult;
+import dev.toma.configuration.config.validate.ValidationHelper;
+import dev.toma.configuration.config.validate.ValidationResult;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
@@ -77,12 +78,12 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
-    public AggregatedValidationResult getValidationResult() {
-        AggregatedValidationResult result = super.getValidationResult();
+    public ValidationResult getValidationResult() {
+        ValidationResult result = super.getValidationResult();
         for (ConfigValue<?> value : this.get().values()) {
-            AggregatedValidationResult valueResult = value.getValidationResult();
-            if (valueResult != null && valueResult.severity().isWarningOrError()) {
-                return AggregatedValidationResult.joinChild(result, valueResult);
+            ValidationResult valueResult = value.getValidationResult();
+            if (valueResult != null && valueResult.isWarningOrError()) {
+                return ValidationHelper.joinChild(result, valueResult);
             }
         }
         return result;
@@ -162,8 +163,8 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
-    protected void readFieldData(Field field) {
-        super.readFieldData(field);
+    protected void processAdditionalAnnotations(Field field) {
+        super.processAdditionalAnnotations(field);
         if (field.isAnnotationPresent(Configurable.Synchronized.class)) {
             Configuration.LOGGER.warn("Detected configurable object annotated with '@Configurable.Synchronized' annotation [{}.{}]. This has no effect and is most likely bug in this configuration. Contact the mod author", field.getDeclaringClass().getCanonicalName(), field.getName());
         }

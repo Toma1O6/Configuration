@@ -1,7 +1,9 @@
 package dev.toma.configuration.config.value;
 
+import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.util.IDescriptionProvider;
-import dev.toma.configuration.config.validate.IConfigValueValidator;
+import dev.toma.configuration.config.validate.Validator;
+import dev.toma.configuration.config.validate.ValueFixer;
 
 /**
  * Config value wrapper. Holds data such as validations, memory references and so on.
@@ -35,11 +37,6 @@ public interface IConfigValue<T> extends IConfigValueReadable<T> {
     void save();
 
     /**
-     * @return Whether current config value can be edited
-     */
-    boolean isEditable();
-
-    /**
      * @return Parent value of this config value or {@code null} for top level config values
      */
     IConfigValue<?> parent();
@@ -52,11 +49,24 @@ public interface IConfigValue<T> extends IConfigValueReadable<T> {
 
     /**
      * Allows you to register custom value validator for this config value. All value assignments are validated via
-     * {@link IConfigValueValidator#validate(Object, IConfigValueReadable)} method which exposes both the value which is
+     * {@link Validator#validate(Object, IConfigValueReadable)} method which exposes both the value which is
      * being set along with read-only config value instance.
      *
      * @param validator The validator to be registered
-     * @throws UnsupportedOperationException When attempting to register validator on Object values
      */
-    void addValidator(IConfigValueValidator<T> validator);
+    void addValidator(Validator<T> validator);
+
+    /**
+     * Allows you to attach custom value fixer which corrects input values
+     * @param fixer The custom fixer function
+     * @since 4.0
+     */
+    void addFixer(ValueFixer<T> fixer);
+
+    /**
+     * Allows you to attach custom value listener in order to be able to react to value change events
+     * @param listener The config value listener
+     * @since 4.0
+     */
+    void addListener(ValueListener<T> listener);
 }

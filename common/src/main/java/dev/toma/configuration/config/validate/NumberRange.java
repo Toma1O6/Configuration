@@ -2,12 +2,15 @@ package dev.toma.configuration.config.validate;
 
 import dev.toma.configuration.config.value.INumericValue;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.function.Predicate;
 
 public final class NumberRange<T extends Number & Comparable<T>> implements Predicate<T> {
 
     private final T min;
     private final T max;
+    private DecimalFormat customFormat;
 
     private NumberRange(T min, T max, INumericValue<T> value) {
         this.min = value.min().compareTo(min) < 0 ? min : value.min();
@@ -33,6 +36,14 @@ public final class NumberRange<T extends Number & Comparable<T>> implements Pred
     @Override
     public boolean test(T t) {
         return this.isWithinRange(t);
+    }
+
+    public String format(T value) {
+        return this.customFormat != null ? this.customFormat.format(value.doubleValue()) : String.valueOf(value.doubleValue());
+    }
+
+    public void setCustomFormat(DecimalFormat format) {
+        this.customFormat = format;
     }
 
     public boolean isWithinRange(T t) {

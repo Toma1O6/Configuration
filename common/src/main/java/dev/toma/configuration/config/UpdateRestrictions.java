@@ -1,6 +1,6 @@
 package dev.toma.configuration.config;
 
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
@@ -37,18 +37,18 @@ public enum UpdateRestrictions {
         this.label = Component.translatable("text.configuration.description.restriction." + this.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.DARK_GRAY);
     }
 
-    public boolean canApplyChangeInEnvironment(ConfigIO.ConfigEnvironment environment) {
+    public boolean canApplyChangeInEnvironment(ConfigurationFileManager.ConfigEnvironment environment) {
         return switch (this) {
             case NONE -> true;
-            case MAIN_MENU -> environment != ConfigIO.ConfigEnvironment.PLAYING;
-            case GAME_RESTART -> environment == ConfigIO.ConfigEnvironment.LOADING;
+            case MAIN_MENU -> environment != ConfigurationFileManager.ConfigEnvironment.PLAYING;
+            case GAME_RESTART -> environment == ConfigurationFileManager.ConfigEnvironment.LOADING;
         };
     }
 
-    public boolean isEditableInEnvironment(ConfigIO.ConfigEnvironment environment) {
+    public boolean isEditableInEnvironment(ConfigurationFileManager.ConfigEnvironment environment) {
         return switch (this) {
             case NONE -> true;
-            case MAIN_MENU, GAME_RESTART -> environment != ConfigIO.ConfigEnvironment.PLAYING;
+            case MAIN_MENU, GAME_RESTART -> environment != ConfigurationFileManager.ConfigEnvironment.PLAYING;
         };
     }
 

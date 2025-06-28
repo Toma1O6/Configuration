@@ -1,9 +1,14 @@
 package dev.toma.configuration.config;
 
+import dev.toma.configuration.config.validate.ValidationResult;
+import dev.toma.configuration.config.validate.Validator;
+import org.intellij.lang.annotations.RegExp;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * Marker annotation for field to config serialization.
@@ -82,6 +87,10 @@ public @interface Configurable {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface UpdateRestriction {
+
+        /**
+         * @return Update restriction to be used for this config value
+         */
         UpdateRestrictions value();
     }
 
@@ -140,6 +149,7 @@ public @interface Configurable {
          * @return Regular expression used for value checking
          * @throws IllegalArgumentException When value is not valid regex syntax
          */
+        @RegExp
         String value();
 
         /**
@@ -170,6 +180,95 @@ public @interface Configurable {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface FixedSize {
+    }
+
+    /**
+     * Allows you to restrict edit mode behind certain condition. Does not actually restrict value change, but should be
+     * rather used to indicate to end user that this value currently does not have any functionality, such as cases
+     * when the annotated config field functionality is blocked by some other config property. For example {@code craftTime}
+     * config value could be restricted by {@code craftingEnabled} config value. <br>
+     *
+     * In case you want to implement custom dependency validation, use the {@link Validate} annotation and implement custom
+     * validation - make sure to always return either {@link ValidationResult#success()} or {@link ValidationResult#warning(List)}
+     * for dependency validations in order to allow values to be saved anyway.
+     *
+     * @since 4.0
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface DependsOn {
+
+        /**
+         * Makes value dependent on specified mod being loaded
+         * @return array of mods on which this config value depends on
+         */
+        ActiveMod[] mods() default {};
+
+        /**
+         * Makes value dependent on other config values
+         * @return arrays of config values this field depends on
+         */
+        ConfigValue[] configValues() default {};
+
+        /**
+         * Used to specify mod dependencies for config fields
+         */
+        @interface ActiveMod {
+
+            /**
+             * @return ModID of the mod this field depends on
+             */
+            String value();
+
+            /**
+             * @return Display name of the mod this field depends on. ModID is displayed by default
+             */
+            String displayName() default "";
+
+            /**
+             * @return Whether the dependent mod must or must not be loaded
+             */
+            boolean loaded() default true;
+        }
+
+        /**
+         * Used to specify config value dependencies for config fields
+         */
+        @interface ConfigValue {
+
+            /**
+             * @see ConfigValueLocation
+             * @return {@link ConfigValueLocation} in string format, such as {@code configId:field/target}
+             */
+            String location();
+
+            /**
+             * @return Array of accepted values in string format. So for boolean values it expects {@code true} or
+             * {@code false} and so on
+             */
+            String[] accepts();
+
+            /**
+             * @return Allows you to negate logic for values within the {@link ConfigValue#accepts()} array
+             */
+            boolean invert() default false;
+        }
+    }
+
+    /**
+     * Allows you to assign custom validator function to your config value.
+     *
+     * @since 4.0
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Validate {
+
+        /**
+         * @return Array of classes implementing the {@link Validator} interface which should be used for validation of this
+         * config field.
+         */
+        Class<? extends Validator<?>>[] value();
     }
 
     /**

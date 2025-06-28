@@ -72,7 +72,7 @@ public final class FileWatchManager {
                             return; // Ignore duplicate reads from subdirectories
                         ConfigHolder<?> holder = this.configPaths.get(strPath);
                         if (holder != null) {
-                            ConfigIO.reloadClientValues(holder);
+                            ConfigurationFileManager.reloadClientValues(holder);
                             this.processCache.add(strPath);
                         }
                     });

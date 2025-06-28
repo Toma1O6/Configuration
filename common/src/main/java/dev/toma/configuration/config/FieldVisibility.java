@@ -1,6 +1,6 @@
 package dev.toma.configuration.config;
 
-import dev.toma.configuration.ConfigurationSettings;
+import dev.toma.configuration.ConfigurationOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -22,22 +22,22 @@ public enum FieldVisibility {
     /**
      * Field is displayed only when advanced mode is active in configuration options
      */
-    ADVANCED(ConfigurationSettings::isAdvancedMode, "advanced"),
+    ADVANCED(opt -> opt.advancedMode, "advanced"),
 
     /**
      * Field is never displayed in GUI
      */
     HIDDEN(opt -> false, null);
 
-    private final Predicate<ConfigurationSettings> visibilityCheck;
+    private final Predicate<ConfigurationOptions> visibilityCheck;
     private final MutableComponent label;
 
-    FieldVisibility(Predicate<ConfigurationSettings> visibilityCheck, String identifier) {
+    FieldVisibility(Predicate<ConfigurationOptions> visibilityCheck, String identifier) {
         this.visibilityCheck = visibilityCheck;
         this.label = identifier != null ? Component.translatable("text.configuration.description.visibility." + identifier) : null;
     }
 
-    public boolean isVisible(ConfigurationSettings settings) {
+    public boolean isVisible(ConfigurationOptions settings) {
         return visibilityCheck.test(settings);
     }
 

@@ -1,12 +1,13 @@
 package dev.toma.configuration.config;
 
+import com.google.common.collect.ImmutableList;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.adapter.TypeAdapterManager;
 import dev.toma.configuration.config.adapter.TypeAttributes;
 import dev.toma.configuration.config.adapter.TypeMapper;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.config.value.IConfigValueReadable;
@@ -82,7 +83,7 @@ public final class ConfigHolder<CFG> {
     @ApiStatus.Internal
     public static void registerConfig(ConfigHolder<?> holder) {
         REGISTERED_CONFIGS.put(holder.configId, holder);
-        ConfigIO.processConfig(holder);
+        ConfigurationFileManager.processConfig(holder);
     }
 
     /**
@@ -132,6 +133,10 @@ public final class ConfigHolder<CFG> {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public static Collection<ConfigHolder<?>> configs() {
+        return ImmutableList.copyOf(REGISTERED_CONFIGS.values());
+    }
+
     /**
      * @return Whether any config value does not match the in memory value
      */
@@ -153,6 +158,10 @@ public final class ConfigHolder<CFG> {
         this.values().forEach(ConfigValue::save);
     }
 
+    public void runGameInitEvents() {
+        this.values().forEach(ConfigValue::runGameInitEvents);
+    }
+
     /**
      * Restores client saved values and clears network value cache on each value
      */
@@ -162,13 +171,11 @@ public final class ConfigHolder<CFG> {
 
     /**
      * Allows you to obtain value for specific key within your config. For example when you have the following config
-     * structure with integer value on path {@code modid.numbers.myNumber}, and you want to obtain its value using key for any
+     * structure with integer value on path {@code numbers/myNumber}, and you want to obtain its value using key for any
      * reason (for example in json datasource definitions), you can use this method with path parameter set
-     * to {@code myConfigHolder.getValue("modid.numbers.myNumber", Integer.class)} to obtain the value. <br>
+     * to {@code myConfigHolder.getValue("numbers/myNumber", Integer.class)} to obtain the value. <br>
      * The path can be also used for array values, for example when you want to get 3rd element in array, specify the path with array
-     * index {@code modid.numbers.numberArray.2} <br>
-     *
-     * <b>Keep in mind that this method fails quietly with only warning being logged to console!</b>
+     * index {@code numbers/numberArray/2} <br>
      *
      * @param path The path to your variable in config
      * @param expectedType Expected data type of the value
@@ -177,21 +184,19 @@ public final class ConfigHolder<CFG> {
      * @since 2.3.0
      */
     public <V> Optional<V> getValue(String path, Class<V> expectedType) {
-        String[] keys = path.split("\\.");
+        String[] keys = path.split(ConfigValueLocation.PATH_SEPARATOR);
         Iterator<String> stringIterator = Arrays.asList(keys).iterator();
         return ObjectValue.getChildValue(stringIterator, expectedType, valueMap);
     }
 
     /**
      * Allows you to obtain config value for specific key within your config. For example when you have the following config
-     * structure with integer value on path {@code modid.numbers.myNumber}, and you want to obtain its value wrapper,
-     * you can use this method with path parameter set to {@code myConfigHolder.getConfigValue("modid.numbers.myNumber", Integer.class)}
+     * structure with integer value on path {@code numbers/myNumber}, and you want to obtain its value wrapper,
+     * you can use this method with path parameter set to {@code myConfigHolder.getConfigValue("numbers/myNumber", Integer.class)}
      * to obtain the value wrapper. <br>
      * Unlike the {@link ConfigHolder#getValue(String, Class)} method, array index access will return the entire array wrapper.
      * This is because internally arrays do not hold config values for each array element. So you will have to use the config value to access
      * elements manually. So the {@code expectedType} attribute has to be {@code ARRAY}!<br>
-     *
-     * <b>Keep in mind that this method fails quietly with only warning being logged to console!</b>
      *
      * @param path The path to your variable in config
      * @param expectedType Expected data type of the value
@@ -200,7 +205,7 @@ public final class ConfigHolder<CFG> {
      * @since 3.0
      */
     public <V> Optional<IConfigValue<V>> getConfigValue(String path, Class<V> expectedType) {
-        String[] keys = path.split("\\.");
+        String[] keys = path.split(ConfigValueLocation.PATH_SEPARATOR);
         Iterator<String> stringIterator = Arrays.asList(keys).iterator();
         return ObjectValue.getChild(stringIterator, expectedType, valueMap);
     }
@@ -302,13 +307,13 @@ public final class ConfigHolder<CFG> {
                 continue;
             int modifiers = field.getModifiers();
             if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
-                Configuration.LOGGER.warn(ConfigIO.MARKER, "Skipping config field {}, only instance non-final types are supported", field);
+                Configuration.LOGGER.warn(ConfigurationFileManager.MARKER, "Skipping config field {}, only instance non-final types are supported", field);
                 continue;
             }
             TypeAttributes<T> attributes = (TypeAttributes<T>) TypeAdapterManager.forType(field.getType());
             TypeAdapter<T> adapter = attributes.adapter();
             if (adapter == null) {
-                Configuration.LOGGER.warn(ConfigIO.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());
+                Configuration.LOGGER.warn(ConfigurationFileManager.MARKER, "Missing adapter for type {}, skipping serialization", field.getType());
                 continue;
             }
             String[] comments = new String[0];
@@ -327,7 +332,7 @@ public final class ConfigHolder<CFG> {
             TypeAdapter.AdapterContext context = this.getAdapterContext(adapter, type, field, mapper, instance);
             TypeAdapter.TypeAttributes<T> typeAttributes = new TypeAdapter.TypeAttributes<>(this.configId, field.getName(), (T) migratedField, context, localizationType, customTranslationKey, comments, localizeComments);
             ConfigValue<?> cfgValue = adapter.serialize(typeAttributes, migratedField, (t, i) -> this.serializeType(t, i, false));
-            cfgValue.processFieldData(field);
+            cfgValue.processAnnotations(field);
             map.put(field.getName(), cfgValue);
             if (saveValue) {
                 this.assignValue(cfgValue);
@@ -373,7 +378,7 @@ public final class ConfigHolder<CFG> {
                     Object remapped = mapper.rollback(value);
                     parent.setFieldValue(field, instance, remapped);
                 } catch (IllegalAccessException e) {
-                    Configuration.LOGGER.error(ConfigIO.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, value, e);
+                    Configuration.LOGGER.error(ConfigurationFileManager.MARKER, "Failed to update config value for field {} from {} to a new value {} due to error {}", field.getName(), type, value, e);
                 }
             }
         };

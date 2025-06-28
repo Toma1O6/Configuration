@@ -3,21 +3,23 @@ package dev.toma.configuration.config;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Objects;
 
+@ApiStatus.Internal
 public final class ConfigUtils {
 
     public static void logCorrectedMessage(String field, Object prevValue, Object corrected) {
-        Configuration.LOGGER.warn(ConfigIO.MARKER, "Correcting config value '{}' from '{}' to '{}'", field, Objects.toString(prevValue), corrected);
+        Configuration.LOGGER.warn(ConfigurationFileManager.MARKER, "Correcting config value '{}' from '{}' to '{}'", field, Objects.toString(prevValue), corrected);
     }
 
     public static void logArraySizeCorrectedMessage(String field, Object prevValue, Object corrected) {
-        Configuration.LOGGER.warn(ConfigIO.MARKER, "Correcting config array value '{}' due to invalid size from '{}' to '{}'", field, prevValue, corrected);
+        Configuration.LOGGER.warn(ConfigurationFileManager.MARKER, "Correcting config array value '{}' due to invalid size from '{}' to '{}'", field, prevValue, corrected);
     }
 
     public static <E extends Enum<E>> E getEnumConstant(String value, Class<E> declaringClass) throws ConfigValueMissingException {

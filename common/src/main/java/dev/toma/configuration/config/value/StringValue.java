@@ -6,7 +6,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
@@ -19,11 +19,12 @@ public class StringValue extends ConfigValue<String> {
 
     public StringValue(ValueData<String> valueData) {
         super(valueData);
+        this.addFixer(this::fixValue);
     }
 
     @SuppressWarnings("MagicConstant")
     @Override
-    protected void readFieldData(Field field) {
+    protected void processAdditionalAnnotations(Field field) {
         Configurable.StringPattern stringPattern = field.getAnnotation(Configurable.StringPattern.class);
         if (stringPattern != null) {
             String value = stringPattern.value();
@@ -31,24 +32,9 @@ public class StringValue extends ConfigValue<String> {
             try {
                 this.pattern = Pattern.compile(value, stringPattern.flags());
             } catch (IllegalArgumentException e) {
-                Configuration.LOGGER.error(ConfigIO.MARKER, "Invalid @StringPattern value for {} field - {}", this.getId(), e);
+                Configuration.LOGGER.error(ConfigurationFileManager.MARKER, "Invalid @StringPattern value for {} field - {}", this.getId(), e);
             }
         }
-    }
-
-    @Override
-    protected String validateValue(String in) {
-        if (this.pattern != null) {
-            if (!this.pattern.matcher(in).matches()) {
-                String defaultValue = this.valueData.getDefaultValue();
-                if (!this.pattern.matcher(defaultValue).matches()) {
-                    throw new IllegalArgumentException(String.format("Invalid config default value '%s' for field '%s' - does not match required pattern \\%s\\", defaultValue, this.getId(), this.pattern.toString()));
-                }
-                ConfigUtils.logCorrectedMessage(this.getId(), in, defaultValue);
-                return defaultValue;
-            }
-        }
-        return in;
     }
 
     @Override
@@ -67,6 +53,18 @@ public class StringValue extends ConfigValue<String> {
 
     public String getErrorDescriptor() {
         return descriptor;
+    }
+
+    private String fixValue(String in) {
+        if (this.pattern != null && !this.pattern.matcher(in).matches()) {
+            String defaultValue = this.valueData.getDefaultValue();
+            if (!this.pattern.matcher(defaultValue).matches()) {
+                throw new IllegalArgumentException(String.format("Invalid config default value '%s' for field '%s' - does not match required pattern \\%s\\", defaultValue, this.getId(), this.pattern.toString()));
+            }
+            ConfigUtils.logCorrectedMessage(this.getId(), in, defaultValue);
+            return defaultValue;
+        }
+        return in;
     }
 
     public static final class Adapter extends TypeAdapter<String> {
