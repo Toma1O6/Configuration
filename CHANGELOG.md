@@ -1,2 +1,2 @@
-# Release 1.21.7-3.3.0
-- Updated to MC 1.21.7
+# Release 1.21.7-3.3.1
+- Fixed crash when trying to access missing config value
