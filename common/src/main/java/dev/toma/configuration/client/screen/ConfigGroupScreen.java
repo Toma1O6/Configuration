@@ -124,5 +124,10 @@ public class ConfigGroupScreen extends Screen {
         @Override
         protected void updateWidgetNarration(NarrationElementOutput output) {
         }
+
+        @Override
+        public boolean isMouseOver(double $$0, double $$1) {
+            return false;
+        }
     }
 }
