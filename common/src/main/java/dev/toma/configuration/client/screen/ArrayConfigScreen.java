@@ -107,8 +107,8 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
                 ThemedButtonWidget removeButton = addRenderableWidget(new ThemedButtonWidget(this.width - 29, widget.getY(), 20, 20, CommonComponents.EMPTY, theme));
                 removeButton.setClickListener((widget1, mouseX, mouseY) -> {
                     this.removeHandler.removeElementAt(elementIndex, (index1, src, dest) -> {
-                        System.arraycopy(src, 0, dest, 0, index);
-                        System.arraycopy(src, index + 1, dest, index, this.sizeSupplier.get() - 1 - index);
+                        System.arraycopy(src, 0, dest, 0, index1);
+                        System.arraycopy(src, index1 + 1, dest, index1, this.sizeSupplier.get() - 1 - index1);
                         return dest;
                     });
                     this.init(minecraft, width, height);
