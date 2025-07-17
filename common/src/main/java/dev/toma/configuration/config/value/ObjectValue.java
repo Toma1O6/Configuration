@@ -123,6 +123,9 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     public static <V> Optional<IConfigValue<V>> getChild(Iterator<String> iterator, Class<V> targetType, Map<String, ConfigValue<?>> valueMap) {
         String key = iterator.next();
         ConfigValue<?> value = valueMap.get(key);
+        if (value == null) {
+            return Optional.empty();
+        }
         if (!iterator.hasNext()) {
             if (targetType.isAssignableFrom(value.getValueType())) {
                 return Optional.of((IConfigValue<V>) value);
