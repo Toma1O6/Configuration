@@ -1,3 +1,5 @@
+import net.darkhax.curseforgegradle.*
+
 buildscript {
     repositories {
         mavenCentral()
@@ -11,6 +13,8 @@ plugins {
     id 'fabric-loom' version "${fabric_loom}"
     id 'idea'
     id 'maven-publish'
+    id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
+    id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
 }
 
 version = "${project.version}"
@@ -89,6 +93,39 @@ tasks.withType(JavaCompile) {
     source(project(":common").sourceSets.main.allSource)
 }
 
+tasks.register('publishToCurseForge', TaskPublishCurseForge) {
+    dependsOn(tasks.remapJar)
+    apiToken = project.findProperty("CURSEFORGE_TOKEN").toString() ?: ""
+    debugMode = debug.toBoolean()
+
+    def uploadFile = upload(curseforge_project_id, tasks.remapJar.archiveFile)
+    uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
+    uploadFile.changelog = file("../CHANGELOG.md").exists() ? file('../CHANGELOG.md').text : "-- No changelog provided --"
+    uploadFile.releaseType = Constants.RELEASE_TYPE_RELEASE
+    uploadFile.displayName = "${mod_id}-fabric-${minecraft_version}-${version}"
+    uploadFile.addModLoader('Fabric')
+    uploadFile.addEnvironment('Client', 'Server')
+    uploadFile.addJavaVersion("Java 21")
+    compatible_mc_versions.split(",").each { gameVersion ->
+        uploadFile.addGameVersion(gameVersion)
+    }
+}
+
+List compatibleVersions = compatible_mc_versions.split(",")
+modrinth {
+    token = project.findProperty("MODRINTH_TOKEN").toString() ?: ""
+    projectId = modrinth_project_id
+    versionNumber = "${version}"
+    versionName = "${mod_id}-fabric-${minecraft_version}-${version}"
+    versionType = "release"
+    uploadFile = remapJar
+    gameVersions = compatibleVersions
+    debugMode = debug.toBoolean()
+    changelog = file("../CHANGELOG.md").exists() ? file("../CHANGELOG.md").text : "-- No changelog provided --"
+    loaders = ["fabric"]
+}
+tasks.modrinth.dependsOn(tasks.remapJar)
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -101,10 +138,10 @@ publishing {
 
     repositories {
         maven {
-            url = uri(project.findProperty("MAVEN_PUBLIC_URL") ?: "")
+            url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
             credentials {
-                username project.findProperty("MAVEN_USERNAME") ?: ""
-                password project.findProperty("MAVEN_PASSWORD") ?: ""
+                username project.findProperty("MAVEN_USERNAME").toString() ?: ""
+                password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
             }
         }
     }
