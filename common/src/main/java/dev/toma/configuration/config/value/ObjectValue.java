@@ -124,35 +124,40 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
         String key = iterator.next();
         ConfigValue<?> value = valueMap.get(key);
         if (value == null) {
+            Configuration.LOGGER.warn("Attempted to get non-existing value definition '{}' in config!", key);
             return Optional.empty();
         }
         if (!iterator.hasNext()) {
             if (targetType.isAssignableFrom(value.getValueType())) {
                 return Optional.of((IConfigValue<V>) value);
             }
-            Configuration.LOGGER.warn("Attempted to get invalid value definition {} in config!", key);
+            Configuration.LOGGER.warn("Attempted to get invalid value definition '{}' in config!", key);
             return Optional.empty();
         } else if (value instanceof IHierarchical hierarchical) {
             return hierarchical.getChild(iterator, targetType);
         }
-        Configuration.LOGGER.warn("Attempted to get non-existing value definition {} in config!", key);
+        Configuration.LOGGER.warn("Attempted to get non-existing value definition '{}' in config!", key);
         return Optional.empty();
     }
 
     public static <V> Optional<V> getChildValue(Iterator<String> iterator, Class<V> targetType, Map<String, ConfigValue<?>> valueMap) {
         String key = iterator.next();
         ConfigValue<?> value = valueMap.get(key);
+        if (value == null) {
+            Configuration.LOGGER.warn("Attempted to get non-existing value '{}' in config!", key);
+            return Optional.empty();
+        }
         if (!iterator.hasNext()) {
             Object result = value.get();
             if (targetType.isAssignableFrom(value.getValueType())) {
                 return Optional.of(targetType.cast(result));
             }
-            Configuration.LOGGER.warn("Attempted to get invalid value {} in config!", key);
+            Configuration.LOGGER.warn("Attempted to get invalid value '{}' in config!", key);
             return Optional.empty();
         } else if (value instanceof IHierarchical hierarchical) {
             return hierarchical.getChildValue(iterator, targetType);
         }
-        Configuration.LOGGER.warn("Attempted to get non-existing value {} in config!", key);
+        Configuration.LOGGER.warn("Attempted to get non-existing value '{}' in config!", key);
         return Optional.empty();
     }
 

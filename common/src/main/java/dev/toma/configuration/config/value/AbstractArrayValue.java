@@ -52,7 +52,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
             return Optional.of((IConfigValue<V>) this); // This will break for object arrays, but since that is currently not supported we can just ignore it. Maybe it will hurt us later
         } catch (ClassCastException e) {
             if (Configuration.PLATFORM.isDevelopmentEnvironment()) {
-                Configuration.LOGGER.error(new FormattedMessage("Attempted to load invalid config value class for array {}", this.getId()), e);
+                Configuration.LOGGER.error(new FormattedMessage("Attempted to load invalid config value class for array '{}'", this.getId()), e);
             }
             return Optional.empty();
         }
@@ -69,7 +69,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
             int length = Array.getLength(arrayValue);
             int elementIndex = Integer.parseInt(key);
             if (elementIndex < 0 || elementIndex >= length) {
-                Configuration.LOGGER.warn("Attempted to get array config value {} which is out of bounds!", key);
+                Configuration.LOGGER.warn("Attempted to get array config value '{}' which is out of bounds!", key);
                 return Optional.empty();
             }
             Object item = Array.get(arrayValue, elementIndex);
@@ -77,18 +77,19 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
                 if (item instanceof IHierarchical hierarchical) {
                     return hierarchical.getChildValue(iterator, targetType);
                 }
-                Configuration.LOGGER.warn("Attempted to get non-existing value {} in config!", key);
+                Configuration.LOGGER.warn("Attempted to get non-existing value '{}' in config!", key);
             } else {
                 if (targetType.isAssignableFrom(item.getClass())) {
                     return Optional.of(targetType.cast(item));
                 }
-                Configuration.LOGGER.warn("Attempted to get invalid value type {} in config!", key);
+                Configuration.LOGGER.warn("Attempted to get invalid value type '{}' in config!", key);
             }
-            return Optional.empty();
+        } catch (NumberFormatException e) {
+            Configuration.LOGGER.warn("Unexpected array index '{}', expected number", key);
         } catch (Exception e) {
-            Configuration.LOGGER.error(new FormattedMessage("Failed to obtain child value for key {} due to error", key), e);
-            return Optional.empty();
+            Configuration.LOGGER.error(new FormattedMessage("Failed to obtain child value for key '{}' due to error", key), e);
         }
+        return Optional.empty();
     }
 
     @Override
