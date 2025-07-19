@@ -270,7 +270,12 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     @Override
     public String toString() {
-        return this.activeValue.toString();
+        return this.getAsString(Mode.SAVED);
+    }
+
+    @Override
+    public String getAsString(Mode mode) {
+        return this.get(mode).toString();
     }
 
     @Override

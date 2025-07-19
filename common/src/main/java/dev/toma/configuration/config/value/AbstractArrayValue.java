@@ -98,8 +98,9 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
     }
 
     @Override
-    public String toString() {
-        return Arrays.toString(this.get());
+    public String getAsString(Mode mode) {
+        T[] value = this.get(mode);
+        return Arrays.toString(value);
     }
 
     @Override

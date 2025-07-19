@@ -36,6 +36,13 @@ public interface IConfigValueReadable<T> extends Supplier<T> {
     T get(IConfigValue.Mode mode);
 
     /**
+     * Obtains value converted to string
+     * @param mode which value mode will be used
+     * @return String representation of currently held config value for given Mode
+     */
+    String getAsString(IConfigValue.Mode mode);
+
+    /**
      * @return Whether current config value is not saved
      */
     boolean isChanged();
