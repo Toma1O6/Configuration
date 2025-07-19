@@ -1,5 +1,6 @@
 package dev.toma.configuration.config;
 
+import dev.toma.configuration.config.validate.RequirementCondition;
 import org.intellij.lang.annotations.RegExp;
 
 import java.lang.annotation.ElementType;
@@ -173,6 +174,51 @@ public @interface Configurable {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface FixedSize {
+    }
+
+    /**
+     * Allows you to restrict edit mode behind certain condition. Does not actually restrict value change, but should be
+     * rather used to indicate to end user that this value currently does not have any functionality, such as cases
+     * when the annotated config field functionality is blocked by some other config property. For example {@code craftTime}
+     * config value could be restricted by {@code craftingEnabled} config value.
+     *
+     * @since 4.0
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Requires {
+
+        /**
+         * Makes value dependent on specified mod being loaded
+         * @return array of mods on which this config value depends on
+         */
+        ActiveMod[] mods() default {};
+
+        /**
+         * Makes value dependent
+         * @return
+         */
+        ConfigValue[] configValues() default {};
+
+        CustomCondition[] conditions() default {};
+
+        LogicalOperator operator() default LogicalOperator.AND;
+
+        @interface ActiveMod {
+            String value();
+            boolean invert() default false;
+        }
+
+        @interface ConfigValue {
+            String config();
+            String path();
+            String[] accepts();
+            boolean invert() default false;
+        }
+
+        @interface CustomCondition {
+            Class<? extends RequirementCondition> value();
+        }
     }
 
     /**

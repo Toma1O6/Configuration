@@ -10,9 +10,9 @@ import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigIO;
 import dev.toma.configuration.config.util.IDescriptionProvider;
 import dev.toma.configuration.config.util.NoteDescriptionProvider;
-import dev.toma.configuration.config.validate.AggregatedValidationResult;
+import dev.toma.configuration.config.validate.ValidationHelper;
 import dev.toma.configuration.config.validate.IConfigValueValidator;
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
 import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Field;
@@ -29,7 +29,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private boolean synchronizeToClient;
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
     private final List<IConfigValueValidator<T>> validators = new ArrayList<>();
-    private AggregatedValidationResult validationResultHolder;
+    private ValidationResult validationResultHolder;
     private final List<IDescriptionProvider<T>> descriptionProviders = new ArrayList<>();
     private FieldVisibility fieldVisibility = FieldVisibility.NORMAL;
 
@@ -163,8 +163,8 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
             corrected = this.valueData.getDefaultValue();
             this.validationResultHolder = null;
         }
-        AggregatedValidationResult validationResult = this.performAdditionalValidations(in);
-        if (validationResult.severity() != IValidationResult.Severity.NONE) {
+        ValidationResult validationResult = this.performAdditionalValidations(in);
+        if (validationResult.isWarningOrError()) {
             this.validationResultHolder = validationResult;
             if (!validationResult.isValid()) {
                 corrected = this.valueData.getDefaultValue();
@@ -194,13 +194,14 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
             }
 
             if (this.updateRestriction == UpdateRestrictions.GAME_RESTART) {
+                // TODO separate impl
                 this.validators.addFirst((t, wrapper) -> {
                     if (ConfigIO.getEnvironment() == ConfigIO.ConfigEnvironment.LOADING)
-                        return IValidationResult.success();
+                        return ValidationResult.success();
                     if (this.isChanged(t, this.activeValue)) {
-                        return IValidationResult.warning(GAME_RESTART_REQUIRED);
+                        return ValidationResult.warning(GAME_RESTART_REQUIRED);
                     } else {
-                        return IValidationResult.success();
+                        return ValidationResult.success();
                     }
                 });
             }
@@ -279,7 +280,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     @Override
-    public AggregatedValidationResult getValidationResult() {
+    public ValidationResult getValidationResult() {
         return this.validationResultHolder;
     }
 
@@ -315,10 +316,10 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         return this.fieldVisibility;
     }
 
-    private AggregatedValidationResult performAdditionalValidations(T value) {
-        List<IValidationResult> results = this.validators.stream()
+    private ValidationResult performAdditionalValidations(T value) {
+        List<ValidationResult> results = this.validators.stream()
                 .map(validator -> validator.validate(value, this))
                 .toList();
-        return AggregatedValidationResult.aggregate(results);
+        return ValidationHelper.aggregate(results);
     }
 }

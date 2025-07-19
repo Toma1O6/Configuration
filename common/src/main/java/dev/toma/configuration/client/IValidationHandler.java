@@ -1,12 +1,12 @@
 package dev.toma.configuration.client;
 
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
 
 public interface IValidationHandler {
 
-    void setValidationResult(IValidationResult result);
+    void setValidationResult(ValidationResult result);
 
     default void setOkStatus() {
-        this.setValidationResult(IValidationResult.success());
+        this.setValidationResult(ValidationResult.success());
     }
 }

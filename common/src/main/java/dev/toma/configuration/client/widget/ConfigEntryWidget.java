@@ -4,8 +4,7 @@ import dev.toma.configuration.client.WidgetAdder;
 import dev.toma.configuration.client.screen.AbstractConfigScreen;
 import dev.toma.configuration.client.screen.WidgetPlacerHelper;
 import dev.toma.configuration.client.theme.ConfigTheme;
-import dev.toma.configuration.config.validate.AggregatedValidationResult;
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -35,7 +34,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     private final List<Component> description;
     private final ConfigTheme theme;
 
-    private IValidationResult result = IValidationResult.success();
+    private ValidationResult result = ValidationResult.success();
     private IValidationRenderer renderer;
     private boolean lastHoverState;
     private long hoverTimeStart;
@@ -78,7 +77,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
                 graphics.fill(this.getX() - 30, this.getY() - 2, this.getRight() + 30, this.getBottom() + 2, configEntry.hoveredColorBackground());
             }
         }
-        IValidationResult validationResult = this.getValidationResult();
+        ValidationResult validationResult = this.getValidationResult();
         boolean isError = this.hasGuiError();
         MutableComponent label = Component.literal(this.getMessage().getString()).withStyle(this.getMessage().getStyle());
         UnaryOperator<Style> modifiedStyle = configEntry.modifiedValueStyle();
@@ -91,22 +90,22 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
             drawScrollingString(graphics, font, label, this.getX(), entryLeft - 5, this.getY() + (this.height - font.lineHeight) / 2, backgroundRenderMode ? configEntry.color() : 0xFFFFFF);
         }
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
-        IValidationResult.Severity severity = validationResult.severity();
+        ValidationResult.Type type = validationResult.type();
         boolean validationRendering = false;
-        if (severity.isWarningOrError()) {
+        if (type.isWarningOrError()) {
             validationRendering = true;
-            this.renderer.drawIcon(graphics, this, severity);
+            this.renderer.drawIcon(graphics, this, type);
         }
         if ((isError || isHovered) && renderer != null) {
             long totalHoverTime = System.currentTimeMillis() - hoverTimeStart;
             if (isError || totalHoverTime >= 750L) {
-                List<Component> messages = validationRendering ? validationResult.messages() : this.description;
+                List<Component> messages = validationRendering ? validationResult.description() : this.description;
                 List<FormattedCharSequence> lines = messages.stream()
                         .flatMap(text -> font.split(text, this.width / 2).stream())
                         .toList();
                 boolean hasDescription = lines.size() > 1 || (lines.size() == 1 && !lines.getFirst().equals(CommonComponents.EMPTY));
                 if (hasDescription) {
-                    this.renderer.drawDescription(graphics, this, lines, severity, severity.textColor);
+                    this.renderer.drawDescription(graphics, this, lines, type, type.textColor);
                 }
             }
         }
@@ -114,7 +113,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public void setValidationResult(IValidationResult result) {
+    public void setValidationResult(ValidationResult result) {
         this.result = result;
     }
 
@@ -136,21 +135,21 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         }
     }
 
-    private IValidationResult getValidationResult() {
-        IValidationResult valueResult = this.configValue.getValidationResult() != null ? this.configValue.getValidationResult() : IValidationResult.success();
-        return valueResult.severity().isHigherSeverityThan(this.result.severity()) ? valueResult : this.result;
+    private ValidationResult getValidationResult() {
+        ValidationResult valueResult = this.configValue.getValidationResult() != null ? this.configValue.getValidationResult() : ValidationResult.success();
+        return valueResult.type().isMoreSevereThan(this.result.type()) ? valueResult : this.result;
     }
 
     private boolean hasGuiError() {
-        IValidationResult result = this.getValidationResult();
-        return !result.severity().isValid() && !(result instanceof AggregatedValidationResult);
+        ValidationResult result = this.getValidationResult();
+        return !result.type().isValid() /*&& !(result instanceof ValidationHelper)*/; // TODO check
     }
 
 
     public interface IValidationRenderer {
 
-        void drawIcon(GuiGraphics graphics, AbstractWidget widget, IValidationResult.Severity severity);
+        void drawIcon(GuiGraphics graphics, AbstractWidget widget, ValidationResult.Type type);
 
-        void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, IValidationResult.Severity severity, int textColor);
+        void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, ValidationResult.Type type, int textColor);
     }
 }

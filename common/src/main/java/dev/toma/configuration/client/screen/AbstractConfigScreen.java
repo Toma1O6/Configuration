@@ -8,7 +8,7 @@ import dev.toma.configuration.client.widget.ThemedButtonWidget;
 import dev.toma.configuration.client.widget.render.TextureRenderer;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.io.ConfigIO;
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.Minecraft;
@@ -204,17 +204,17 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     }
 
     @Override
-    public void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, IValidationResult.Severity severity, int textColor) {
-        this.deferredDescription = new DeferredDescription(severity, text, textColor, widget.getX() + 5, widget.getY() + widget.getHeight() + 10);
+    public void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, ValidationResult.Type type, int textColor) {
+        this.deferredDescription = new DeferredDescription(type, text, textColor, widget.getX() + 5, widget.getY() + widget.getHeight() + 10);
     }
 
     @Override
-    public void drawIcon(GuiGraphics graphics, AbstractWidget widget, IValidationResult.Severity severity) {
-        this.renderValidationIcon(severity, graphics, widget, widget.getX() - 22, widget.getY() + 1);
+    public void drawIcon(GuiGraphics graphics, AbstractWidget widget, ValidationResult.Type type) {
+        this.renderValidationIcon(type, graphics, widget, widget.getX() - 22, widget.getY() + 1);
     }
 
-    public void renderValidationIcon(IValidationResult.Severity severity, GuiGraphics graphics, AbstractWidget widget, int x, int y) {
-        ResourceLocation icon = severity.iconPath;
+    public void renderValidationIcon(ValidationResult.Type type, GuiGraphics graphics, AbstractWidget widget, int x, int y) {
+        ResourceLocation icon = type.iconPath;
         graphics.blit(RenderPipelines.GUI_TEXTURED, icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 
@@ -236,7 +236,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         }
     }
 
-    public record DeferredDescription(IValidationResult.Severity severity, List<FormattedCharSequence> texts, int textColor, int x, int y) {
+    public record DeferredDescription(ValidationResult.Type type, List<FormattedCharSequence> texts, int textColor, int x, int y) {
 
         public void render(GuiGraphics graphics, Font font, int width, int height, float renderDelta) {
             if (!texts.isEmpty()) {
@@ -261,9 +261,9 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
                     startY = height - heightOffset - 6;
                 }
 
-                int background = severity.backgroundColor;
-                int fadeMin = severity.backgroundFadeMinColor;
-                int fadeMax = severity.backgroundFadeMaxColor;
+                int background = type.backgroundColor;
+                int fadeMin = type.backgroundFadeMinColor;
+                int fadeMax = type.backgroundFadeMaxColor;
                 graphics.fillGradient(startX - 3, startY - 4, startX + maxTextWidth + 3, startY - 3, background, background);
                 graphics.fillGradient(startX - 3, startY + heightOffset + 3, startX + maxTextWidth + 3, startY + heightOffset + 4, background, background);
                 graphics.fillGradient(startX - 3, startY - 3, startX + maxTextWidth + 3, startY + heightOffset + 3, background, background);

@@ -10,7 +10,7 @@ import dev.toma.configuration.client.widget.ThemedButtonWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.ConfigUtils;
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.StringValue;
 import net.minecraft.client.Minecraft;
@@ -76,7 +76,7 @@ public class StringDisplayAdapter extends AbstractDisplayAdapter {
             if (!matcher.matches()) {
                 String errorMessage = value.getErrorDescriptor();
                 MutableComponent errorLabel = errorMessage != null ? Component.translatable(errorMessage, text, pattern.toString()) : ClientErrors.invalidText(text, pattern);
-                container.setValidationResult(IValidationResult.error(errorLabel));
+                container.setValidationResult(ValidationResult.error(errorLabel));
                 return;
             }
         }
