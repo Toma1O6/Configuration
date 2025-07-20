@@ -83,5 +83,9 @@ public record ValidationResult(Type type, List<Component> description) {
         public boolean isMoreSevereThan(Type other) {
             return this.ordinal() > other.ordinal();
         }
+
+        public boolean isSameOrMoreSevereThan(Type other) {
+            return this.ordinal() >= other.ordinal();
+        }
     }
 }

@@ -22,11 +22,6 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.Range(min = 10, max = 20)
-    @Configurable.DependsOn(
-            configValues = {
-                    @Configurable.DependsOn.ConfigValue(config = "configuration-test", path = "intArray.1", accepts = "55")
-            }
-    )
     public byte byteRanged = 15;
 
     @Configurable
@@ -84,6 +79,10 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.StringPattern(value = "[a-z\\s]+", flags = Pattern.CASE_INSENSITIVE)
+    @Configurable.DependsOn(
+            mods = @Configurable.DependsOn.ActiveMod("examplemod"),
+            configValues = @Configurable.DependsOn.ConfigValue(location = "configuration-test:color", accepts = "#FFFFFF")
+    )
     public String string = "random text";
 
     @Configurable

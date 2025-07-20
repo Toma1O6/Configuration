@@ -268,7 +268,7 @@ public @interface Configurable {
          * @return Array of classes implementing the {@link Validator} interface which should be used for validation of this
          * config field.
          */
-        Class<? extends Validator<?>>[] validators();
+        Class<? extends Validator<?>>[] value();
     }
 
     /**

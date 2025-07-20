@@ -4,6 +4,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class ValidationHelper {
@@ -36,12 +37,15 @@ public final class ValidationHelper {
         ValidationResult.Type type = ValidationResult.Type.SUCCESS;
         List<Component> messages = new ArrayList<>();
         if (!results.isEmpty()) {
-            for (ValidationResult result : results) {
+            Iterator<ValidationResult> iterator = results.iterator();
+            while (iterator.hasNext()) {
+                ValidationResult result = iterator.next();
                 List<Component> resultMessages = result.description().stream().filter(c -> c != null && !c.equals(CommonComponents.EMPTY)).toList();
                 ValidationResult.Type resultType = result.type();
-                if (resultType.isMoreSevereThan(type)) {
+                if (resultType.isSameOrMoreSevereThan(ValidationResult.Type.WARNING)) {
                     messages.addAll(resultMessages);
-                    messages.add(CommonComponents.EMPTY);
+                    if (iterator.hasNext())
+                        messages.add(CommonComponents.SPACE);
                     type = resultType;
                 }
             }

@@ -251,7 +251,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
         // Auto-registration of validators
         Configurable.Validate validate = field.getAnnotation(Configurable.Validate.class);
         if (validate != null) {
-            Class<? extends Validator<?>>[] types = validate.validators();
+            Class<? extends Validator<?>>[] types = validate.value();
             for (Class<? extends Validator<?>> validatorType : types) {
                 try {
                     this.autoRegisterValidator(validatorType);
