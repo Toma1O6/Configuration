@@ -364,6 +364,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private ValidationResult performAdditionalValidations(T value) {
         List<ValidationResult> results = this.validators.stream()
                 .map(validator -> validator.validate(value, this))
+                .filter(ValidationResult::isWarningOrError)
                 .toList();
         return ValidationHelper.aggregate(results);
     }
