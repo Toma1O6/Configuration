@@ -53,7 +53,7 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
         if (optional.isEmpty())
             return Optional.empty();
         String key = iterator.next();
-        T[] arrayValue = this.get(Mode.SAVED); // TODO we probably want to use pending value
+        T[] arrayValue = this.get();
         try {
             int length = Array.getLength(arrayValue);
             int elementIndex = Integer.parseInt(key);
