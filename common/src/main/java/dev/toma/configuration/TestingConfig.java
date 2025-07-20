@@ -22,6 +22,11 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.Range(min = 10, max = 20)
+    @Configurable.DependsOn(
+            configValues = {
+                    @Configurable.DependsOn.ConfigValue(config = "configuration-test", path = "intArray.1", accepts = "55")
+            }
+    )
     public byte byteRanged = 15;
 
     @Configurable
@@ -58,7 +63,7 @@ public final class TestingConfig {
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     @Configurable.Comment(value = "Requires game restart", localize = true)
     @Configurable.Range(max = 50)
-    public int intGameRestartRestriction = 99;
+    public int intGameRestartRestriction = 45;
 
     @Configurable
     @Configurable.Synchronized
@@ -104,7 +109,7 @@ public final class TestingConfig {
 
     @Configurable(key = Configurable.LocalizationKey.FULL)
     @Configurable.DecimalRange(min = 500.0F)
-    public float[] floatArray = {135.32F, 1561.23F};
+    public float[] floatArray = {650.32F, 1561.23F};
 
     @Configurable
     public String[] stringArray = {"minecraft:test"};

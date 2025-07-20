@@ -1,6 +1,6 @@
 package dev.toma.configuration.config;
 
-import dev.toma.configuration.config.validate.RequirementCondition;
+import dev.toma.configuration.config.validate.Validator;
 import org.intellij.lang.annotations.RegExp;
 
 import java.lang.annotation.ElementType;
@@ -186,7 +186,7 @@ public @interface Configurable {
      */
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Requires {
+    @interface DependsOn {
 
         /**
          * Makes value dependent on specified mod being loaded
@@ -200,13 +200,10 @@ public @interface Configurable {
          */
         ConfigValue[] configValues() default {};
 
-        CustomCondition[] conditions() default {};
-
-        LogicalOperator operator() default LogicalOperator.AND;
-
         @interface ActiveMod {
             String value();
-            boolean invert() default false;
+            String displayName() default "";
+            boolean loaded() default true;
         }
 
         @interface ConfigValue {
@@ -215,10 +212,17 @@ public @interface Configurable {
             String[] accepts();
             boolean invert() default false;
         }
+    }
 
-        @interface CustomCondition {
-            Class<? extends RequirementCondition> value();
-        }
+    /**
+     * TODO
+     *
+     * @since 4.0
+     */
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Validate {
+        Class<? extends Validator<?>>[] validators();
     }
 
     /**

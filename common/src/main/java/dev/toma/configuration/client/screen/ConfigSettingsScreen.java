@@ -2,7 +2,7 @@ package dev.toma.configuration.client.screen;
 
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.ConfigurationOptions;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -77,7 +77,7 @@ public final class ConfigSettingsScreen extends Screen {
     }
 
     private void close() {
-        ConfigIO.saveClientValues(Configuration.options);
+        ConfigurationFileManager.saveClientValues(Configuration.options);
         this.minecraft.setScreen(this.parent);
     }
 }

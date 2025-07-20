@@ -163,8 +163,8 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     }
 
     @Override
-    protected void readFieldData(Field field) {
-        super.readFieldData(field);
+    protected void processAdditionalAnnotations(Field field) {
+        super.processAdditionalAnnotations(field);
         if (field.isAnnotationPresent(Configurable.Synchronized.class)) {
             Configuration.LOGGER.warn("Detected configurable object annotated with '@Configurable.Synchronized' annotation [{}.{}]. This has no effect and is most likely bug in this configuration. Contact the mod author", field.getDeclaringClass().getCanonicalName(), field.getName());
         }

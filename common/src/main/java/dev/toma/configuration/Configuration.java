@@ -6,7 +6,7 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.service.ServiceHelper;
 import dev.toma.configuration.service.services.Platform;
 import org.apache.logging.log4j.LogManager;
@@ -82,7 +82,7 @@ public final class Configuration {
         ConfigHolder<CFG> holder = new ConfigHolder<>(cfgClass, id, filename, group, formatFactory);
         ConfigHolder.registerConfig(holder);
         if (cfgClass.getAnnotation(Config.NoAutoSync.class) == null) {
-            ConfigIO.FILE_WATCH_MANAGER.addTrackedConfig(holder);
+            ConfigurationFileManager.FILE_WATCH_MANAGER.addTrackedConfig(holder);
         }
         return holder;
     }

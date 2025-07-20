@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import dev.toma.configuration.client.ConfigurationClient;
 import dev.toma.configuration.command.ConfigSaveCommand;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.network.ForgeNetworkManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.client.ConfigScreenHandler;
@@ -38,17 +38,17 @@ public class ConfigurationForge {
     }
 
     private void init(FMLCommonSetupEvent event) {
-        ConfigIO.FILE_WATCH_MANAGER.startService();
+        ConfigurationFileManager.FILE_WATCH_MANAGER.startService();
         ForgeNetworkManager.registerMessages();
     }
 
     private void serverStarting(ServerStartedEvent event) {
-        ConfigIO.serverStarted();
+        ConfigurationFileManager.serverStarted();
     }
 
     private void serverStopping(ServerStoppingEvent event) {
-        ConfigIO.FILE_WATCH_MANAGER.stop();
-        ConfigIO.serverStopping();
+        ConfigurationFileManager.FILE_WATCH_MANAGER.stop();
+        ConfigurationFileManager.serverStopping();
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

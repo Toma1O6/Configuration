@@ -1,6 +1,6 @@
 package dev.toma.configuration.mixin;
 
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -26,6 +26,6 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
     )
     private void configuration$handleLogin(CallbackInfo ci) {
         // Set current environment to playing to disallow modification of synchronized/menu only edit fields on dedicated servers
-        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.PLAYING);
+        ConfigurationFileManager.setEnvironment(ConfigurationFileManager.ConfigEnvironment.PLAYING);
     }
 }

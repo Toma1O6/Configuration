@@ -2,7 +2,7 @@ package dev.toma.configuration.mixin;
 
 import com.mojang.blaze3d.platform.WindowEventHandler;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
@@ -25,7 +25,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
             at = @At("RETURN")
     )
     private void configuration$reloadClientConfigs(Screen screen, CallbackInfo ci) {
-        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.MENU);
+        ConfigurationFileManager.setEnvironment(ConfigurationFileManager.ConfigEnvironment.MENU);
         ConfigHolder.getSynchronizedConfigs().stream()
                 .map(ConfigHolder::getConfig)
                 .filter(Optional::isPresent)
@@ -38,7 +38,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
             at = @At("RETURN")
     )
     private void configuration$disconnect(Screen screen, boolean canceled, CallbackInfo ci) {
-        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.MENU);
+        ConfigurationFileManager.setEnvironment(ConfigurationFileManager.ConfigEnvironment.MENU);
         ConfigHolder.getSynchronizedConfigs().stream()
                 .map(ConfigHolder::getConfig)
                 .filter(Optional::isPresent)
@@ -51,6 +51,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
             at = @At("RETURN")
     )
     private void configuration$onGameLoadFinished(CallbackInfo ci) {
-        ConfigIO.setEnvironment(ConfigIO.ConfigEnvironment.MENU);
+        ConfigurationFileManager.runGameInitEvents();
+        ConfigurationFileManager.setEnvironment(ConfigurationFileManager.ConfigEnvironment.MENU);
     }
 }

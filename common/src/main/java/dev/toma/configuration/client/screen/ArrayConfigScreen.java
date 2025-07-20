@@ -89,7 +89,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
             errorOffset -= correct;
             offset += correct;
             ConfigValue<?> dummy = valueFactory.create(array.getId(), i);
-            dummy.processFieldData(owner);
+            dummy.processAnnotations(owner);
             Component label = this.getEntryLabel(dummy, i);
             ConfigEntryWidget widget = addRenderableWidget(new ConfigEntryWidget(30, viewportMin + 10 + j * spacing + offset, this.width - 60, 20, label, dummy, this.getConfigId(), this.theme));
             widget.setDescriptionRenderer(this);

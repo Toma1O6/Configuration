@@ -15,9 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public final class ConfigIO {
+public final class ConfigurationFileManager {
 
-    public static final Marker MARKER = MarkerManager.getMarker("IO");
+    public static final Marker MARKER = MarkerManager.getMarker("ConfigurationFileManager");
     public static final FileWatchManager FILE_WATCH_MANAGER = new FileWatchManager();
     private static ConfigEnvironment environment = ConfigEnvironment.LOADING;
 
@@ -61,6 +61,12 @@ public final class ConfigIO {
                 Configuration.LOGGER.error(MARKER, "Failed to write config file {}", configHolder.getConfigId());
             }
         });
+    }
+
+    public static void runGameInitEvents() {
+        for (ConfigHolder<?> holder : ConfigHolder.configs()) {
+            processSafely(holder, holder::runGameInitEvents);
+        }
     }
 
     private static void processSafely(ConfigHolder<?> holder, Runnable action) {
@@ -126,7 +132,7 @@ public final class ConfigIO {
     }
 
     public static void setEnvironment(ConfigEnvironment environment) {
-        ConfigIO.environment = environment;
+        ConfigurationFileManager.environment = environment;
         Configuration.LOGGER.debug(MARKER, "Setting configuration environment to {}", environment);
     }
 

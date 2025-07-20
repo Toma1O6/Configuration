@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import dev.toma.configuration.client.ConfigurationClient;
 import dev.toma.configuration.command.ConfigSaveCommand;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.network.NeoforgeNetworkManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.bus.api.IEventBus;
@@ -58,16 +58,16 @@ public class ConfigurationNeoforge {
     }
 
     private void init(FMLCommonSetupEvent event) {
-        ConfigIO.FILE_WATCH_MANAGER.startService();
+        ConfigurationFileManager.FILE_WATCH_MANAGER.startService();
     }
 
     private void serverStarted(ServerStartedEvent event) {
-        ConfigIO.serverStarted();
+        ConfigurationFileManager.serverStarted();
     }
 
     private void serverStopping(ServerStoppingEvent event) {
-        ConfigIO.FILE_WATCH_MANAGER.stop();
-        ConfigIO.serverStopping();
+        ConfigurationFileManager.FILE_WATCH_MANAGER.stop();
+        ConfigurationFileManager.serverStopping();
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

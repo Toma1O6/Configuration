@@ -1,7 +1,7 @@
 package dev.toma.configuration;
 
 import dev.toma.configuration.command.ConfigSaveCommand;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.network.FabricNetworkManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -14,16 +14,16 @@ public class ConfigurationFabric implements ModInitializer {
         Configuration.setup();
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             if (server instanceof DedicatedServer) {
-                ConfigIO.FILE_WATCH_MANAGER.stop();
+                ConfigurationFileManager.FILE_WATCH_MANAGER.stop();
             }
-            ConfigIO.serverStopping();
+            ConfigurationFileManager.serverStopping();
         });
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> ConfigIO.serverStarted());
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> ConfigurationFileManager.serverStarted());
     }
 
     @Override
     public void onInitialize() {
-        ConfigIO.FILE_WATCH_MANAGER.startService();
+        ConfigurationFileManager.FILE_WATCH_MANAGER.startService();
         FabricNetworkManager.INSTANCE.registerMessages();
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> ConfigSaveCommand.register(dispatcher));
     }

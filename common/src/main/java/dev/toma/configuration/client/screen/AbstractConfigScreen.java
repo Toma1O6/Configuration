@@ -7,7 +7,7 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.client.widget.ThemedButtonWidget;
 import dev.toma.configuration.client.widget.render.TextureRenderer;
 import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.io.ConfigIO;
+import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
@@ -168,7 +168,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         dialog.onConfirmed(screen -> {
             Configuration.LOGGER.info(MARKER, "Reverting config {} to default values", this.getConfigId());
             this.revertToDefault(this.holder.values());
-            ConfigIO.saveClientValues(this.holder);
+            ConfigurationFileManager.saveClientValues(this.holder);
             dialog.displayPreviousScreen();
         });
         minecraft.setScreen(dialog);
@@ -177,7 +177,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     private void buttonRevertChangesClicked() {
         DialogScreen dialog = new DialogScreen(ConfigEntryWidget.REVERT_CHANGES, new Component[] {ConfigEntryWidget.REVERT_CHANGES_DIALOG_TEXT}, this);
         dialog.onConfirmed(screen -> {
-            ConfigIO.reloadClientValues(this.holder);
+            ConfigurationFileManager.reloadClientValues(this.holder);
             dialog.displayPreviousScreen();
         });
         minecraft.setScreen(dialog);
@@ -199,7 +199,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
 
     private void saveConfig(boolean force) {
         if (force || this.isRoot()) {
-            ConfigIO.saveClientValues(this.holder);
+            ConfigurationFileManager.saveClientValues(this.holder);
         }
     }
 
