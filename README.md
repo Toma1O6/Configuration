@@ -68,6 +68,10 @@ public class MyMod {
     public static MyConfig config;
     
     public MyMod() {
+        // Since 4.0 versions you can register the config instance easily like this:
+        config = Configuration.registerSimpleYmlConfig(MyConfig.class);
+
+        // For older versions follow this patern
         // You can also use JSON/PROPERTIES config formats. More types may be supported in the future if needed
         ConfigHolder<MyConfig> configHolder = Configuration.registerConfig(MyConfig.class, ConfigFormats.YAML);
         config = configHolder.getConfigInstance();
