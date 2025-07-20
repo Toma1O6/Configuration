@@ -65,6 +65,7 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
         editBoxWidget.setBackgroundRenderer(theme.getEditBoxBackground(editBoxWidget));
         ConfigUtils.adjustCharacterLimit(field, editBoxWidget);
         DecimalFormat decimalFormat = ConfigUtils.getDecimalFormat(field);
+        value.getRange().setCustomFormat(decimalFormat);
         editBoxWidget.setFormatter(decimalFormat, value::get);
         return editBoxWidget;
     }
@@ -79,6 +80,7 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
         slider.setBackgroundRenderer(theme.getSliderBackground(slider));
         slider.setHandleRenderer(theme.getSliderHandle(slider));
         DecimalFormat decimalFormat = ConfigUtils.getDecimalFormat(field);
+        value.getRange().setCustomFormat(decimalFormat);
         slider.setFormatter(decimalFormat);
         return slider;
     }

@@ -39,11 +39,11 @@ public class NumericRangeDescription<N extends Number & Comparable<N>> extends N
         if (rangeMin.compareTo(min) <= 0 && rangeMax.compareTo(max) >= 0) {
             return null; // Full range available
         } else if (rangeMin.compareTo(min) > 0 && rangeMax.compareTo(max) < 0) {
-            return Component.translatable(LOCALIZATION_KEY, rangeMin.doubleValue(), rangeMax.doubleValue());
+            return Component.translatable(LOCALIZATION_KEY, range.format(rangeMin), range.format(rangeMax));
         } else if (rangeMin.compareTo(min) > 0) {
-            return Component.translatable(LOCALIZATION_KEY, rangeMin.doubleValue(), "...");
+            return Component.translatable(LOCALIZATION_KEY, range.format(rangeMin), "...");
         } else {
-            return Component.translatable(LOCALIZATION_KEY, "...", rangeMax.doubleValue());
+            return Component.translatable(LOCALIZATION_KEY, "...", range.format(rangeMax));
         }
     }
 }
