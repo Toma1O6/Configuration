@@ -7,7 +7,7 @@ import dev.toma.configuration.config.value.IConfigValueReadable;
  * @param <V> The config value type
  */
 @FunctionalInterface
-public interface ConfigValueListener<V> {
+public interface ValueListener<V> {
 
     /**
      * Triggered on every value change, such as config loading, saving, updating, network update and so on.

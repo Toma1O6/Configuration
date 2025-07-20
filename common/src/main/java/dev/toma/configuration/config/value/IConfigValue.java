@@ -1,6 +1,6 @@
 package dev.toma.configuration.config.value;
 
-import dev.toma.configuration.config.util.ConfigValueListener;
+import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.util.IDescriptionProvider;
 import dev.toma.configuration.config.validate.Validator;
 import dev.toma.configuration.config.validate.ValueFixer;
@@ -68,5 +68,5 @@ public interface IConfigValue<T> extends IConfigValueReadable<T> {
      * @param listener The config value listener
      * @since 4.0
      */
-    void addListener(ConfigValueListener<T> listener);
+    void addListener(ValueListener<T> listener);
 }

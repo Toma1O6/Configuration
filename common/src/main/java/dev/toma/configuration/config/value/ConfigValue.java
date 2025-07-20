@@ -9,7 +9,7 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigurationFileManager;
-import dev.toma.configuration.config.util.ConfigValueListener;
+import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.util.IDescriptionProvider;
 import dev.toma.configuration.config.util.NoteDescriptionProvider;
 import dev.toma.configuration.config.validate.*;
@@ -31,7 +31,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     private UpdateRestrictions updateRestriction = UpdateRestrictions.NONE;
     private final List<ValueFixer<T>> correctors = new ArrayList<>();
     private final List<Validator<T>> validators = new ArrayList<>();
-    private final List<ConfigValueListener<T>> listeners = new ArrayList<>();
+    private final List<ValueListener<T>> listeners = new ArrayList<>();
     private ValidationResult validationResultHolder;
     private final List<IDescriptionProvider<T>> descriptionProviders = new ArrayList<>();
     private FieldVisibility fieldVisibility = FieldVisibility.NORMAL;
@@ -334,7 +334,7 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
     }
 
     @Override
-    public void addListener(ConfigValueListener<T> listener) {
+    public void addListener(ValueListener<T> listener) {
         this.listeners.add(Objects.requireNonNull(listener));
     }
 

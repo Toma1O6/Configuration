@@ -1,5 +1,6 @@
 package dev.toma.configuration.config.validate;
 
+import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.config.value.IConfigValueReadable;
 
@@ -24,7 +25,7 @@ public interface Validator<V> {
 
     /**
      * Can be used to init the validator component once game initializes. Internally used for example to attach custom
-     * {@link dev.toma.configuration.config.util.ConfigValueListener} to config values.
+     * {@link ValueListener} to config values.
      * @param value The config value holder
      */
     default void onGameLoaded(IConfigValue<V> value) {
