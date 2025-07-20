@@ -4,9 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.ConfigHolder;
+import dev.toma.configuration.config.ConfigValueLocation;
 import dev.toma.configuration.config.format.ConfigFormats;
 import dev.toma.configuration.config.format.IConfigFormatHandler;
 import dev.toma.configuration.config.io.ConfigurationFileManager;
+import dev.toma.configuration.config.value.IConfigValue;
 import dev.toma.configuration.service.ServiceHelper;
 import dev.toma.configuration.service.services.Platform;
 import org.apache.logging.log4j.LogManager;
@@ -132,5 +134,51 @@ public final class Configuration {
      */
     public static <CFG> Optional<ConfigHolder<CFG>> getConfig(String id) {
         return ConfigHolder.getConfig(id);
+    }
+
+
+    /**
+     * Allows you to obtain config value for specific key within your config. For example when you have the following config
+     * structure with integer value on path {@code config:numbers/myNumber}, and you want to obtain its value wrapper,
+     * you can use this method with path parameter set to {@code Configuration.getConfigValueHolder("config:numbers/myNumber", Integer.class)}
+     * to obtain the value wrapper. <br>
+     * Unlike the {@link Configuration#getConfigValue(ConfigValueLocation, Class)} method, array index access will return the entire array wrapper.
+     * This is because internally arrays do not hold config values for each array element. So you will have to use the config value to access
+     * elements manually. This means the {@code type} attribute has to be {@code ARRAY}!<br>
+     *
+     * @param location {@link ConfigValueLocation} with namespace being the configId and path being the path to value within the config itself. Nested paths need to be separated by / characters
+     * @param type Expected data type of the value
+     * @return Optional with the specified value or {@link Optional#empty()} when the value does not exist or has different data type
+     *
+     * @since 4.0
+     */
+    public static <V> Optional<IConfigValue<V>> getConfigValueHolder(ConfigValueLocation location, Class<V> type) {
+        ConfigHolder<?> holder = getConfig(location.namespace()).orElse(null);
+        if (holder == null) {
+            return Optional.empty();
+        }
+        return holder.getConfigValue(location.path(), type);
+    }
+
+    /**
+     * Allows you to obtain value for specific key within config. For example when you have the following config
+     * structure with integer value on path {@code config:numbers/myNumber}, and you want to obtain its value using key for any
+     * reason (for example in json data definitions), you can use this method with path parameter set
+     * to {@code Configuration.getValue("config:numbers/myNumber", Integer.class)} to obtain the value. <br>
+     * The path can be also used for array values, for example when you want to get 3rd element in array, specify the path with array
+     * index {@code config:numbers/numberArray/2} <br>
+     *
+     * @param location {@link ConfigValueLocation} with namespace being the configId and path being the path to value within the config itself. Nested paths need to be separated by / characters
+     * @param type Expected data type of the value
+     * @return Optional with the specified value or {@link Optional#empty()} when the value does not exist or has different data type
+     *
+     * @since 4.0
+     */
+    public static <V> Optional<V> getConfigValue(ConfigValueLocation location, Class<V> type) {
+        ConfigHolder<?> holder = getConfig(location.namespace()).orElse(null);
+        if (holder == null) {
+            return Optional.empty();
+        }
+        return holder.getValue(location.path(), type);
     }
 }

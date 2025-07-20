@@ -171,13 +171,11 @@ public final class ConfigHolder<CFG> {
 
     /**
      * Allows you to obtain value for specific key within your config. For example when you have the following config
-     * structure with integer value on path {@code modid.numbers.myNumber}, and you want to obtain its value using key for any
+     * structure with integer value on path {@code numbers/myNumber}, and you want to obtain its value using key for any
      * reason (for example in json datasource definitions), you can use this method with path parameter set
-     * to {@code myConfigHolder.getValue("modid.numbers.myNumber", Integer.class)} to obtain the value. <br>
+     * to {@code myConfigHolder.getValue("numbers/myNumber", Integer.class)} to obtain the value. <br>
      * The path can be also used for array values, for example when you want to get 3rd element in array, specify the path with array
-     * index {@code modid.numbers.numberArray.2} <br>
-     *
-     * <b>Keep in mind that this method fails quietly with only warning being logged to console!</b>
+     * index {@code numbers/numberArray/2} <br>
      *
      * @param path The path to your variable in config
      * @param expectedType Expected data type of the value
@@ -186,21 +184,19 @@ public final class ConfigHolder<CFG> {
      * @since 2.3.0
      */
     public <V> Optional<V> getValue(String path, Class<V> expectedType) {
-        String[] keys = path.split("\\.");
+        String[] keys = path.split(ConfigValueLocation.PATH_SEPARATOR);
         Iterator<String> stringIterator = Arrays.asList(keys).iterator();
         return ObjectValue.getChildValue(stringIterator, expectedType, valueMap);
     }
 
     /**
      * Allows you to obtain config value for specific key within your config. For example when you have the following config
-     * structure with integer value on path {@code modid.numbers.myNumber}, and you want to obtain its value wrapper,
-     * you can use this method with path parameter set to {@code myConfigHolder.getConfigValue("modid.numbers.myNumber", Integer.class)}
+     * structure with integer value on path {@code numbers/myNumber}, and you want to obtain its value wrapper,
+     * you can use this method with path parameter set to {@code myConfigHolder.getConfigValue("numbers/myNumber", Integer.class)}
      * to obtain the value wrapper. <br>
      * Unlike the {@link ConfigHolder#getValue(String, Class)} method, array index access will return the entire array wrapper.
      * This is because internally arrays do not hold config values for each array element. So you will have to use the config value to access
      * elements manually. So the {@code expectedType} attribute has to be {@code ARRAY}!<br>
-     *
-     * <b>Keep in mind that this method fails quietly with only warning being logged to console!</b>
      *
      * @param path The path to your variable in config
      * @param expectedType Expected data type of the value
@@ -209,7 +205,7 @@ public final class ConfigHolder<CFG> {
      * @since 3.0
      */
     public <V> Optional<IConfigValue<V>> getConfigValue(String path, Class<V> expectedType) {
-        String[] keys = path.split("\\.");
+        String[] keys = path.split(ConfigValueLocation.PATH_SEPARATOR);
         Iterator<String> stringIterator = Arrays.asList(keys).iterator();
         return ObjectValue.getChild(stringIterator, expectedType, valueMap);
     }
