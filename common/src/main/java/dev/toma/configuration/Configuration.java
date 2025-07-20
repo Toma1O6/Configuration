@@ -89,38 +89,105 @@ public final class Configuration {
         return holder;
     }
 
+    /**
+     * Registers config class and returns the config instance itself rather than {@link ConfigHolder} as is the case
+     * with {@link Configuration#registerConfig(Class, IConfigFormatHandler)}.
+     *
+     * @param cfgClass Your config class
+     * @param formatFactory File format to be used by this config class. You can use values
+     *                      from {@link dev.toma.configuration.config.format.ConfigFormats} for example.
+     * @return Config instance for given class
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> CFG registerSimpleConfig(Class<CFG> cfgClass, IConfigFormatHandler formatFactory) {
         return registerConfig(cfgClass, formatFactory).getConfigInstance();
     }
 
+    /**
+     * Registers config with JSON format.
+     * @param cfgClass Your config class
+     * @return {@link ConfigHolder} containing your config instance
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> ConfigHolder<CFG> registerJsonConfig(Class<CFG> cfgClass) {
         return registerConfig(cfgClass, ConfigFormats.JSON);
     }
 
+    /**
+     * Registers config with JSON format.
+     * @param cfgClass Your config class
+     * @return Config instance for given class
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> CFG registerSimpleJsonConfig(Class<CFG> cfgClass) {
         return registerJsonConfig(cfgClass).getConfigInstance();
     }
 
+    /**
+     * Registers config with Properties format.
+     * @param cfgClass Your config class
+     * @return {@link ConfigHolder} containing your config instance
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> ConfigHolder<CFG> registerPropertiesConfig(Class<CFG> cfgClass) {
         return registerConfig(cfgClass, ConfigFormats.PROPERTIES);
     }
 
+    /**
+     * Registers config with Properties format.
+     * @param cfgClass Your config class
+     * @return Config instance for given class
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> CFG registerSimplePropertiesConfig(Class<CFG> cfgClass) {
         return registerPropertiesConfig(cfgClass).getConfigInstance();
     }
 
+    /**
+     * Registers config with YAML format.
+     * @param cfgClass Your config class
+     * @return {@link ConfigHolder} containing your config instance
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> ConfigHolder<CFG> registerYmlConfig(Class<CFG> cfgClass) {
         return registerConfig(cfgClass, ConfigFormats.YML);
     }
 
+    /**
+     * Registers config with YAML format.
+     * @param cfgClass Your config class
+     * @return Config instance for given class
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> CFG registerSimpleYmlConfig(Class<CFG> cfgClass) {
         return registerYmlConfig(cfgClass).getConfigInstance();
     }
 
+    /**
+     * Registers config with INI format.
+     * @param cfgClass Your config class
+     * @return {@link ConfigHolder} containing your config instance
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> ConfigHolder<CFG> registerIniConfig(Class<CFG> cfgClass) {
         return registerConfig(cfgClass, ConfigFormats.INI);
     }
 
+    /**
+     * Registers config with INI format.
+     * @param cfgClass Your config class
+     * @return Config instance for given class
+     * @param <CFG> Config type
+     * @since 4.0
+     */
     public static <CFG> CFG registerSimpleIniConfig(Class<CFG> cfgClass) {
         return registerIniConfig(cfgClass).getConfigInstance();
     }

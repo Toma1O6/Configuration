@@ -142,7 +142,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     private boolean hasGuiError() {
         ValidationResult result = this.getValidationResult();
-        return !result.type().isValid() /*&& !(result instanceof ValidationHelper)*/; // TODO check
+        return !result.type().isValid();
     }
 
 

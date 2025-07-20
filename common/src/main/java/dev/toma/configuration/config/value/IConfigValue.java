@@ -57,11 +57,16 @@ public interface IConfigValue<T> extends IConfigValueReadable<T> {
     void addValidator(Validator<T> validator);
 
     /**
-     * TODO
+     * Allows you to attach custom value fixer which corrects input values
+     * @param fixer The custom fixer function
      * @since 4.0
-     * @param fixer
      */
     void addFixer(ValueFixer<T> fixer);
 
+    /**
+     * Allows you to attach custom value listener in order to be able to react to value change events
+     * @param listener The config value listener
+     * @since 4.0
+     */
     void addListener(ConfigValueListener<T> listener);
 }

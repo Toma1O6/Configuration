@@ -24,7 +24,6 @@ public final class ConfigFormats {
     private static final String EXT_YML = "yml";
     private static final String EXT_PROPERTIES = "properties";
     private static final String EXT_INI = "ini";
-    private static final String EXT_TOML = "toml";
 
     // Formats
     /** JSON config format. Does not support comments */
@@ -35,6 +34,10 @@ public final class ConfigFormats {
     public static final IConfigFormatHandler YML = new SimpleFormatImpl(EXT_YML, YamlFormat::new);
     /** Properties config format. Does not support comments */
     public static final IConfigFormatHandler PROPERTIES = new SimpleFormatImpl(EXT_PROPERTIES, PropertiesFormat::new);
+    /**
+     * INI config format. With comments.
+     * @since 4.0
+     */
     public static final IConfigFormatHandler INI = new SimpleFormatImpl(EXT_INI, IniFormat::new);
 
     private record SimpleFormatImpl(String fileExt, Supplier<IConfigFormat> factory) implements IConfigFormatHandler {

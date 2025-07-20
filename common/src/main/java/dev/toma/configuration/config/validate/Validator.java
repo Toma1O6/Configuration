@@ -22,6 +22,11 @@ public interface Validator<V> {
      */
     ValidationResult validate(V newValue, IConfigValueReadable<V> valueHolder);
 
+    /**
+     * Can be used to init the validator component once game initializes. Internally used for example to attach custom
+     * {@link dev.toma.configuration.config.util.ConfigValueListener} to config values.
+     * @param value The config value holder
+     */
     default void onGameLoaded(IConfigValue<V> value) {
     }
 }

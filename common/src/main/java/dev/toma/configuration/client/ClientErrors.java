@@ -18,8 +18,8 @@ public final class ClientErrors {
         return Component.translatable(KEY_NAN, value);
     }
 
-    public static MutableComponent outOfBounds(Number number, NumberRange<?> range) {
-        return Component.translatable(KEY_NUM_BOUNDS, number, range.min(), range.max());
+    public static <N extends Number & Comparable<N>> MutableComponent outOfBounds(Number number, NumberRange<N> range) {
+        return Component.translatable(KEY_NUM_BOUNDS, number, range.format(range.min()), range.format(range.max()));
     }
 
     public static MutableComponent invalidText(String text, Pattern pattern) {

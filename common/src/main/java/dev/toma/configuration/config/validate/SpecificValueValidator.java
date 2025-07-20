@@ -2,6 +2,7 @@ package dev.toma.configuration.config.validate;
 
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigHolder;
+import dev.toma.configuration.config.ConfigValueLocation;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.IConfigValue;
@@ -12,34 +13,33 @@ import java.util.*;
 
 public class SpecificValueValidator<V> implements Validator<V> {
 
-    private final String config;
-    private final String path;
+    private final ConfigValueLocation location;
     private final String[] accepts;
     private final boolean invert;
 
     public SpecificValueValidator(Configurable.DependsOn.ConfigValue value) {
-        this(value.config(), value.path(), value.accepts(), value.invert());
+        this(ConfigValueLocation.parse(value.location()), value.accepts(), value.invert());
     }
 
-    public SpecificValueValidator(String config, String path, String[] accepts, boolean invert) {
-        this.config = config;
-        this.path = path;
+    public SpecificValueValidator(ConfigValueLocation location, String[] accepts, boolean invert) {
+        this.location = location;
         this.accepts = accepts;
         this.invert = invert;
     }
 
     @Override
     public ValidationResult validate(V newValue, IConfigValueReadable<V> valueHolder) {
-        ConfigHolder<?> holder = Configuration.getConfig(this.config).orElse(null);
+        ConfigHolder<?> holder = Configuration.getConfig(this.location.namespace()).orElse(null);
         if (holder == null) {
-            return ValidationResult.warning(Component.translatable("text.configuration.validation.config_not_found", this.config));
+            return ValidationResult.warning(Component.translatable("text.configuration.validation.config_not_found", this.location));
         }
         Component configName = holder.getTitle();
-        IConfigValue<Object> configValue = holder.getConfigValue(this.path, Object.class).orElse(null);
+        String path = this.location.path();
+        IConfigValue<Object> configValue = holder.getConfigValue(path, Object.class).orElse(null);
         if (configValue == null) {
-            return ValidationResult.warning(Component.translatable("text.configuration.validation.field_not_found", this.path, configName));
+            return ValidationResult.warning(Component.translatable("text.configuration.validation.field_not_found", path, configName));
         }
-        Object value = holder.getValue(this.path, Object.class).orElse(null);
+        Object value = holder.getValue(path, Object.class).orElse(null);
         if (value == null) {
             return ValidationResult.warning(Component.translatable("text.configuration.validation.value_not_found", configValue.getTitle(), configName));
         }
@@ -61,8 +61,7 @@ public class SpecificValueValidator<V> implements Validator<V> {
     @Override
     public void onGameLoaded(IConfigValue<V> v) {
         ConfigValue<V> configValue = (ConfigValue<V>) v;
-        Configuration.getConfig(this.config)
-                .flatMap(holder -> holder.getConfigValue(this.path, Object.class))
+        Configuration.getConfigValueHolder(this.location, Object.class)
                 .ifPresent(value ->
                         value.addListener((cfgValue, updatedValue) -> configValue.validateAndStoreResult(configValue.getActiveValue())));
     }
