@@ -18,6 +18,13 @@ for correct Minecraft version and drop the `.jar` file into `mods` directory.
 <span style="color:#AA0000">**This setup has been made for 3.+ versions, for older releases you must use curseforge maven repository**</span><br>
 In the following examples replace the `project.minecraft_version` and `project.configuration_version` by your used properties.
 
+## Version overview
+### 1.20
+- ![1.20.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.20.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.20.1)
+
+---
+
+### 1.21
 - ![1.21](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21)
 - ![1.21.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.1)
 - ![1.21.3](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.3%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.3)
@@ -27,6 +34,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 - ![1.21.7](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.7%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.7)
 - ![1.21.8](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.8%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.8)
 
+---
 
 First add maven repository into your root project `build.gradle` and into all subprojects
 ```groovy
