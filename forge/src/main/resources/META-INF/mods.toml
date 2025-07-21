@@ -8,7 +8,7 @@ version="${version}"
 displayName="${mod_name}"
 logoFile="assets/logo.png"
 authors="${mod_authors}"
-updateJSONURL="https://raw.githubusercontent.com/Toma1O6/UpdateSchemas/refs/heads/master/configuration-forge.json"
+updateJSONURL="https://raw.githubusercontent.com/Toma1O6/Configuration/refs/heads/development/versions.json"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/configuration"
 description='''${mod_description}'''
 
