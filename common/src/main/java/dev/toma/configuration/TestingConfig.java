@@ -79,10 +79,6 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.StringPattern(value = "[a-z\\s]+", flags = Pattern.CASE_INSENSITIVE)
-    @Configurable.DependsOn(
-            mods = @Configurable.DependsOn.ActiveMod("examplemod"),
-            configValues = @Configurable.DependsOn.ConfigValue(location = "configuration-test:color", accepts = "#FFFFFF")
-    )
     public String string = "random text";
 
     @Configurable
@@ -133,6 +129,9 @@ public final class TestingConfig {
         public int testInt = 13;
 
         @Configurable
+        @Configurable.DependsOn(
+                configValues = @Configurable.DependsOn.ConfigValue(location = "configuration-test:nestedTest/testInt", accepts = "14")
+        )
         public int testInt2 = 15;
 
         @Configurable
