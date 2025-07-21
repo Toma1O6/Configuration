@@ -8,9 +8,7 @@ import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -121,5 +119,10 @@ public abstract class AbstractArrayValue<T> extends ConfigValue<T[]> implements 
             value[i] = decoder.apply(buf);
         }
         return value;
+    }
+
+    @Override
+    public Collection<ConfigValue<?>> children() {
+        return Collections.emptyList();
     }
 }

@@ -9,9 +9,9 @@ import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import dev.toma.configuration.config.io.ConfigurationFileManager;
-import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.util.IDescriptionProvider;
 import dev.toma.configuration.config.util.NoteDescriptionProvider;
+import dev.toma.configuration.config.util.ValueListener;
 import dev.toma.configuration.config.validate.*;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.message.FormattedMessage;
@@ -149,6 +149,11 @@ public abstract class ConfigValue<T> implements IConfigValue<T> {
 
     public final void runGameInitEvents() {
         this.validators.forEach(validator -> validator.onGameLoaded(this));
+        if (this instanceof IHierarchical hierarchical) {
+            for (ConfigValue<?> value : hierarchical.children()) {
+                value.runGameInitEvents();
+            }
+        }
         this.validateAndStoreResult(this.activeValue);
     }
 

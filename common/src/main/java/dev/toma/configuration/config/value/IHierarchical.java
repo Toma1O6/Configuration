@@ -13,4 +13,6 @@ public interface IHierarchical {
     IConfigValue<?> getChildById(String childId);
 
     Collection<String> getChildrenKeys();
+
+    Collection<ConfigValue<?>> children();
 }

@@ -10,10 +10,7 @@ import dev.toma.configuration.config.validate.ValidationResult;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implements IHierarchical {
 
@@ -113,6 +110,11 @@ public class ObjectValue extends ConfigValue<Map<String, ConfigValue<?>>> implem
     @Override
     public Collection<String> getChildrenKeys() {
         return this.get().keySet();
+    }
+
+    @Override
+    public Collection<ConfigValue<?>> children() {
+        return this.get().values();
     }
 
     @Override
