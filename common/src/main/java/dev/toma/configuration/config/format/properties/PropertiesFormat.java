@@ -255,7 +255,7 @@ public final class PropertiesFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(String[] fileComments) {
+    public void addComments(String... fileComments) {
     }
 
     private String getKey(String field) {

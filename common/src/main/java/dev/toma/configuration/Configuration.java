@@ -38,7 +38,7 @@ public final class Configuration {
     @ApiStatus.Internal
     public static void setup() {
         if (PLATFORM.isDevelopmentEnvironment()) {
-            registerSimpleJsonConfig(TestingConfig.class);
+            registerSimpleYmlConfig(TestingConfig.class);
         }
         options = registerIniConfig(ConfigurationOptions.class);
     }

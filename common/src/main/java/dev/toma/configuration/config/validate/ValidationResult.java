@@ -52,7 +52,7 @@ public record ValidationResult(Type type, List<Component> description) {
     public enum Type {
 
         /** Marks that everything is okay */
-        SUCCESS(0xFFFFFFFF, 0xF0030319, 0x502493E5, 0x502469E5),
+        SUCCESS(0xFFE0E0E0, 0xF0030319, 0x502493E5, 0x502469E5),
         /** Marks that the value is potentionally dangerous, but does not prevent config update */
         WARNING(0xFFFFAA00, 0xF0563900, 0x50FFB200, 0x509E6900),
         /** Marks that the value is incorrect and cannot be saved */

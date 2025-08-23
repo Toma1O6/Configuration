@@ -56,7 +56,7 @@ public final class TestingConfig {
 
     @Configurable
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
-    @Configurable.Comment(value = "Requires game restart", localize = true)
+    @Configurable.Comment("Requires game restart")
     @Configurable.Range(max = 50)
     public int intGameRestartRestriction = 45;
 

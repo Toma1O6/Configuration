@@ -137,7 +137,6 @@ public class YamlFormat implements IConfigFormat {
         for (Boolean value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -156,7 +155,6 @@ public class YamlFormat implements IConfigFormat {
         for (Character value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -175,7 +173,6 @@ public class YamlFormat implements IConfigFormat {
         for (Byte value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -194,7 +191,6 @@ public class YamlFormat implements IConfigFormat {
         for (Short value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -213,7 +209,6 @@ public class YamlFormat implements IConfigFormat {
         for (Integer value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -236,7 +231,6 @@ public class YamlFormat implements IConfigFormat {
         for (Long value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -259,7 +253,6 @@ public class YamlFormat implements IConfigFormat {
         for (Float value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -282,7 +275,6 @@ public class YamlFormat implements IConfigFormat {
         for (Double value : values) {
             writeArrayEntry(String.valueOf(value));
         }
-        newLine();
     }
 
     @Override
@@ -305,7 +297,6 @@ public class YamlFormat implements IConfigFormat {
         for (String value : values) {
             writeArrayEntry(value);
         }
-        newLine();
     }
 
     @Override
@@ -447,7 +438,7 @@ public class YamlFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(String[] fileComments) {
+    public void addComments(String... fileComments) {
         for (String comment : fileComments) {
             spaces();
             buffer.append("# ").append(comment).append("\n");
@@ -469,10 +460,6 @@ public class YamlFormat implements IConfigFormat {
         buffer.append(key).append(":\n");
     }
 
-    private void newLine() {
-        buffer.append("\n");
-    }
-
     private void writeArrayEntry(String value) {
         spaces(this.currentNesting + 1);
         buffer.append("- ").append(value).append("\n");
@@ -480,7 +467,7 @@ public class YamlFormat implements IConfigFormat {
 
     private void writeValuePair(String key, String value) {
         spaces();
-        buffer.append(key).append(": ").append(value).append("\n\n");
+        buffer.append(key).append(": ").append(value).append("\n");
     }
 
     private <V> V getValue(String key, Function<String, V> parser) throws ConfigValueMissingException {
