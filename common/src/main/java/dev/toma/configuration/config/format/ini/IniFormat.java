@@ -249,7 +249,7 @@ public class IniFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(String[] fileComments) {
+    public void addComments(String... fileComments) {
         this.descriptionBuffer.addAll(Arrays.asList(fileComments));
     }
 

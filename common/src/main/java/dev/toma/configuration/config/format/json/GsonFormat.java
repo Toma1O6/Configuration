@@ -300,7 +300,7 @@ public final class GsonFormat implements IConfigFormat {
     }
 
     @Override
-    public void addComments(String[] fileComments) {
+    public void addComments(String... fileComments) {
         // comments are not supported for JSON4 files
     }
 

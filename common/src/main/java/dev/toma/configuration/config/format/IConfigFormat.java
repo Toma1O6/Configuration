@@ -105,7 +105,7 @@ public interface IConfigFormat {
 
     void writeFile(File file) throws IOException;
 
-    void addComments(String[] fileComments);
+    void addComments(String... fileComments);
 
     static Boolean parseBoolean(String string) throws ConfigValueMissingException {
         try {

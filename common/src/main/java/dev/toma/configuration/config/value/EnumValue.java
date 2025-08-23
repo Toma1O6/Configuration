@@ -5,18 +5,18 @@ import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.format.IConfigFormat;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
+import java.util.Arrays;
+import java.util.List;
 
-    private final String[] additionalComments;
+public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
 
     public EnumValue(ValueData<E> valueData) {
         super(valueData);
-        this.additionalComments = generateEnumComments(valueData.getValueType());
     }
 
     @Override
     protected void serialize(IConfigFormat format) {
-        format.addComments(this.additionalComments);
+        format.addComments(getValidEnumEntriesAsString(this.valueData.getValueType()));
         format.writeEnum(this.getId(), this.get(Mode.SAVED));
     }
 
@@ -25,13 +25,10 @@ public class EnumValue<E extends Enum<E>> extends ConfigValue<E> {
         this.setValue(format.readEnum(this.getId(), getValueType()));
     }
 
-    static <E extends Enum<E>> String[] generateEnumComments(Class<E> enumType) {
-        String[] comments = new String[enumType.getEnumConstants().length + 1];
-        comments[0] = "Allowed values:";
-        for (int i = 0; i < enumType.getEnumConstants().length; i++) {
-            comments[i + 1] = "- " + enumType.getEnumConstants()[i].name();
-        }
-        return comments;
+    static <E extends Enum<E>> String getValidEnumEntriesAsString(Class<E> enumType) {
+        List<String> values = Arrays.stream(enumType.getEnumConstants())
+                .map(Enum::name).toList();
+        return "Allowed values: [" + String.join(", ", values) + "]";
     }
 
     public static final class Adapter<E extends Enum<E>> extends TypeAdapter<E> {
