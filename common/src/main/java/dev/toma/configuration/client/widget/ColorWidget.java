@@ -9,6 +9,8 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -55,12 +57,12 @@ public final class ColorWidget extends AbstractThemeWidget {
     }
 
     @Override
-    protected boolean isValidClickButton(int button) {
-        return button == 0;
+    protected boolean isValidClickButton(MouseButtonInfo info) {
+        return info.button() == 0;
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         ColorSelectorDialog dialog = new ColorSelectorDialog(SELECT_COLOR, this.lastScreen, this.argb, this.colorSupplier);
         dialog.onConfirmed(screen -> {
             int color = dialog.getResultColor();
@@ -168,7 +170,7 @@ public final class ColorWidget extends AbstractThemeWidget {
             }
 
             @Override
-            protected boolean isValidClickButton(int button) {
+            protected boolean isValidClickButton(MouseButtonInfo info) {
                 return false;
             }
 

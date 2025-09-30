@@ -7,7 +7,6 @@ import dev.toma.configuration.service.services.Platform;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 
 public class NeoforgePlatform implements Platform {
 
@@ -23,12 +22,12 @@ public class NeoforgePlatform implements Platform {
 
     @Override
     public boolean isDevelopmentEnvironment() {
-        return !FMLLoader.isProduction();
+        return !FMLEnvironment.isProduction();
     }
 
     @Override
     public Environment getEnvironment() {
-        return FMLEnvironment.dist == Dist.CLIENT ? Environment.CLIENT : Environment.SERVER;
+        return FMLEnvironment.getDist() == Dist.CLIENT ? Environment.CLIENT : Environment.SERVER;
     }
 
     @Override

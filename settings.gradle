@@ -28,9 +28,10 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
-rootProject.name = "${root_project}"
+rootProject.name = "Configuration"
 include("common")
 include("neoforge")
 include("fabric")
-include("forge")
+// TODO enable module once Forge updates
+//include("forge")
 

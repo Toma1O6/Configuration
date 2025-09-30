@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -116,7 +117,7 @@ public class ConfigGroupScreen extends Screen {
         }
 
         @Override
-        protected boolean isValidClickButton(int p_230987_1_) {
+        protected boolean isValidClickButton(MouseButtonInfo info) {
             return false;
         }
 

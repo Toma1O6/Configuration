@@ -4,6 +4,7 @@ import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.render.IRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public class ThemedButtonWidget extends AbstractThemeWidget {
@@ -34,9 +35,9 @@ public class ThemedButtonWidget extends AbstractThemeWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         if (this.clickListener != null) {
-            this.clickListener.onClick(this, mouseX, mouseY);
+            this.clickListener.onClick(this, event.x(), event.y());
         }
     }
 

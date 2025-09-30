@@ -5,6 +5,7 @@ import dev.toma.configuration.config.value.BooleanValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public class BooleanWidget extends AbstractThemeWidget {
@@ -33,7 +34,7 @@ public class BooleanWidget extends AbstractThemeWidget {
     }
 
     @Override
-    public void onClick(double x, double y) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.setState(!this.value.get());
     }
 

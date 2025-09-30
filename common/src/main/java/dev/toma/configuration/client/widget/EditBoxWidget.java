@@ -8,7 +8,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -27,10 +29,10 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 // Shamelessly copied from Vanilla and adjusted as needed
+// TODO implement it in a way we can reuse vanilla editBox instead
 public class EditBoxWidget extends AbstractThemeWidget {
 
     public static final WidgetSprites SPRITES = new WidgetSprites(ResourceLocation.withDefaultNamespace("widget/text_field"), ResourceLocation.withDefaultNamespace("widget/text_field_highlighted"));
-    private static final int CURSOR_INSERT_WIDTH = 1;
     private static final int CURSOR_INSERT_COLOR = 0xffd0d0d0;
     private static final String CURSOR_APPEND_CHARACTER = "_";
     private static final int CURSOR_BLINK_INTERVAL_MS = 300;
@@ -74,6 +76,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
         this.formatter = $$0;
     }
 
+    @Override
     protected MutableComponent createNarrationMessage() {
         Component $$0 = this.getMessage();
         return Component.translatable("gui.narrate.editBox", $$0, this.value);
@@ -140,8 +143,8 @@ public class EditBoxWidget extends AbstractThemeWidget {
 
     }
 
-    private void deleteText(int count) {
-        if (Screen.hasControlDown()) {
+    private void deleteText(int count, boolean words) {
+        if (words) {
             this.deleteWords(count);
         } else {
             this.deleteChars(count);
@@ -249,11 +252,12 @@ public class EditBoxWidget extends AbstractThemeWidget {
         this.moveCursorTo(this.value.length(), $$0);
     }
 
-    public boolean keyPressed(int $$0, int $$1, int $$2) {
+    @Override
+    public boolean keyPressed(KeyEvent event) {
         if (this.isActive() && this.isFocused()) {
-            switch ($$0) {
+            switch (event.key()) {
                 case 259:
-                    this.deleteText(-1);
+                    this.deleteText(-1, event.hasControlDown());
                     return true;
                 case 260:
                 case 264:
@@ -261,19 +265,19 @@ public class EditBoxWidget extends AbstractThemeWidget {
                 case 266:
                 case 267:
                 default:
-                    if (Screen.isSelectAll($$0)) {
+                    if (event.isSelectAll()) {
                         this.moveCursorToEnd(false);
                         this.setHighlightPos(0);
                         return true;
-                    } else if (Screen.isCopy($$0)) {
+                    } else if (event.isCopy()) {
                         Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
                         return true;
-                    } else if (Screen.isPaste($$0)) {
+                    } else if (event.isPaste()) {
                         this.insertText(Minecraft.getInstance().keyboardHandler.getClipboard());
 
                         return true;
                     } else {
-                        if (Screen.isCut($$0)) {
+                        if (event.isCut()) {
                             Minecraft.getInstance().keyboardHandler.setClipboard(this.getHighlighted());
                             this.insertText("");
                             return true;
@@ -282,29 +286,29 @@ public class EditBoxWidget extends AbstractThemeWidget {
                         return false;
                     }
                 case 261:
-                    this.deleteText(1);
+                    this.deleteText(1, event.hasControlDown());
                     return true;
                 case 262:
-                    if (Screen.hasControlDown()) {
-                        this.moveCursorTo(this.getWordPosition(1), Screen.hasShiftDown());
+                    if (event.hasControlDown()) {
+                        this.moveCursorTo(this.getWordPosition(1), event.hasShiftDown());
                     } else {
-                        this.moveCursor(1, Screen.hasShiftDown());
+                        this.moveCursor(1, event.hasShiftDown());
                     }
 
                     return true;
                 case 263:
-                    if (Screen.hasControlDown()) {
-                        this.moveCursorTo(this.getWordPosition(-1), Screen.hasShiftDown());
+                    if (event.hasControlDown()) {
+                        this.moveCursorTo(this.getWordPosition(-1), event.hasShiftDown());
                     } else {
-                        this.moveCursor(-1, Screen.hasShiftDown());
+                        this.moveCursor(-1, event.hasShiftDown());
                     }
 
                     return true;
                 case 268:
-                    this.moveCursorToStart(Screen.hasShiftDown());
+                    this.moveCursorToStart(event.hasShiftDown());
                     return true;
                 case 269:
-                    this.moveCursorToEnd(Screen.hasShiftDown());
+                    this.moveCursorToEnd(event.hasShiftDown());
                     return true;
             }
         } else {
@@ -316,12 +320,13 @@ public class EditBoxWidget extends AbstractThemeWidget {
         return this.isActive() && this.isFocused();
     }
 
-    public boolean charTyped(char $$0, int $$1) {
+    @Override
+    public boolean charTyped(CharacterEvent event) {
         if (!this.canConsumeInput()) {
             return false;
-        } else if (StringUtil.isAllowedChatCharacter($$0)) {
+        } else if (event.isAllowedChatCharacter()) {
             if (this.isActive()) {
-                this.insertText(Character.toString($$0));
+                this.insertText(event.codepointAsString());
             }
 
             return true;
@@ -330,19 +335,34 @@ public class EditBoxWidget extends AbstractThemeWidget {
         }
     }
 
-    public void onClick(double $$0, double $$1) {
-        int $$2 = Mth.floor($$0) - this.getX();
-        if (this.bordered) {
-            $$2 -= 4;
+    @Override
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        if (doubleClick) {
+            this.selectWord(event);
+        } else {
+            this.moveCursorTo(this.findClickedPositionInText(event), event.hasShiftDown());
         }
-
-        String $$3 = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), this.getInnerWidth());
-        this.moveCursorTo(this.font.plainSubstrByWidth($$3, $$2).length() + this.displayPos, Screen.hasShiftDown());
     }
 
-    public void playDownSound(SoundManager $$0) {
+    private int findClickedPositionInText(MouseButtonEvent event) {
+        int i = Math.min(Mth.floor(event.x()), this.getInnerWidth());
+        String s = this.value.substring(this.displayPos);
+        return this.displayPos + this.font.plainSubstrByWidth(s, i).length();
     }
 
+    private void selectWord(MouseButtonEvent event) {
+        int i = this.findClickedPositionInText(event);
+        int j = this.getWordPosition(-1, i);
+        int k = this.getWordPosition(1, i);
+        this.moveCursorTo(j, false);
+        this.moveCursorTo(k, true);
+    }
+
+    @Override
+    public void playDownSound(SoundManager manager) {
+    }
+
+    @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float deltaTick) {
         if (this.isVisible()) {
             if (this.isBordered()) {
@@ -437,10 +457,10 @@ public class EditBoxWidget extends AbstractThemeWidget {
         graphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, x1, y1, x2, y2, 0xff0000ff);
     }
 
-    public void setMaxLength(int $$0) {
-        this.maxLength = $$0;
-        if (this.value.length() > $$0) {
-            this.value = this.value.substring(0, $$0);
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+        if (this.value.length() > maxLength) {
+            this.value = this.value.substring(0, maxLength);
             this.onValueChange(this.value);
         }
 
@@ -458,14 +478,15 @@ public class EditBoxWidget extends AbstractThemeWidget {
         return this.bordered;
     }
 
-    public void setBordered(boolean $$0) {
-        this.bordered = $$0;
+    public void setBordered(boolean bordered) {
+        this.bordered = bordered;
     }
 
-    public void setFocused(boolean $$0) {
-        if (this.canLoseFocus || $$0) {
-            super.setFocused($$0);
-            if ($$0) {
+    @Override
+    public void setFocused(boolean focused) {
+        if (this.canLoseFocus || focused) {
+            super.setFocused(focused);
+            if (focused) {
                 this.focusedTime = Util.getMillis();
             }
 
@@ -476,45 +497,45 @@ public class EditBoxWidget extends AbstractThemeWidget {
         return this.isBordered() ? this.width - 8 : this.width;
     }
 
-    public void setHighlightPos(int $$0) {
-        this.highlightPos = Mth.clamp($$0, 0, this.value.length());
+    public void setHighlightPos(int pos) {
+        this.highlightPos = Mth.clamp(pos, 0, this.value.length());
         this.scrollTo(this.highlightPos);
     }
 
-    private void scrollTo(int $$0) {
+    private void scrollTo(int position) {
         if (this.font != null) {
             this.displayPos = Math.min(this.displayPos, this.value.length());
             int $$1 = this.getInnerWidth();
             String $$2 = this.font.plainSubstrByWidth(this.value.substring(this.displayPos), $$1);
             int $$3 = $$2.length() + this.displayPos;
-            if ($$0 == this.displayPos) {
+            if (position == this.displayPos) {
                 this.displayPos -= this.font.plainSubstrByWidth(this.value, $$1, true).length();
             }
 
-            if ($$0 > $$3) {
-                this.displayPos += $$0 - $$3;
-            } else if ($$0 <= this.displayPos) {
-                this.displayPos -= this.displayPos - $$0;
+            if (position > $$3) {
+                this.displayPos += position - $$3;
+            } else if (position <= this.displayPos) {
+                this.displayPos -= this.displayPos - position;
             }
 
             this.displayPos = Mth.clamp(this.displayPos, 0, this.value.length());
         }
     }
 
-    public void setCanLoseFocus(boolean $$0) {
-        this.canLoseFocus = $$0;
+    public void setCanLoseFocus(boolean canLoseFocus) {
+        this.canLoseFocus = canLoseFocus;
     }
 
     public boolean isVisible() {
         return this.visible;
     }
 
-    public void setVisible(boolean $$0) {
-        this.visible = $$0;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
-    public void setSuggestion(String $$0) {
-        this.suggestion = $$0;
+    public void setSuggestion(String suggestion) {
+        this.suggestion = suggestion;
     }
 
     public int getScreenX(int $$0) {

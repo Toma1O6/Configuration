@@ -4,6 +4,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -51,8 +53,8 @@ public abstract class ContainerWidget extends AbstractWidget implements Containe
     }
 
     @Override
-    public boolean mouseClicked(double p_231044_1_, double p_231044_3_, int p_231044_5_) {
-        boolean result = ContainerEventHandler.super.mouseClicked(p_231044_1_, p_231044_3_, p_231044_5_);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        boolean result = ContainerEventHandler.super.mouseClicked(event, doubleClick);
         if (!result && this.focused != null) {
             this.setFocused(null);
         }
@@ -60,13 +62,13 @@ public abstract class ContainerWidget extends AbstractWidget implements Containe
     }
 
     @Override
-    public boolean mouseReleased(double p_231048_1_, double p_231048_3_, int p_231048_5_) {
-        return ContainerEventHandler.super.mouseReleased(p_231048_1_, p_231048_3_, p_231048_5_);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        return ContainerEventHandler.super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double p_231045_1_, double p_231045_3_, int p_231045_5_, double p_231045_6_, double p_231045_8_) {
-        return ContainerEventHandler.super.mouseDragged(p_231045_1_, p_231045_3_, p_231045_5_, p_231045_6_, p_231045_8_);
+    public boolean mouseDragged(MouseButtonEvent event, double p_231045_6_, double p_231045_8_) {
+        return ContainerEventHandler.super.mouseDragged(event, p_231045_6_, p_231045_8_);
     }
 
     @Override
@@ -80,13 +82,13 @@ public abstract class ContainerWidget extends AbstractWidget implements Containe
     }
 
     @Override
-    public boolean keyPressed(int p_231046_1_, int p_231046_2_, int p_231046_3_) {
-        return ContainerEventHandler.super.keyPressed(p_231046_1_, p_231046_2_, p_231046_3_);
+    public boolean keyPressed(KeyEvent event) {
+        return ContainerEventHandler.super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int p_223281_1_, int p_223281_2_, int p_223281_3_) {
-        return ContainerEventHandler.super.keyReleased(p_223281_1_, p_223281_2_, p_223281_3_);
+    public boolean keyReleased(KeyEvent event) {
+        return ContainerEventHandler.super.keyReleased(event);
     }
 
     @Override

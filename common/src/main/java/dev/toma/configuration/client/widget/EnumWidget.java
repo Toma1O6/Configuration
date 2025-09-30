@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -32,7 +33,7 @@ public class EnumWidget<E extends Enum<E>> extends ThemedButtonWidget {
     }
 
     @Override
-    public void onClick(double p_230982_1_, double p_230982_3_) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.nextValue();
         this.updateText();
     }
