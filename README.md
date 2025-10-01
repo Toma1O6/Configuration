@@ -10,7 +10,7 @@ can be enabled for desired fields.
 For users config UI is automatically generated with simple controls and user-friendly UX.
 
 ## User installation
-Installation is simple as any other mod - download `.jar` file from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/configuration/files/)
+Installation is simple as any other mod - download `.jar` file from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/configuration/files/) (or [Modrinth](https://modrinth.com/mod/configuration))
 for correct Minecraft version and drop the `.jar` file into `mods` directory.
 
 ## For developers
@@ -33,6 +33,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 - ![1.21.6](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.6%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.6)
 - ![1.21.7](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.7%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.7)
 - ![1.21.8](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.8%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.8)
+- ![1.21.9](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fapi.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.9%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.9)
 
 ---
 
