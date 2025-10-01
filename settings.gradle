@@ -32,6 +32,5 @@ rootProject.name = "Configuration"
 include("common")
 include("neoforge")
 include("fabric")
-// TODO enable module once Forge updates
-//include("forge")
+include("forge")
 
