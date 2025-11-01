@@ -43,11 +43,11 @@ First add maven repository into your root project `build.gradle` and into all su
 repositories {
     maven {
         name 'Configuration'
-        url 'https://api.repsy.io/mvn/toma/public/'
+        url 'https://repo.repsy.io/mvn/toma/public/'
     }
     maven {
-        name 'Configuration backup maven'
-        url 'https://repo.repsy.io/mvn/toma/public/'
+        name 'Configuration (alternative/backup)'
+        url 'https://api.repsy.io/mvn/toma/public/'
     }
 }
 ```
