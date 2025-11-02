@@ -30,12 +30,13 @@ public @interface Config {
     String id();
 
     /**
-     * Allows you to customize your config filename. Your custom filename must be valid
-     * according to your operating system, otherwise {@link java.io.IOException} will
-     * be raised during config processing.
+     * Allows you to customize your config filename/path. You can also use this to place your config into subdirectories.
+     * For example, setting filename to {@code my_mod_directory/config-main} will result in the config file being placed
+     * on {@code /config/my_mod_directory/config-main.yml} path.
+     * <p>
      * Using {@code empty} string as filename will use your {@link Config#id()} value as default.
      *
-     * @return Your custom filename.
+     * @return Your custom filename/path.
      */
     String filename() default "";
 
