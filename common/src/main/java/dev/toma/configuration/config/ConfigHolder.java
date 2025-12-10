@@ -39,6 +39,8 @@ public final class ConfigHolder<CFG> {
     private final String filename;
     // Config group, same as config ID unless changed
     private final String group;
+	// Whether to use unified folder structure (group-based subdirectory)
+	private final boolean unifiedfolder;
     // Registered config instance
     private final CFG configInstance;
     // Type of config
@@ -54,11 +56,12 @@ public final class ConfigHolder<CFG> {
     // Lock for async operations
     private final Object lock = new Object();
 
-    public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, String group, IConfigFormatHandler format) {
+    public ConfigHolder(Class<CFG> cfgClass, String configId, String filename, String group, boolean unifiedfolder, IConfigFormatHandler format) {
         this.configClass = cfgClass;
         this.configId = configId;
         this.filename = filename;
         this.group = group;
+	    this.unifiedfolder = unifiedfolder;
         try {
             this.configInstance = cfgClass.getDeclaredConstructor().newInstance();
         } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
@@ -230,6 +233,13 @@ public final class ConfigHolder<CFG> {
     public String getGroup() {
         return group;
     }
+	
+	/**
+	 * @return Whether this config uses unified folder structure
+	 */
+	public boolean getUnifiedFolder() {
+		return unifiedfolder;
+	}
 
     /**
      * @return Your registered config

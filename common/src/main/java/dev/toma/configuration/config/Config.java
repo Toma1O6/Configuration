@@ -47,6 +47,15 @@ public @interface Config {
      * @return Custom config group identifier. By default, value defined by {@link Config#id()} will be used.
      */
     String group() default "";
+	
+	/**
+	 * Determines whether this config should be stored in a unified folder structure.
+	 * When set to {@code true}, the config file will be placed in a subdirectory named after the config group.
+	 * This is useful for organizing multiple related config files together.
+	 *
+	 * @return {@code true} if config should use unified folder structure, {@code false} otherwise
+	 */
+	boolean unifiedfolder() default false;
 
     /**
      * Annotating your config class with this will block config auto-sync when config file is updated

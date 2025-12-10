@@ -115,7 +115,14 @@ public final class ConfigurationFileManager {
 
     public static File getConfigFile(ConfigHolder<?> holder) {
         IConfigFormatHandler handler = holder.getFormat();
-        String filename = holder.getFilename() + "." + handler.fileExt();
+	    String Filename = holder.getFilename();
+	    String groupname = holder.getGroup();
+        String filename;
+	    if (holder.getUnifiedFolder()) {
+		    filename = groupname + "/" + Filename + "." + handler.fileExt();
+	    } else {
+		    filename = Filename + "." + handler.fileExt();
+	    }
         return Paths.get("config", filename).toFile();
     }
 
