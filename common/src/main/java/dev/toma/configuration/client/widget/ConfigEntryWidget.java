@@ -7,6 +7,7 @@ import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.validate.ValidationResult;
 import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -87,7 +88,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         int entryLeft = WidgetPlacerHelper.getLeft(this.getX(), this.width);
         boolean backgroundRenderMode = AbstractConfigScreen.canRenderBackground(minecraft);
         if (backgroundRenderMode || isHovered) {
-            drawScrollingString(graphics, font, label, this.getX(), entryLeft - 5, this.getY() + (this.height - font.lineHeight) / 2, backgroundRenderMode ? configEntry.color() : 0xFFFFFF);
+            renderScrollingString(label, entryLeft - 5, backgroundRenderMode ? configEntry.color() : 0xFFFFFFFF, graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
         }
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         ValidationResult.Type type = validationResult.type();
@@ -112,6 +113,14 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         this.lastHoverState = isHovered;
     }
 
+    public void renderScrollingString(Component text, int right, int color, ActiveTextCollector textCollector) {
+        int left = this.getX();
+        int top = this.getY();
+        int bottom = this.getBottom();
+        Component coloredText = text.copy().withStyle(style -> style.withColor(color));
+        textCollector.acceptScrolling(coloredText, left, left, right, top, bottom, textCollector.defaultParameters());
+    }
+
     @Override
     public void setValidationResult(ValidationResult result) {
         this.result = result;
@@ -123,16 +132,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         if (editableCheck)
             widget.active = this.configValue.isEditable();
         return this.addRenderableWidget(widget);
-    }
-
-    public static void drawScrollingString(GuiGraphics graphics, Font font, Component text, int x1, int x2, int y, int color) {
-        int maxWidth = x2 - x1;
-        int width = font.width(text);
-        if (width <= maxWidth) {
-            graphics.drawString(font, text, x1, y, color);
-        } else {
-            AbstractWidget.renderScrollingString(graphics, font, text, x1, y, x2, y + font.lineHeight, color);
-        }
     }
 
     private ValidationResult getValidationResult() {

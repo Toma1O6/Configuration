@@ -9,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import java.util.regex.Pattern;
 
 /**
- * Structure similar to {@link net.minecraft.resources.ResourceLocation} where namespace represents the configId and path
+ * Structure similar to {@link net.minecraft.resources.Identifier} where namespace represents the configId and path
  * specifies path to the desired config value. This data structure supports uppercase text, numbers and characters as
  * {@code _}, {@code -} (and {@code /} in path). <p>
  *

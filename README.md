@@ -35,6 +35,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 - ![1.21.8](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.8%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.8)
 - ![1.21.9](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.9%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.9)
 - ![1.21.10](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.10%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.10)
+- ![1.21.11](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.11%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.11)
 
 ---
 

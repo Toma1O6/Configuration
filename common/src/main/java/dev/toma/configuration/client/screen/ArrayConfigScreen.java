@@ -16,7 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.lang.reflect.Field;
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends AbstractConfigScreen {
 
     public static final Component ADD_ELEMENT = Component.translatable("text.configuration.value.add_element");
-    public static final ResourceLocation REMOVE_ICON = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "textures/icons/remove.png");
+    public static final Identifier REMOVE_ICON = Identifier.fromNamespaceAndPath(Configuration.MODID, "textures/icons/remove.png");
 
     public final C array;
     private final boolean fixedSize;
@@ -80,7 +80,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
                     addElement.setBackgroundRenderer(theme.getButtonBackground(addElement));
                     addElement.setClickListener((widget, mouseX, mouseY) -> {
                         this.addHandler.insertElement();
-                        this.init(minecraft, width, height);
+                        this.init(width, height);
                     });
                 }
                 break;
@@ -111,7 +111,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
                         System.arraycopy(src, index1 + 1, dest, index1, this.sizeSupplier.get() - 1 - index1);
                         return dest;
                     });
-                    this.init(minecraft, width, height);
+                    this.init(width, height);
                 });
                 removeButton.setBackgroundRenderer(theme.getButtonBackground(removeButton));
                 removeButton.setForegroundRenderer(new TextureRenderer(REMOVE_ICON, 2, 2, 16, 16));
@@ -155,7 +155,7 @@ public class ArrayConfigScreen<V, C extends AbstractArrayValue<V>> extends Abstr
         int next = this.index + scale;
         if (next >= 0 && next + this.pageSize <= this.getTotalSize()) {
             this.index = next;
-            this.init(minecraft, width, height);
+            this.init(width, height);
             return true;
         }
         return false;

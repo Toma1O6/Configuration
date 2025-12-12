@@ -2,17 +2,17 @@ package dev.toma.configuration.client.widget.render;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class TextureRenderer implements IRenderer {
 
-    private final ResourceLocation texture;
+    private final Identifier texture;
     private final int xOffset;
     private final int yOffset;
     private final int textureWidth;
     private final int textureHeight;
 
-    public TextureRenderer(ResourceLocation texture, int xOffset, int yOffset, int textureWidth, int textureHeight) {
+    public TextureRenderer(Identifier texture, int xOffset, int yOffset, int textureWidth, int textureHeight) {
         this.texture = texture;
         this.xOffset = xOffset;
         this.yOffset = yOffset;

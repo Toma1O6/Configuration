@@ -11,7 +11,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.text.DecimalFormat;
@@ -19,12 +19,12 @@ import java.text.DecimalFormat;
 public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThemeWidget {
 
     public static final WidgetSprites SLIDER = new WidgetSprites(
-            ResourceLocation.withDefaultNamespace("widget/slider"),
-            ResourceLocation.withDefaultNamespace("widget/slider_highlighted")
+            Identifier.withDefaultNamespace("widget/slider"),
+            Identifier.withDefaultNamespace("widget/slider_highlighted")
     );
     public static final WidgetSprites HANDLE = new WidgetSprites(
-            ResourceLocation.withDefaultNamespace("widget/slider_handle"),
-            ResourceLocation.withDefaultNamespace("widget/slider_handle_highlighted")
+            Identifier.withDefaultNamespace("widget/slider_handle"),
+            Identifier.withDefaultNamespace("widget/slider_handle_highlighted")
     );
 
     protected final Font font;
@@ -58,7 +58,7 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
         this.renderBackground(guiGraphics);
         this.applyRenderer(this.handleRenderer, guiGraphics, this.getX() + (int)(this.value * (this.width - 8.0D)), this.getY(), 8, this.getHeight());
         int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
-        this.renderScrollingString(guiGraphics, font, 2, textColor);
+        ConfigurationRenderUtils.renderCenteredScrollingString(this, this.getMessage(), textColor, 2, guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
     }
 
     @Override

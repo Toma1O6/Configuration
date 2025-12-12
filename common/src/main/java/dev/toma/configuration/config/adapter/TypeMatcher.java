@@ -1,7 +1,7 @@
 package dev.toma.configuration.config.adapter;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public interface TypeMatcher extends Predicate<Class<?>>, Comparable<TypeMatcher> {
 
-    ResourceLocation getIdentifier();
+    Identifier getIdentifier();
 
     int priority();
 
@@ -100,21 +100,21 @@ public interface TypeMatcher extends Predicate<Class<?>>, Comparable<TypeMatcher
 
     class NamedMatcherImpl implements TypeMatcher {
 
-        private final ResourceLocation identifier;
+        private final Identifier identifier;
         private final Predicate<Class<?>> matcher;
         private int priority;
 
-        public NamedMatcherImpl(ResourceLocation identifier, Predicate<Class<?>> matcher) {
+        public NamedMatcherImpl(Identifier identifier, Predicate<Class<?>> matcher) {
             this.identifier = Objects.requireNonNull(identifier);
             this.matcher = Objects.requireNonNull(matcher);
         }
 
         public static NamedMatcherImpl vanilla(String path, Predicate<Class<?>> matcher) {
-            return new NamedMatcherImpl(ResourceLocation.fromNamespaceAndPath(Configuration.MODID, path), matcher);
+            return new NamedMatcherImpl(Identifier.fromNamespaceAndPath(Configuration.MODID, path), matcher);
         }
 
         public static NamedMatcherImpl vanilla(String path, Class<?> requiredType) {
-            return new NamedMatcherImpl(ResourceLocation.fromNamespaceAndPath(Configuration.MODID, path), type -> type.equals(requiredType));
+            return new NamedMatcherImpl(Identifier.fromNamespaceAndPath(Configuration.MODID, path), type -> type.equals(requiredType));
         }
 
         public NamedMatcherImpl withPriority(int priority) {
@@ -128,7 +128,7 @@ public interface TypeMatcher extends Predicate<Class<?>>, Comparable<TypeMatcher
         }
 
         @Override
-        public ResourceLocation getIdentifier() {
+        public Identifier getIdentifier() {
             return identifier;
         }
 

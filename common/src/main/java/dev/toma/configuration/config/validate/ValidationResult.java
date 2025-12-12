@@ -2,7 +2,7 @@ package dev.toma.configuration.config.validate;
 
 import dev.toma.configuration.Configuration;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,14 +62,14 @@ public record ValidationResult(Type type, List<Component> description) {
         public final int backgroundColor;
         public final int backgroundFadeMinColor;
         public final int backgroundFadeMaxColor;
-        public final ResourceLocation iconPath;
+        public final Identifier iconPath;
 
         Type(int textColor, int backgroundColor, int backgroundFadeMinColor, int backgroundFadeMaxColor) {
             this.textColor = textColor;
             this.backgroundColor = backgroundColor;
             this.backgroundFadeMinColor = backgroundFadeMinColor;
             this.backgroundFadeMaxColor = backgroundFadeMaxColor;
-            this.iconPath = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "textures/icons/" + this.name().toLowerCase(Locale.ROOT) + ".png");
+            this.iconPath = Identifier.fromNamespaceAndPath(Configuration.MODID, "textures/icons/" + this.name().toLowerCase(Locale.ROOT) + ".png");
         }
 
         public boolean isWarningOrError() {

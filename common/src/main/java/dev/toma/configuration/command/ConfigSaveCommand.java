@@ -13,6 +13,7 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.ConfigHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public final class ConfigSaveCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 literal("configuration")
-                        .requires(stack -> stack.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(stack -> {
                             throw NOT_ENOUGH_ARGUMENTS.create();
                         })

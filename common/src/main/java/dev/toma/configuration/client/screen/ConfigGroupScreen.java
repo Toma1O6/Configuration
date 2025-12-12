@@ -96,7 +96,7 @@ public class ConfigGroupScreen extends Screen {
         int next = this.index + scale;
         if (next >= 0 && next + this.pageSize <= this.configHolders.size()) {
             this.index = next;
-            this.init(minecraft, width, height);
+            this.init(width, height);
             return true;
         }
         return false;

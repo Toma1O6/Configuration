@@ -2,15 +2,15 @@ package dev.toma.configuration.client.widget.render;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
 public class SpriteRenderer implements IRenderer {
 
-    private final Supplier<ResourceLocation> resourceProvider;
+    private final Supplier<Identifier> resourceProvider;
 
-    public SpriteRenderer(Supplier<ResourceLocation> resourceProvider) {
+    public SpriteRenderer(Supplier<Identifier> resourceProvider) {
         this.resourceProvider = resourceProvider;
     }
 

@@ -21,7 +21,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.apache.logging.log4j.Marker;
@@ -36,16 +36,16 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     public static final int HEADER_HEIGHT = 35;
     public static final int FOOTER_HEIGHT = 30;
     public static final WidgetSprites BUTTON_SPRITES = new WidgetSprites(
-            ResourceLocation.withDefaultNamespace("widget/button"),
-            ResourceLocation.withDefaultNamespace("widget/button_disabled"),
-            ResourceLocation.withDefaultNamespace("widget/button_highlighted")
+            Identifier.withDefaultNamespace("widget/button"),
+            Identifier.withDefaultNamespace("widget/button_disabled"),
+            Identifier.withDefaultNamespace("widget/button_highlighted")
     );
     public static final Marker MARKER = MarkerManager.getMarker("Screen");
     public static final Component LABEL_BACK = Component.translatable("text.configuration.value.back");
     public static final Component LABEL_SAVE_AND_CLOSE = Component.translatable("text.configuration.value.save_and_close");
-    public static final ResourceLocation ICON_REVERT = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "textures/icons/revert.png");
-    public static final ResourceLocation ICON_REVERT_DEFAULT = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "textures/icons/revert_default.png");
-    public static final ResourceLocation ICON_APPLY = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "textures/icons/apply.png");
+    public static final Identifier ICON_REVERT = Identifier.fromNamespaceAndPath(Configuration.MODID, "textures/icons/revert.png");
+    public static final Identifier ICON_REVERT_DEFAULT = Identifier.fromNamespaceAndPath(Configuration.MODID, "textures/icons/revert_default.png");
+    public static final Identifier ICON_APPLY = Identifier.fromNamespaceAndPath(Configuration.MODID, "textures/icons/apply.png");
     protected final ConfigHolder<?> holder;
     protected final ConfigTheme theme;
     protected final Screen last;
@@ -114,7 +114,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         applyButton.setClickListener((widget, mouseX, mouseY) -> {
             if (this.holder.isChanged()) {
                 this.holder.save();
-                this.init(minecraft, width, height);
+                this.init(width, height);
             }
         });
         applyButton.setTooltip(Tooltip.create(ConfigEntryWidget.APPLY));
@@ -214,7 +214,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     }
 
     public void renderValidationIcon(ValidationResult.Type type, GuiGraphics graphics, AbstractWidget widget, int x, int y) {
-        ResourceLocation icon = type.iconPath;
+        Identifier icon = type.iconPath;
         graphics.blit(RenderPipelines.GUI_TEXTURED, icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
     }
 

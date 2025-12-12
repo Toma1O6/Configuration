@@ -7,14 +7,14 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public record S2C_SendConfigDataMessage(String config, Map<String, NetworkConfigValue<?>> values) implements CustomPacketPayload {
 
-    public static final ResourceLocation IDENTIFIER = ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "send_config_data");
+    public static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(Configuration.MODID, "send_config_data");
     public static final Type<S2C_SendConfigDataMessage> TYPE = new Type<>(IDENTIFIER);
     public static final StreamCodec<FriendlyByteBuf, S2C_SendConfigDataMessage> CODEC = StreamCodec.of(
             (o, s2CSendConfigDataMessage) -> s2CSendConfigDataMessage.encode(o),

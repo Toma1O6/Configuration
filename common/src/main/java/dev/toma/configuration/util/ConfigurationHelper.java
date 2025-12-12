@@ -23,7 +23,7 @@ public final class ConfigurationHelper {
     @RegExp
     public static final String SIMPLE_ARGB_PATTERN = "^#[0-9a-fA-F]{1,8}$";
     /**
-     * Regexp for {@link net.minecraft.resources.ResourceLocation} values.
+     * Regexp for {@link net.minecraft.resources.Identifier} values.
      * Namespace is optional and typically defaults to {@code minecraft}
      */
     @RegExp

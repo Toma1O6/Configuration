@@ -2,8 +2,6 @@ package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.value.EnumValue;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -22,14 +20,15 @@ public class EnumWidget<E extends Enum<E>> extends ThemedButtonWidget {
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        Minecraft minecraft = Minecraft.getInstance();
         this.renderBackground(graphics);
         int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
-        this.renderString(graphics, minecraft.font, textColor);
+        this.renderString(graphics, textColor);
     }
 
-    private void renderString(GuiGraphics graphics, Font font, int color) {
-        this.renderScrollingString(graphics, font, 2, color);
+    private void renderString(GuiGraphics graphics, int color) {
+        // is there a better way to set color?
+        Component message = this.getMessage().copy().withStyle(style -> style.withColor(color));
+        this.renderScrollingStringOverContents(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), message, 2);
     }
 
     @Override

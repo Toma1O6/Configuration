@@ -56,7 +56,7 @@ public class DialogScreen extends Screen {
 
     @Override
     protected void init() {
-        this.background.init(minecraft, width, height);
+        this.background.init(width, height);
         this.setDimensions(140, 100);
         this.addDefaultDialogButtons();
     }

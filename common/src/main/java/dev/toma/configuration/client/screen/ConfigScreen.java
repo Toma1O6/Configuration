@@ -102,7 +102,7 @@ public class ConfigScreen extends AbstractConfigScreen {
         int next = this.index + scale;
         if (next >= 0 && next + this.pageSize <= this.valueMap.size()) {
             this.index = next;
-            this.init(minecraft, width, height);
+            this.init(width, height);
             return true;
         }
         return false;

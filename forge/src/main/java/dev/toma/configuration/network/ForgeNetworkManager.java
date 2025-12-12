@@ -3,7 +3,7 @@ package dev.toma.configuration.network;
 import dev.toma.configuration.Configuration;
 import dev.toma.configuration.network.message.S2C_SendConfigDataMessage;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.PacketDistributor;
@@ -12,7 +12,7 @@ import net.minecraftforge.network.SimpleChannel;
 public class ForgeNetworkManager implements NetworkManager {
 
     public static final ForgeNetworkManager INSTANCE = new ForgeNetworkManager();
-    private static final SimpleChannel CHANNEL = ChannelBuilder.named(ResourceLocation.fromNamespaceAndPath(Configuration.MODID, "network"))
+    private static final SimpleChannel CHANNEL = ChannelBuilder.named(Identifier.fromNamespaceAndPath(Configuration.MODID, "network"))
             .networkProtocolVersion(1)
             .simpleChannel();
 
