@@ -1,2 +1,3 @@
-# Release 1.21.7-3.3.0
-- Updated to MC 1.21.7
+# Release 1.21.11-4.1.0
+- 1.21.11 port
+- Added support for unified config directories (#25)
