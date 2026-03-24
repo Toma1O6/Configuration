@@ -32,5 +32,4 @@ rootProject.name = "Configuration"
 include("common")
 include("neoforge")
 include("fabric")
-include("forge")
 

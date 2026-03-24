@@ -61,11 +61,6 @@ subprojects {
                 "neoforge_version_range": "${neoforge_version_range}",
                 "neogradle_userdev": "${neogradle_userdev}",
 
-                // Forge
-                "forge_version": "${forge_version}",
-                "forge_version_range": "${forge_version_range}",
-                "forge_gradle_version": "${forge_gradle_version}",
-
                 // Fabric
                 "fabric_version": "${fabric_version}",
                 "fabric_loader_version": "${fabric_loader_version}",
