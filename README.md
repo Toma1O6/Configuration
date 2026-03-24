@@ -19,8 +19,8 @@ for correct Minecraft version and drop the `.jar` file into `mods` directory.
 In the following examples replace the `project.minecraft_version` and `project.configuration_version` by your used properties.
 
 ## Version overview
-### 1.20
-- ![1.20.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.20.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.20.1)
+### 26.x
+- ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1)
 
 ---
 
@@ -36,6 +36,11 @@ In the following examples replace the `project.minecraft_version` and `project.c
 - ![1.21.9](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.9%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.9)
 - ![1.21.10](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.10%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.10)
 - ![1.21.11](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.11%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.11)
+
+---
+
+### 1.20
+- ![1.20.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.20.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.20.1)
 
 ---
 

@@ -93,7 +93,7 @@ tasks.register('publishToCurseForge', TaskPublishCurseForge) {
     uploadFile.displayName = "${mod_id}-neoforge-${minecraft_version}-${version}"
     uploadFile.addModLoader('NeoForge')
     uploadFile.addEnvironment('Client', 'Server')
-    uploadFile.addJavaVersion("Java 21")
+    uploadFile.addJavaVersion("Java 25")
     compatible_mc_versions.split(",").each { gameVersion ->
         uploadFile.addGameVersion(gameVersion)
     }

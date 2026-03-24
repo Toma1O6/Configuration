@@ -110,7 +110,7 @@ tasks.register('publishToCurseForge', TaskPublishCurseForge) {
     uploadFile.displayName = "${mod_id}-fabric-${minecraft_version}-${version}"
     uploadFile.addModLoader('Fabric')
     uploadFile.addEnvironment('Client', 'Server')
-    uploadFile.addJavaVersion("Java 21")
+    uploadFile.addJavaVersion("Java 25")
     compatible_mc_versions.split(",").each { gameVersion ->
         uploadFile.addGameVersion(gameVersion)
     }
