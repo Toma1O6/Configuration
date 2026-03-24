@@ -2,7 +2,7 @@ package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.value.EnumValue;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
@@ -19,16 +19,16 @@ public class EnumWidget<E extends Enum<E>> extends ThemedButtonWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(graphics);
         int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
         this.renderString(graphics, textColor);
     }
 
-    private void renderString(GuiGraphics graphics, int color) {
+    private void renderString(GuiGraphicsExtractor graphics, int color) {
         // is there a better way to set color?
         Component message = this.getMessage().copy().withStyle(style -> style.withColor(color));
-        this.renderScrollingStringOverContents(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), message, 2);
+        this.extractScrollingStringOverContents(graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE), message, 2);
     }
 
     @Override

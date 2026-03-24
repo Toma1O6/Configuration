@@ -4,7 +4,7 @@ import dev.toma.configuration.client.theme.ConfigTheme;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -363,7 +363,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float deltaTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float deltaTick) {
         if (this.isVisible()) {
             if (this.isBordered()) {
                 this.renderBackground(graphics);
@@ -382,7 +382,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
             if (!label.isEmpty()) {
                 String renderString = cursorAtEnd ? label.substring(0, position) : label;
                 FormattedCharSequence sequence = this.formatter.apply(renderString, this.displayPos);
-                graphics.drawString(this.font, sequence, textLeft, top, textColor);
+                graphics.text(this.font, sequence, textLeft, top, textColor);
                 textLeft += this.font.width(sequence) + 1;
             }
 
@@ -396,15 +396,15 @@ public class EditBoxWidget extends AbstractThemeWidget {
             }
 
             if (!label.isEmpty() && cursorAtEnd && position < label.length()) {
-                graphics.drawString(this.font, this.formatter.apply(label.substring(position), this.cursorPos), textLeft, top, textColor);
+                graphics.text(this.font, this.formatter.apply(label.substring(position), this.cursorPos), textLeft, top, textColor);
             }
 
             if (this.hint != null && label.isEmpty() && !this.isFocused()) {
-                graphics.drawString(this.font, this.hint, textLeft, top, textColor);
+                graphics.text(this.font, this.hint, textLeft, top, textColor);
             }
 
             if (!$$15 && this.suggestion != null) {
-                graphics.drawString(this.font, this.suggestion, $$16 - 1, top, 0xFF808080);
+                graphics.text(this.font, this.suggestion, $$16 - 1, top, 0xFF808080);
             }
 
             int var10003;
@@ -417,7 +417,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
                     var10005 = top + 1;
                     graphics.fill($$16, var10003, var10004, var10005 + 9, CURSOR_INSERT_COLOR);
                 } else {
-                    graphics.drawString(this.font, CURSOR_APPEND_CHARACTER, $$16, top, textColor);
+                    graphics.text(this.font, CURSOR_APPEND_CHARACTER, $$16, top, textColor);
                 }
             }
 
@@ -432,7 +432,7 @@ public class EditBoxWidget extends AbstractThemeWidget {
         }
     }
 
-    private void renderHighlight(GuiGraphics graphics, int x1, int y1, int x2, int y2) {
+    private void renderHighlight(GuiGraphicsExtractor graphics, int x1, int y1, int x2, int y2) {
         int $$6;
         if (x1 < x2) {
             $$6 = x1;

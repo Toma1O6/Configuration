@@ -16,8 +16,8 @@ import java.util.Optional;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnable> implements WindowEventHandler {
 
-    public MinecraftMixin(String name) {
-        super(name);
+    public MinecraftMixin(String name, boolean propagatesCrashes) {
+        super(name, propagatesCrashes);
     }
 
     @Inject(
@@ -37,7 +37,7 @@ public abstract class MinecraftMixin extends ReentrantBlockableEventLoop<Runnabl
             method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V",
             at = @At("RETURN")
     )
-    private void configuration$disconnect(Screen screen, boolean canceled, CallbackInfo ci) {
+    private void configuration$disconnect(Screen screen, boolean keepResourcePacks, CallbackInfo ci) {
         ConfigurationFileManager.setEnvironment(ConfigurationFileManager.ConfigEnvironment.MENU);
         ConfigHolder.getSynchronizedConfigs().stream()
                 .map(ConfigHolder::getConfig)

@@ -4,7 +4,7 @@ import dev.toma.configuration.client.screen.DialogScreen;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.Configurable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -48,7 +48,7 @@ public final class ColorWidget extends AbstractThemeWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialRenderTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialRenderTicks) {
         int providedColor = this.colorSupplier.getAsInt();
         int color = this.argb ? providedColor : (0xFF << 24) | providedColor;
         this.renderBackground(graphics);
@@ -158,7 +158,7 @@ public final class ColorWidget extends AbstractThemeWidget {
             }
 
             @Override
-            public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
                 int color = this.colorProvider.getAsInt();
                 if (!this.argb) {
                     color |= 0xFF << 24;

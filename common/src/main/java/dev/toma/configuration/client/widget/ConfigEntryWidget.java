@@ -9,7 +9,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.CommonComponents;
@@ -66,7 +66,7 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         ConfigTheme.ConfigEntry configEntry = this.theme.getConfigEntry();
@@ -88,9 +88,9 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         int entryLeft = WidgetPlacerHelper.getLeft(this.getX(), this.width);
         boolean backgroundRenderMode = AbstractConfigScreen.canRenderBackground(minecraft);
         if (backgroundRenderMode || isHovered) {
-            renderScrollingString(label, entryLeft - 5, backgroundRenderMode ? configEntry.color() : 0xFFFFFFFF, graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+            renderScrollingString(label, entryLeft - 5, backgroundRenderMode ? configEntry.color() : 0xFFFFFFFF, graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
         }
-        super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTicks);
         ValidationResult.Type type = validationResult.type();
         boolean validationRendering = false;
         if (type.isWarningOrError()) {
@@ -147,8 +147,8 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
 
     public interface IValidationRenderer {
 
-        void drawIcon(GuiGraphics graphics, AbstractWidget widget, ValidationResult.Type type);
+        void drawIcon(GuiGraphicsExtractor graphics, AbstractWidget widget, ValidationResult.Type type);
 
-        void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, ValidationResult.Type type, int textColor);
+        void drawDescription(GuiGraphicsExtractor graphics, AbstractWidget widget, List<FormattedCharSequence> text, ValidationResult.Type type, int textColor);
     }
 }

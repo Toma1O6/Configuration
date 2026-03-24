@@ -13,7 +13,7 @@ import dev.toma.configuration.config.value.ConfigValue;
 import dev.toma.configuration.config.value.ObjectValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -75,7 +75,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         this.saveConfig(true);
     }
 
-    public static void renderScrollbar(GuiGraphics graphics, int x, int y, int width, int height, int index, int valueCount, int paging, int bgColor) {
+    public static void renderScrollbar(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int index, int valueCount, int paging, int bgColor) {
         if (valueCount <= paging)
             return;
         double step = height / (double) valueCount;
@@ -204,16 +204,16 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     }
 
     @Override
-    public void drawDescription(GuiGraphics graphics, AbstractWidget widget, List<FormattedCharSequence> text, ValidationResult.Type type, int textColor) {
+    public void drawDescription(GuiGraphicsExtractor graphics, AbstractWidget widget, List<FormattedCharSequence> text, ValidationResult.Type type, int textColor) {
         this.deferredDescription = new DeferredDescription(type, text, textColor, widget.getX() + 5, widget.getY() + widget.getHeight() + 10);
     }
 
     @Override
-    public void drawIcon(GuiGraphics graphics, AbstractWidget widget, ValidationResult.Type type) {
+    public void drawIcon(GuiGraphicsExtractor graphics, AbstractWidget widget, ValidationResult.Type type) {
         this.renderValidationIcon(type, graphics, widget, widget.getX() - 22, widget.getY() + 1);
     }
 
-    public void renderValidationIcon(ValidationResult.Type type, GuiGraphics graphics, AbstractWidget widget, int x, int y) {
+    public void renderValidationIcon(ValidationResult.Type type, GuiGraphicsExtractor graphics, AbstractWidget widget, int x, int y) {
         Identifier icon = type.iconPath;
         graphics.blit(RenderPipelines.GUI_TEXTURED, icon, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
     }
@@ -223,13 +223,13 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float renderDelta) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float renderDelta) {
         if (canRenderBackground(minecraft)) {
-            super.renderBackground(graphics, mouseX, mouseY, renderDelta);
+            super.extractBackground(graphics, mouseX, mouseY, renderDelta);
         }
     }
 
-    protected void renderPost(GuiGraphics graphics, float renderDelta) {
+    protected void renderPost(GuiGraphicsExtractor graphics, float renderDelta) {
         if (this.deferredDescription != null) {
             this.deferredDescription.render(graphics, this.font, this.width, this.height, renderDelta);
             this.deferredDescription = null;
@@ -238,7 +238,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
 
     public record DeferredDescription(ValidationResult.Type type, List<FormattedCharSequence> texts, int textColor, int x, int y) {
 
-        public void render(GuiGraphics graphics, Font font, int width, int height, float renderDelta) {
+        public void render(GuiGraphicsExtractor graphics, Font font, int width, int height, float renderDelta) {
             if (!texts.isEmpty()) {
                 int maxTextWidth = 0;
                 for(FormattedCharSequence textComponent : texts) {
@@ -278,7 +278,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
                 graphics.nextStratum();
                 for(int i = 0; i < texts.size(); i++) {
                     FormattedCharSequence textComponent = texts.get(i);
-                    graphics.drawString(font, textComponent, startX, startY, textColor, false);
+                    graphics.text(font, textComponent, startX, startY, textColor, false);
                     if (i == 0) {
                         startY += 2;
                     }

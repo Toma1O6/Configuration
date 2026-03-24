@@ -12,7 +12,7 @@ public class FabricNetworkManager implements NetworkManager {
     public static final FabricNetworkManager INSTANCE = new FabricNetworkManager();
 
     public void registerMessages() {
-        PayloadTypeRegistry.playS2C().register(S2C_SendConfigDataMessage.TYPE, S2C_SendConfigDataMessage.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(S2C_SendConfigDataMessage.TYPE, S2C_SendConfigDataMessage.CODEC);
 
         if (Configuration.PLATFORM.getEnvironment() == dev.toma.configuration.config.Environment.CLIENT) {
             this.registerClientReceivers();

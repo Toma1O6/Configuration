@@ -8,7 +8,7 @@ import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import dev.toma.configuration.config.adapter.TypeAdapter;
 import dev.toma.configuration.config.value.ConfigValue;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.message.FormattedMessage;
@@ -75,7 +75,7 @@ public class ConfigScreen extends AbstractConfigScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (canRenderBackground(minecraft)) {
             // HEADER
             ConfigTheme.Header themeHeader = this.theme.getHeader();
@@ -83,14 +83,14 @@ public class ConfigScreen extends AbstractConfigScreen {
             Component headerLabel = themeHeader.customText() != null ? themeHeader.customText() : this.title;
             int titleWidth = this.font.width(headerLabel);
             graphics.fill(0, 0, width, HEADER_HEIGHT, themeHeader.backgroundColor());
-            graphics.drawString(font, headerLabel, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, themeHeader.foregroundColor(), true);
+            graphics.text(font, headerLabel, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, themeHeader.foregroundColor(), true);
             graphics.fill(0, height - FOOTER_HEIGHT, width, height, footer.backgroundColor());
             Integer fillColor = this.theme.getBackgroundFillColor();
             if (fillColor != null) {
                 graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, fillColor);
             }
         }
-        renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
+        renderables.forEach(renderable -> renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks));
         ConfigTheme.Scrollbar scrollbar = this.theme.getScrollbar();
         renderScrollbar(graphics, width - scrollbar.width(), HEADER_HEIGHT, scrollbar.width(), height - FOOTER_HEIGHT - HEADER_HEIGHT, index, valueMap.size(), pageSize, scrollbar.backgroundColor());
         this.renderPost(graphics, partialTicks);

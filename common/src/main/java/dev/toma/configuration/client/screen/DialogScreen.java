@@ -1,6 +1,6 @@
 package dev.toma.configuration.client.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -62,15 +62,15 @@ public class DialogScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int backgroundColor = 0xFF << 24;
-        this.background.render(graphics, -1, -1, partialTicks);
+        this.background.extractRenderState(graphics, -1, -1, partialTicks);
         graphics.nextStratum();
         graphics.fill(0, 0, width, height, 0xAA << 24);
         graphics.fillGradient(this.dialogLeft - 1, this.dialogTop - 1, this.dialogLeft + this.dialogWidth + 1, this.dialogTop + this.dialogHeight + 1, 0xFFFFFFFF, 0xFFFFFFFF);
         graphics.fillGradient(this.dialogLeft, this.dialogTop, this.dialogLeft + this.dialogWidth, this.dialogTop + this.dialogHeight, backgroundColor, backgroundColor);
         this.renderForeground(graphics, mouseX, mouseY, partialTicks);
-        renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
+        renderables.forEach(renderable -> renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks));
     }
 
     @Override
@@ -90,15 +90,16 @@ public class DialogScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics p_283688_, int p_299421_, int p_298679_, float p_297268_) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
     }
 
-    protected void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    protected void renderForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int headerWidth = this.font.width(this.title);
-        graphics.drawString(font, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2, this.dialogTop + 5, 0xFFFFFFFF);
+        graphics.text(font, this.title, this.dialogLeft + (this.dialogWidth - headerWidth) / 2, this.dialogTop + 5, 0xFFFFFFFF);
         int line = 0;
         for (FormattedCharSequence textLine : this.splitText) {
-            graphics.drawString(font, textLine, this.dialogLeft + 5, this.dialogTop + 20 + line * 10, 0xFFFFFFFF);
+            graphics.text(font, textLine, this.dialogLeft + 5, this.dialogTop + 20 + line * 10, 0xFFFFFFFF);
             ++line;
         }
     }

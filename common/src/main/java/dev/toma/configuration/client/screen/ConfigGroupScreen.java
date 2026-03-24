@@ -3,7 +3,7 @@ package dev.toma.configuration.client.screen;
 import dev.toma.configuration.client.widget.ConfigEntryWidget;
 import dev.toma.configuration.config.ConfigHolder;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -69,14 +69,14 @@ public class ConfigGroupScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int titleWidth = this.font.width(this.title);
         graphics.fill(0, 0, width, HEADER_HEIGHT, 0x99 << 24);
-        graphics.drawString(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFFFF);
+        graphics.text(font, this.title, (this.width - titleWidth) / 2, (HEADER_HEIGHT - this.font.lineHeight) / 2, 0xFFFFFFFF);
         graphics.fill(0, height - FOOTER_HEIGHT, width, height, 0x99 << 24);
         graphics.fill(0, HEADER_HEIGHT, width, height - FOOTER_HEIGHT, 0x55 << 24);
         AbstractConfigScreen.renderScrollbar(graphics, width - 5, HEADER_HEIGHT, 5, height - FOOTER_HEIGHT - HEADER_HEIGHT, index, configHolders.size(), pageSize, 0xFF << 24);
-        renderables.forEach(renderable -> renderable.render(graphics, mouseX, mouseY, partialTicks));
+        renderables.forEach(renderable -> renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks));
     }
 
     protected void initFooter() {
@@ -112,8 +112,8 @@ public class ConfigGroupScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            graphics.drawString(font, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2, 0xFFAAAAAA);
+        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            graphics.text(font, this.getMessage(), this.getX(), this.getY() + (this.height - this.font.lineHeight) / 2, 0xFFAAAAAA);
         }
 
         @Override

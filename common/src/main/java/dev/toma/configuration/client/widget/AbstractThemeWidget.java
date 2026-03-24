@@ -2,7 +2,7 @@ package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.render.IRenderer;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -32,11 +32,11 @@ public abstract class AbstractThemeWidget extends AbstractWidget {
         this.backgroundRenderer = backgroundRenderer;
     }
 
-    public void renderBackground(GuiGraphics graphics) {
+    public void renderBackground(GuiGraphicsExtractor graphics) {
         this.applyRenderer(this.backgroundRenderer, graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
-    public void applyRenderer(IRenderer renderer, GuiGraphics graphics, int x, int y, int width, int height) {
+    public void applyRenderer(IRenderer renderer, GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         if (renderer != null) {
             renderer.draw(graphics, x, y, width, height, this.isHovered);
         }

@@ -5,7 +5,7 @@ import dev.toma.configuration.client.widget.render.IRenderer;
 import dev.toma.configuration.config.value.NumericValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -54,11 +54,11 @@ public class SliderWidget<N extends Number & Comparable<N>> extends AbstractThem
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaTick) {
         this.renderBackground(guiGraphics);
         this.applyRenderer(this.handleRenderer, guiGraphics, this.getX() + (int)(this.value * (this.width - 8.0D)), this.getY(), 8, this.getHeight());
         int textColor = this.theme.getWidgetTextColor(this.active, this.isHovered);
-        ConfigurationRenderUtils.renderCenteredScrollingString(this, this.getMessage(), textColor, 2, guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+        ConfigurationRenderUtils.renderCenteredScrollingString(this, this.getMessage(), textColor, 2, guiGraphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
     }
 
     @Override

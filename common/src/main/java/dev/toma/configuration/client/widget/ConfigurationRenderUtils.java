@@ -1,7 +1,7 @@
 package dev.toma.configuration.client.widget;
 
 import net.minecraft.client.gui.ActiveTextCollector;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 
@@ -25,7 +25,7 @@ public final class ConfigurationRenderUtils {
         textCollector.acceptScrollingWithDefaultCenter(coloredText, left, right, top, bottom);
     }
 
-    public static ActiveTextCollector createColoredTextCollector(GuiGraphics graphics, int color) {
-        return graphics.textRenderer(GuiGraphics.HoveredTextEffects.NONE, style -> style.withColor(color));
+    public static ActiveTextCollector createColoredTextCollector(GuiGraphicsExtractor graphics, int color) {
+        return graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE, style -> style.withColor(color));
     }
 }

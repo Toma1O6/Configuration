@@ -2,8 +2,7 @@ package dev.toma.configuration.client.widget;
 
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.client.widget.render.IRenderer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
@@ -18,12 +17,12 @@ public class ThemedButtonWidget extends AbstractThemeWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         if (this.backgroundRenderer != null) {
-            this.backgroundRenderer.draw(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.isHovered);
+            this.backgroundRenderer.draw(graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.isHovered);
         }
-        ConfigurationRenderUtils.renderCenteredScrollingString(this, this.getMessage(), this.theme.getWidgetTextColor(this.active, this.isHovered), 2, guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
-        this.applyRenderer(this.foregroundRenderer, guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        ConfigurationRenderUtils.renderCenteredScrollingString(this, this.getMessage(), this.theme.getWidgetTextColor(this.active, this.isHovered), 2, graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
+        this.applyRenderer(this.foregroundRenderer, graphics, this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
     public void setForegroundRenderer(IRenderer foregroundRenderer) {

@@ -4,7 +4,7 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.ConfigurationOptions;
 import dev.toma.configuration.config.io.ConfigurationFileManager;
 import dev.toma.configuration.config.value.BooleanValue;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -66,14 +66,14 @@ public final class ConfigSettingsScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float renderDelta) {
-        super.renderBackground(graphics, mouseX, mouseY, renderDelta);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float renderDelta) {
+        super.extractBackground(graphics, mouseX, mouseY, renderDelta);
         // Header BG
         graphics.fill(0, 0, this.width, 30, 0x99 << 24);
         // Footer BG
         graphics.fill(0, this.height - 30, this.width, this.height, 0x99 << 24);
         // Header text
-        graphics.drawString(this.font, TITLE, (this.width - this.font.width(TITLE)) / 2, (30 - this.font.lineHeight) / 2, 0xFFFFFFFF);
+        graphics.text(this.font, TITLE, (this.width - this.font.width(TITLE)) / 2, (30 - this.font.lineHeight) / 2, 0xFFFFFFFF);
     }
 
     private void close() {
