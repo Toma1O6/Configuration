@@ -21,6 +21,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 ## Version overview
 ### 26.x
 - ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1)
+- ![26.1.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1.1)
 
 ---
 
