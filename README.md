@@ -22,6 +22,7 @@ In the following examples replace the `project.minecraft_version` and `project.c
 ### 26.x
 - ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1)
 - ![26.1.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1.1)
+- ![26.1.2](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-common%2Fmaven-metadata.xml&versionSuffix=26.1.2&label=26.1.2)
 
 ---
 
@@ -59,11 +60,11 @@ repositories {
 }
 ```
 
-**(This step is relevant only for multiloader setups)** Now add relevant `compileOnly` dependency for each subproject, starting with `common` module - `/common/build.gradle`
+**Version format has changed since 26.1.2! Old artifact format is `dev.toma.configuration:configuration-${mc_version}:${configuration_version}-common`**
 ```groovy
 dependencies {
     // Configuration library
-    compileOnly "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration_version}-common"
+    compileOnly "dev.toma.configuration:configuration-common:${project.configuration_version}"
 }
 ```
 And now for each subproject (we will use Neoforge in this example, but the same applies for the remaning mod loaders) -
@@ -71,7 +72,7 @@ And now for each subproject (we will use Neoforge in this example, but the same 
 ```groovy
 dependencies {
     // Configuration library
-    implementation "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration_version}-neoforge"
+    implementation "dev.toma.configuration:configuration-neoforge:${project.configuration_version}"
 }
 ```
 Then repeat the same process for each subproject, but do not forget to change the version suffix to relevant mod loader.
