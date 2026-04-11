@@ -1,3 +1,3 @@
-# Release 26.1.1-4.1.1
-- Updated to 26.1.1
-- Fixed MC version requirement
+# Release 4.1.2+26.1.2
+- Updated to 26.1.2
+- Updated version format
