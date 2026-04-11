@@ -82,9 +82,9 @@ subprojects {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                groupId = project.group
-                artifactId = "${project.mod_id}-${project.platform}"
-                version = "${project.version}"
+                groupId = "${mod_group}"
+                artifactId = "${mod_id}-${project.platform}"
+                version = "${mod_version}+${minecraft_version}"
 
                 artifact jar
                 artifact sourcesJar
