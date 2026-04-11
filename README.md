@@ -18,31 +18,10 @@ for correct Minecraft version and drop the `.jar` file into `mods` directory.
 <span style="color:#AA0000">**This setup has been made for 3.+ versions, for older releases you must use curseforge maven repository**</span><br>
 In the following examples replace the `project.minecraft_version` and `project.configuration_version` by your used properties.
 
-## Version overview
-### 26.x
-- ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1)
-- ![26.1.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-26.1.1%2Fmaven-metadata.xml&versionSuffix=-common&label=26.1.1)
-- ![26.1.2](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-common%2Fmaven-metadata.xml&versionSuffix=26.1.2&label=26.1.2)
-
----
-
-### 1.21
-- ![1.21](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21)
-- ![1.21.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.1)
-- ![1.21.3](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.3%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.3)
-- ![1.21.4](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.4%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.4)
-- ![1.21.5](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.5%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.5)
-- ![1.21.6](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.6%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.6)
-- ![1.21.7](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.7%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.7)
-- ![1.21.8](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.8%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.8)
-- ![1.21.9](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.9%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.9)
-- ![1.21.10](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.10%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.10)
-- ![1.21.11](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.11%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21.11)
-
----
-
-### 1.20
-- ![1.20.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.20.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.20.1)
+## Common version overview
+- ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-common%2Fmaven-metadata.xml&versionSuffix=26.1.2&label=26.1)
+- ![1.21](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.21.1%2Fmaven-metadata.xml&versionSuffix=-common&label=1.21)
+- ![1.20](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Ftoma%2Fpublic%2Fdev%2Ftoma%2Fconfiguration%2Fconfiguration-1.20.1%2Fmaven-metadata.xml&label=1.20)
 
 ---
 
