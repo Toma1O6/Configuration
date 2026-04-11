@@ -126,24 +126,3 @@ modrinth {
     loaders = ["fabric"]
 }
 tasks.modrinth.dependsOn(tasks.jar)
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = "${project.mod_id}-${platform}"
-            version = "${project.version}"
-            from components.java
-        }
-    }
-
-    repositories {
-        maven {
-            url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
-            credentials {
-                username project.findProperty("MAVEN_USERNAME").toString() ?: ""
-                password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
-            }
-        }
-    }
-}

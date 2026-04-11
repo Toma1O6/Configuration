@@ -4,10 +4,15 @@ plugins {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of("${java_version}")
-    java.withSourcesJar()
-    java.withJavadocJar()
+    java {
+        withSourcesJar()
+
+        toolchain {
+            languageVersion = JavaLanguageVersion.of("${java_version}")
+        }
+    }
 
     jar {
         manifest {
@@ -72,6 +77,29 @@ subprojects {
             expand(props)
         }
         inputs.properties(props)
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = project.group
+                artifactId = "${project.mod_id}-${project.platform}"
+                version = "${project.version}"
+
+                artifact jar
+                artifact sourcesJar
+            }
+        }
+
+        repositories {
+            maven {
+                url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
+                credentials {
+                    username project.findProperty("MAVEN_USERNAME").toString() ?: ""
+                    password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
+                }
+            }
+        }
     }
 
     tasks.withType(JavaCompile).configureEach {
