@@ -17,12 +17,8 @@ plugins {
     id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
 }
 
-version = "${project.version}"
+version = "${project.mod_version}+${project.minecraft_version}"
 group = project.mod_group
-def classifier = 'fabric'
-base {
-    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
-}
 
 repositories {
     maven {
@@ -79,9 +75,9 @@ jar {
         attributes([
                 "Specification-Title"     : "${mod_name}",
                 "Specification-Vendor"    : "${mod_authors}",
-                "Specification-Version"   : project.jar.archiveVersion,
+                "Specification-Version"   : "${mod_version}",
                 "Implementation-Title"    : "${mod_name}",
-                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Version"  : "${mod_version}",
                 "Implementation-Vendor"   : "${mod_authors}",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
@@ -107,7 +103,7 @@ tasks.register('publishToCurseForge', TaskPublishCurseForge) {
     uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
     uploadFile.changelog = file("../CHANGELOG.md").exists() ? file('../CHANGELOG.md').text : "-- No changelog provided --"
     uploadFile.releaseType = Constants.RELEASE_TYPE_RELEASE
-    uploadFile.displayName = "${mod_id}-fabric-${minecraft_version}-${version}"
+    uploadFile.displayName = "${mod_id}-${platform}-${version}"
     uploadFile.addModLoader('Fabric')
     uploadFile.addEnvironment('Client', 'Server')
     uploadFile.addJavaVersion("Java 25")
@@ -121,7 +117,7 @@ modrinth {
     token = project.findProperty("MODRINTH_TOKEN").toString() ?: ""
     projectId = modrinth_project_id
     versionNumber = "${version}"
-    versionName = "${mod_id}-fabric-${minecraft_version}-${version}"
+    versionName = "${mod_id}-${platform}-${version}"
     versionType = "release"
     uploadFile = jar
     gameVersions = compatibleVersions
@@ -135,8 +131,8 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = project.group
-            artifactId = "${project.mod_id}-${project.minecraft_version}"
-            version = "${project.version}-${classifier}"
+            artifactId = "${project.mod_id}-${platform}"
+            version = "${project.version}"
             from components.java
         }
     }

@@ -14,9 +14,9 @@ subprojects {
             attributes([
                     'Specification-Title'       : "${mod_name}",
                     'Specification-Vendor'      : "${mod_authors}",
-                    'Specification-Version'     : "${project.jar.archiveVersion}",
+                    'Specification-Version'     : "${mod_version}",
                     'Implementation-Title'      : "${project.name}",
-                    'Implementation-Version'    : "${project.jar.archiveVersion}",
+                    'Implementation-Version'    : "${mod_version}",
                     'Implementation-Vendor'     : "${mod_authors}",
                     'Implementation-Timestamp'  : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
                     'Timestamp'                 : System.currentTimeMillis()
@@ -36,7 +36,7 @@ subprojects {
     processResources {
         def props = [
                 // Mod
-                "version": project.version,
+                "version": "${mod_version}",
                 "mod_id": "${mod_id}",
                 "mod_name": "${mod_name}",
                 "mod_authors": "${mod_authors}",
@@ -77,6 +77,14 @@ subprojects {
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = "UTF-8"
         it.options.getRelease().set(project.java_version.toInteger())
+    }
+
+    tasks.withType(Jar).configureEach {
+        archiveBaseName.set("${mod_id}-${project.platform}")
+    }
+
+    tasks.named('test') {
+        enabled = false
     }
 
     task publishCurseForge(dependsOn: [':fabric:publishToCurseForge', ':neoforge:publishToCurseForge']) {

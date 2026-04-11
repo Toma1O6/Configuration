@@ -4,12 +4,8 @@ plugins {
     id 'maven-publish'
 }
 
-version = "${project.version}"
+version = "${project.mod_version}+${project.minecraft_version}"
 group = project.mod_group
-def classifier = 'common'
-base {
-    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
-}
 
 minecraft {
     version("${minecraft_version}")
@@ -31,8 +27,8 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = project.group
-            artifactId = "${project.mod_id}-${project.minecraft_version}"
-            version = "${project.version}-${classifier}"
+            artifactId = "${project.mod_id}-${platform}"
+            version = "${project.version}"
             from components.java
         }
     }
