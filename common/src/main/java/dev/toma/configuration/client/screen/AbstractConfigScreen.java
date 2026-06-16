@@ -95,7 +95,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         settings.setBackgroundRenderer(theme.getButtonBackground(settings));
         settings.setClickListener((widget, mouseX, mouseY) -> {
             ConfigSettingsScreen settingsScreen = new ConfigSettingsScreen(this);
-            this.minecraft.setScreen(settingsScreen);
+            this.minecraft.gui.setScreen(settingsScreen);
         });
         settings.setTooltip(Tooltip.create(Component.translatable("options.title")));
         settings.setTooltipDelay(Duration.ofMillis(300));
@@ -159,7 +159,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
     }
 
     private void buttonBackClicked() {
-        this.minecraft.setScreen(this.last);
+        this.minecraft.gui.setScreen(this.last);
         this.saveConfig();
     }
 
@@ -171,7 +171,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
             ConfigurationFileManager.saveClientValues(this.holder);
             dialog.displayPreviousScreen();
         });
-        minecraft.setScreen(dialog);
+        minecraft.gui.setScreen(dialog);
     }
 
     private void buttonRevertChangesClicked() {
@@ -180,7 +180,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
             ConfigurationFileManager.reloadClientValues(this.holder);
             dialog.displayPreviousScreen();
         });
-        minecraft.setScreen(dialog);
+        minecraft.gui.setScreen(dialog);
     }
 
     private void revertToDefault(Collection<ConfigValue<?>> configValues) {

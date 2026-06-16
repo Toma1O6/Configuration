@@ -70,7 +70,7 @@ public final class ColorWidget extends AbstractThemeWidget {
             this.colorWidget.set(colorText);
             dialog.displayPreviousScreen();
         });
-        Minecraft.getInstance().setScreen(dialog);
+        Minecraft.getInstance().gui.setScreen(dialog);
     }
 
     @Override

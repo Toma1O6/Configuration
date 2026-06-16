@@ -54,7 +54,7 @@ public class ConfigGroupScreen extends Screen {
             this.addRenderableWidget(new LeftAlignedLabel(posX, y, componentWidth, 20, Component.translatable("config.screen." + configId), this.font));
             this.addRenderableWidget(Button.builder(ConfigEntryWidget.OPEN, btn -> {
                 ConfigScreen screen = new ConfigScreen(value, value.getTitle(), value.getValueMap(), this);
-                minecraft.setScreen(screen);
+                minecraft.gui.setScreen(screen);
             }).pos(getValueX(posX, componentWidth), y).size(getValueWidth(componentWidth), 20).build());
         }
         initFooter();
@@ -81,7 +81,7 @@ public class ConfigGroupScreen extends Screen {
 
     protected void initFooter() {
         int centerY = this.height - FOOTER_HEIGHT + (FOOTER_HEIGHT - 20) / 2;
-        addRenderableWidget(Button.builder(AbstractConfigScreen.LABEL_BACK, btn -> minecraft.setScreen(last)).pos(5, centerY).size(120, 20).build());
+        addRenderableWidget(Button.builder(AbstractConfigScreen.LABEL_BACK, btn -> minecraft.gui.setScreen(last)).pos(5, centerY).size(120, 20).build());
     }
 
     protected void correctScrollingIndex(int count) {

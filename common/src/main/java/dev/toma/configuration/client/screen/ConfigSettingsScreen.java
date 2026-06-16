@@ -78,6 +78,6 @@ public final class ConfigSettingsScreen extends Screen {
 
     private void close() {
         ConfigurationFileManager.saveClientValues(Configuration.options);
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 }

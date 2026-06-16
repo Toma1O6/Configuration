@@ -16,7 +16,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'java'
-    id 'net.neoforged.gradle.userdev' version "${neogradle_userdev}"
+    id 'net.neoforged.moddev' version "${moddev_version}"
     id 'maven-publish'
     id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
     id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
@@ -25,33 +25,52 @@ plugins {
 version = "${project.mod_version}+${project.minecraft_version}"
 group = project.mod_group
 
-def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
-if (at.exists()) {
-    minecraft.accessTransformers.file at
-}
-
-runs {
-    configureEach {
-        systemProperty 'forge.logging.console.level', 'debug'
-        modSource project.sourceSets.main
+neoForge {
+    version = project.neoforge_version
+    def at = project(":common").file("src/main/resources/META-INF/accesstransformer.cfg")
+    if (at.exists()) {
+        accessTransformers = project(":common").files('src/main/resources/META-INF/accesstransformer.cfg')
     }
 
-    client {
-        workingDirectory project.file('run/client')
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
     }
 
-    server {
-        workingDirectory project.file('run/server')
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
     }
 }
 
 
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
     implementation "net.neoforged:neoforge:${project.neoforge_version}"
     compileOnly project(":common")
 }
+
+//sourceSets.main.resources.srcDir generateModMetadata
+//neoForge.ideSyncTask generateModMetadata
 
 tasks.named('compileJava', JavaCompile).configure {
     source(project(":common").sourceSets.main.allSource)

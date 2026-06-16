@@ -29,9 +29,9 @@ public class ObjectDisplayAdapter extends AbstractDisplayAdapter {
         button.setBackgroundRenderer(theme.getButtonBackground(button));
         button.setClickListener((widget, mouseX, mouseY) -> {
             Minecraft client = Minecraft.getInstance();
-            Screen currentScreen = client.screen;
+            Screen currentScreen = client.gui.screen();
             Screen nestedConfigScreen = new ConfigScreen(holder, container.getComponentName(), map, currentScreen);
-            client.setScreen(nestedConfigScreen);
+            client.gui.setScreen(nestedConfigScreen);
         });
 
         ValueReverter reverter = def -> {

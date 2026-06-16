@@ -46,7 +46,7 @@ public abstract class AbstractArrayDisplayAdapter<T> extends AbstractDisplayAdap
             return new ThemedButtonWidget(left, y, widgetWidth, height, ConfigEntryWidget.OPEN, theme);
         });
         buttonWidget.setClickListener((widget, mouseX, mouseY) -> {
-            Screen activeScreen = client.screen;
+            Screen activeScreen = client.gui.screen();
             ArrayConfigScreen<T, C> arrayConfigScreen = new ArrayConfigScreen<>(holder, array, activeScreen);
             arrayConfigScreen.fetchSize(() -> array.get().length);
             arrayConfigScreen.valueFactory((id, elementIndex) -> {
@@ -71,7 +71,7 @@ public abstract class AbstractArrayDisplayAdapter<T> extends AbstractDisplayAdap
                 T[] trimmed = (T[]) Array.newInstance(type, arr.length - 1);
                 array.setValue(trimmer.trim(i, arr, trimmed));
             });
-            client.setScreen(arrayConfigScreen);
+            client.gui.setScreen(arrayConfigScreen);
         });
         buttonWidget.setBackgroundRenderer(theme.getButtonBackground(buttonWidget));
         return buttonWidget;

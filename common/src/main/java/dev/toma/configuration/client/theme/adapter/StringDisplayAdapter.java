@@ -62,7 +62,7 @@ public class StringDisplayAdapter extends AbstractDisplayAdapter {
             int left = WidgetPlacerHelper.getLeft(x, width);
             int widgetWidth = 20;
             ColorWidget.GetSet<String> getSet = ColorWidget.GetSet.of(editBox::getValue, editBox::setValue);
-            Screen currentScreen = Minecraft.getInstance().screen;
+            Screen currentScreen = Minecraft.getInstance().gui.screen();
             return new ColorWidget(left, y, widgetWidth, height, theme, colorValue, getSet, currentScreen);
         });
         widget.setBackgroundRenderer(theme.getColorBackground(widget));
