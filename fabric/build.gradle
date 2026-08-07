@@ -35,10 +35,6 @@ loom {
         accessWidenerPath.set(accessWidenerFile)
     }
 
-    mixin {
-        defaultRefmapName.set("${mod_id}.refmap.json")
-    }
-
     runs {
         client {
             client()
