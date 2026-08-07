@@ -1,16 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-}
-
 plugins {
     id 'net.fabricmc.fabric-loom' version "${fabric_loom}"
-    id 'idea'
-    id 'maven-publish'
 }
 
 version = "${project.mod_version}+${project.minecraft_version}"
