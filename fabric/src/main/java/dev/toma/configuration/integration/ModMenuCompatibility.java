@@ -14,7 +14,12 @@ public class ModMenuCompatibility implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return screen -> ConfigurationClient.getConfigScreen(Configuration.MODID, screen);
+        List<ConfigHolder<?>> configs = ConfigHolder.getConfigsByGroup(Configuration.MODID);
+        if (configs.size() > 1) {
+            return screen -> ConfigurationClient.getConfigScreenByGroup(configs, Configuration.MODID, screen);
+        } else {
+            return screen -> ConfigurationClient.getConfigScreen(Configuration.MODID, screen);
+        }
     }
 
     @Override
