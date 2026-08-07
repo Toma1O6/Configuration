@@ -1,0 +1,27 @@
+name: Maven release
+on:
+  push:
+    tags:
+      - 'version/*'
+  workflow_dispatch:
+
+env:
+  JAVA_VENDOR: 'microsoft'
+  JAVA_VERSION: '25'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  maven-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
+        with:
+          distribution: ${{ env.JAVA_VENDOR }}
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v6
+      - run: chmod +x ./gradlew
+      - run: ./gradlew publish -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_PUBLIC_URL }} -PMAVEN_PRIVATE_URL=${{ secrets.MAVEN_URL }} -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} --no-configuration-cache

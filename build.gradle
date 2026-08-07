@@ -91,8 +91,9 @@ subprojects {
         }
 
         repositories {
+            String mavenUrl = isDevelopmentVersion() ? "MAVEN_PRIVATE_URL" : "MAVEN_PUBLIC_URL"
             maven {
-                url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
+                url = uri(project.findProperty(mavenUrl).toString() ?: "")
                 credentials {
                     username project.findProperty("MAVEN_USERNAME").toString() ?: ""
                     password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
@@ -113,16 +114,9 @@ subprojects {
     tasks.named('test') {
         enabled = false
     }
+}
 
-    task publishCurseForge(dependsOn: [':fabric:publishToCurseForge', ':neoforge:publishToCurseForge']) {
-        group = "publishing"
-    }
-
-    task publishModrinth(dependsOn: [':fabric:modrinth', ':neoforge:modrinth']) {
-        group = "publishing"
-    }
-
-    task publishMod(dependsOn: ['publish', 'publishCurseForge', 'publishModrinth']) {
-        group = "publishing"
-    }
+def isDevelopmentVersion() {
+    def versionString = version.toString()
+    return versionString.contains("-dev")
 }

@@ -1,5 +1,3 @@
-import net.darkhax.curseforgegradle.*
-
 buildscript {
     repositories {
         mavenCentral()
@@ -18,8 +16,6 @@ plugins {
     id 'java'
     id 'net.neoforged.moddev' version "${moddev_version}"
     id 'maven-publish'
-    id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
-    id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
 }
 
 version = "${project.mod_version}+${project.minecraft_version}"
@@ -95,36 +91,3 @@ jar {
 
     exclude("${mod_id}.accesswidener")
 }
-
-tasks.register('publishToCurseForge', TaskPublishCurseForge) {
-    dependsOn(tasks.jar)
-    apiToken = project.findProperty("CURSEFORGE_TOKEN").toString() ?: ""
-    debugMode = debug.toBoolean()
-
-    def uploadFile = upload(curseforge_project_id, tasks.jar.archiveFile)
-    uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
-    uploadFile.changelog = file("../CHANGELOG.md").exists() ? file('../CHANGELOG.md') : "-- No changelog provided --"
-    uploadFile.releaseType = Constants.RELEASE_TYPE_RELEASE
-    uploadFile.displayName = "${mod_id}-${platform}-${version}"
-    uploadFile.addModLoader('NeoForge')
-    uploadFile.addEnvironment('Client', 'Server')
-    uploadFile.addJavaVersion("Java 25")
-    compatible_mc_versions.split(",").each { gameVersion ->
-        uploadFile.addGameVersion(gameVersion)
-    }
-}
-
-List compatibleVersions = compatible_mc_versions.split(",")
-modrinth {
-    token = project.findProperty("MODRINTH_TOKEN").toString() ?: ""
-    projectId = modrinth_project_id
-    versionNumber = "${version}"
-    versionName = "${mod_id}-${platform}-${version}"
-    versionType = "release"
-    uploadFile = jar
-    gameVersions = compatibleVersions
-    debugMode = debug.toBoolean()
-    changelog = file("../CHANGELOG.md").exists() ? file("../CHANGELOG.md").text : "-- No changelog provided --"
-    loaders = ["neoforge"]
-}
-tasks.modrinth.dependsOn(tasks.jar)
