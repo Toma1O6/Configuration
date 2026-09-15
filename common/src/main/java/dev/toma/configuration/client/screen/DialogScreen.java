@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,12 +74,11 @@ public class DialogScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        int keyCode = event.key();
         if (this.allowKeyboardInteractions()) {
-            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (event.isEscape()) {
                 this.cancel();
                 return true;
-            } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            } else if (event.isConfirmation()) {
                 this.confirm();
                 return true;
             }
