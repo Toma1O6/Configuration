@@ -30,7 +30,7 @@ public abstract class AbstractDisplayAdapter implements DisplayAdapter {
             widget.setTooltipDelay(Duration.ofMillis(200));
             widget.setBackgroundRenderer(theme.getButtonBackground(widget));
             widget.setForegroundRenderer(new TextureRenderer(AbstractConfigScreen.ICON_REVERT, 2, 2, 16, 16));
-            widget.active = value.isEditable() && value.isChanged();
+            widget.setActive(value.isEditable() && value.isChanged());
             return widget;
         });
     }
@@ -44,15 +44,15 @@ public abstract class AbstractDisplayAdapter implements DisplayAdapter {
             widget.setTooltipDelay(Duration.ofMillis(200));
             widget.setBackgroundRenderer(theme.getButtonBackground(widget));
             widget.setForegroundRenderer(new TextureRenderer(AbstractConfigScreen.ICON_REVERT_DEFAULT, 2, 2, 16, 16));
-            widget.active = value.isEditable() && value.isChangedFromDefault();
+            widget.setActive(value.isEditable() && value.isChangedFromDefault());
             return widget;
         });
     }
 
     protected void attachDefaultChangeListeners(ConfigValue<?> value, ThemeWidget widget, ThemedButtonWidget revertButton, ThemedButtonWidget revertToDefault) {
         widget.setChangeListener(_ -> {
-            revertButton.active = value.isEditable() && value.isChanged();
-            revertToDefault.active = value.isEditable() && value.isChangedFromDefault();
+            revertButton.setActive(value.isEditable() && value.isChanged());
+            revertToDefault.setActive(value.isEditable() && value.isChangedFromDefault());
         });
     }
 

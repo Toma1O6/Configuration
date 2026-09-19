@@ -127,10 +127,10 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
     }
 
     @Override
-    public <W extends AbstractWidget> W addConfigWidget(boolean editableCheck, ToWidgetFunction<W> function) {
+    public <W extends AbstractWidget & ThemeWidget> W addConfigWidget(boolean editableCheck, ToWidgetFunction<W> function) {
         W widget = function.asWidget(this.getX(), this.getY(), this.width, this.height, this.configId);
         if (editableCheck)
-            widget.active = this.configValue.isEditable();
+            widget.setActive(this.configValue.isEditable());
         return this.addRenderableWidget(widget);
     }
 

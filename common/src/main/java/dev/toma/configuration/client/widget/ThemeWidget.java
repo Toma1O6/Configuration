@@ -26,6 +26,8 @@ public interface ThemeWidget {
 
     int getHeight();
 
+    void setActive(boolean active);
+
     boolean isActive();
 
     boolean isHoveredOrFocused();

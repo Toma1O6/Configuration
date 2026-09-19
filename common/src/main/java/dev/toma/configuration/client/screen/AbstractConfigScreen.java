@@ -119,7 +119,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         });
         applyButton.setTooltip(Tooltip.create(ConfigEntryWidget.APPLY));
         applyButton.setTooltipDelay(Duration.ofMillis(300));
-        applyButton.active = holder.isChanged();
+        applyButton.setActive(holder.isChanged());
 
         revertDefaultButton = addRenderableWidget(new ThemedButtonWidget(width - 50, centerY, 20, 20, CommonComponents.EMPTY, theme));
         revertDefaultButton.setBackgroundRenderer(theme.getButtonBackground(revertDefaultButton));
@@ -127,7 +127,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         revertDefaultButton.setClickListener((widget, mouseX, mouseY) -> this.buttonRevertToDefaultClicked());
         revertDefaultButton.setTooltip(Tooltip.create(ConfigEntryWidget.REVERT_DEFAULTS));
         revertDefaultButton.setTooltipDelay(Duration.ofMillis(300));
-        revertDefaultButton.active = holder.isChangedFromDefault();
+        revertDefaultButton.setActive(holder.isChangedFromDefault());
 
         revertButton = addRenderableWidget(new ThemedButtonWidget(width - 75, centerY, 20, 20, CommonComponents.EMPTY, theme));
         revertButton.setBackgroundRenderer(theme.getButtonBackground(revertButton));
@@ -135,17 +135,17 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigEntry
         revertButton.setClickListener((widget, mouseX, mouseY) -> this.buttonRevertChangesClicked());
         revertButton.setTooltip(Tooltip.create(ConfigEntryWidget.REVERT_CHANGES));
         revertButton.setTooltipDelay(Duration.ofMillis(300));
-        revertButton.active = holder.isChanged();
+        revertButton.setActive(holder.isChanged());;
     }
 
     @Override
     public void tick() {
         if (applyButton != null)
-            applyButton.active = holder.isChanged();
+            applyButton.setActive(holder.isChanged());
         if (revertDefaultButton != null)
-            revertDefaultButton.active = holder.isChangedFromDefault();
+            revertDefaultButton.setActive(holder.isChangedFromDefault());
         if (revertButton != null)
-            revertButton.active = holder.isChanged();
+            revertButton.setActive(holder.isChanged());
     }
 
     protected void correctScrollingIndex(int count) {

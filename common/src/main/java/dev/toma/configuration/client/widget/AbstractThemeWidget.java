@@ -65,4 +65,9 @@ public abstract class AbstractThemeWidget extends AbstractWidget implements Them
     public ConfigTheme getTheme() {
         return theme;
     }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

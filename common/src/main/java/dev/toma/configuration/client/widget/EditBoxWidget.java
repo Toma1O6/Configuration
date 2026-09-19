@@ -30,6 +30,8 @@ public class EditBoxWidget extends EditBox implements ThemeWidget {
         super(font, x, y, width, height, CommonComponents.EMPTY);
         this.theme = theme;
         this.filter = Objects::nonNull;
+        this.setTextColor(this.theme.getWidgetTextColor(true, false));
+        this.setTextColorUneditable(this.theme.getWidgetTextColor(false, false));
     }
 
     @Override
@@ -65,6 +67,12 @@ public class EditBoxWidget extends EditBox implements ThemeWidget {
     // TODO implement?
     public void setFilter(Predicate<String> filter) {
         this.filter = filter;
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
+        this.setEditable(this.isActive());
     }
 
     public record NumberFormatter(DecimalFormat format, Supplier<Number> value) implements TextFormatter {
