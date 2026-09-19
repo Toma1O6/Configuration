@@ -1,5 +1,6 @@
 package dev.toma.configuration.client.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.toma.configuration.client.screen.DialogScreen;
 import dev.toma.configuration.client.theme.ConfigTheme;
 import dev.toma.configuration.config.Configurable;
@@ -58,13 +59,13 @@ public final class ColorWidget extends AbstractThemeWidget {
 
     @Override
     protected boolean isValidClickButton(MouseButtonInfo info) {
-        return info.button() == 0;
+        return info.button() == InputConstants.MOUSE_BUTTON_LEFT;
     }
 
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
         ColorSelectorDialog dialog = new ColorSelectorDialog(SELECT_COLOR, this.lastScreen, this.argb, this.colorSupplier);
-        dialog.onConfirmed(screen -> {
+        dialog.onConfirmed(_ -> {
             int color = dialog.getResultColor();
             String colorText = this.colorPrefix + Integer.toHexString(color).toUpperCase();
             this.colorWidget.set(colorText);
