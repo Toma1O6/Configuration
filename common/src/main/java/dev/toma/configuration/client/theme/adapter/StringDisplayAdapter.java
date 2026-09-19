@@ -38,7 +38,7 @@ public class StringDisplayAdapter extends AbstractDisplayAdapter {
                 left += 21;
                 widgetWidth -= 21;
             }
-            return new EditBoxWidget(left, y, widgetWidth, height, theme, font);
+            return new EditBoxWidget(font, left, y, widgetWidth, height, theme);
         });
         editBox.setValue(stringValue.get());
         editBox.setResponder(text -> this.onTextChanged(text, stringValue, container, editBox));

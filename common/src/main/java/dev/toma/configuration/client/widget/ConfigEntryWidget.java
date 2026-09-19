@@ -144,7 +144,6 @@ public class ConfigEntryWidget extends ContainerWidget implements WidgetAdder {
         return !result.type().isValid();
     }
 
-
     public interface IValidationRenderer {
 
         void drawIcon(GuiGraphicsExtractor graphics, AbstractWidget widget, ValidationResult.Type type);

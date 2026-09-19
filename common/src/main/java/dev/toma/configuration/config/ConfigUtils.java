@@ -5,6 +5,7 @@ import dev.toma.configuration.client.widget.EditBoxWidget;
 import dev.toma.configuration.config.exception.ConfigValueMissingException;
 import dev.toma.configuration.config.io.ConfigurationFileManager;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -32,7 +33,7 @@ public final class ConfigUtils {
         throw new ConfigValueMissingException("Missing enum value: " + value);
     }
 
-    public static DecimalFormat getDecimalFormat(Field field) {
+    public static @Nullable DecimalFormat getDecimalFormat(Field field) {
         Configurable.Gui.NumberFormat format = field.getAnnotation(Configurable.Gui.NumberFormat.class);
         if (format != null) {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols();

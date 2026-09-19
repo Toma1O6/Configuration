@@ -9,7 +9,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-public abstract class AbstractThemeWidget extends AbstractWidget {
+public abstract class AbstractThemeWidget extends AbstractWidget implements ThemeWidget {
 
     public static final Component REVERT = Component.translatable("text.configuration.value.revert");
     public static final Component REVERT_DEFAULT = Component.translatable("text.configuration.value.revert_default");
@@ -28,6 +28,7 @@ public abstract class AbstractThemeWidget extends AbstractWidget {
         this.theme = theme;
     }
 
+    @Override
     public void setBackgroundRenderer(IRenderer backgroundRenderer) {
         this.backgroundRenderer = backgroundRenderer;
     }
@@ -42,10 +43,13 @@ public abstract class AbstractThemeWidget extends AbstractWidget {
         }
     }
 
-    public void setChangeListener(ChangeListener<AbstractThemeWidget> changeListener) {
-        this.changeListener = changeListener;
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends AbstractWidget & ThemeWidget> void setChangeListener(ChangeListener<T> changeListener) {
+        this.changeListener = (ChangeListener<AbstractThemeWidget>) changeListener;
     }
 
+    @Override
     public void setChanged() {
         if (this.changeListener != null) {
             this.changeListener.onChanged(this);
@@ -57,12 +61,8 @@ public abstract class AbstractThemeWidget extends AbstractWidget {
         output.add(NarratedElementType.TITLE, this.getMessage());
     }
 
+    @Override
     public ConfigTheme getTheme() {
         return theme;
-    }
-
-    @FunctionalInterface
-    public interface ChangeListener<T> {
-        void onChanged(T t);
     }
 }
