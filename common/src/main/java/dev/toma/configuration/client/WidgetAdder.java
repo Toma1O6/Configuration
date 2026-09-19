@@ -1,13 +1,14 @@
 package dev.toma.configuration.client;
 
+import dev.toma.configuration.client.widget.ThemeWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 
 public interface WidgetAdder extends IValidationHandler {
 
-    <W extends AbstractWidget> W addConfigWidget(boolean editableCheck, ToWidgetFunction<W> function);
+    <W extends AbstractWidget & ThemeWidget> W addConfigWidget(boolean editableCheck, ToWidgetFunction<W> function);
 
-    default <W extends AbstractWidget> W addConfigWidget(ToWidgetFunction<W> function) {
+    default <W extends AbstractWidget & ThemeWidget> W addConfigWidget(ToWidgetFunction<W> function) {
         return addConfigWidget(true, function);
     }
 
