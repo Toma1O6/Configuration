@@ -23,7 +23,7 @@ public class CharacterDisplayAdapter extends AbstractDisplayAdapter {
         EditBoxWidget editBoxWidget = container.addConfigWidget((x, y, width, height, configId) -> {
             int left = WidgetPlacerHelper.getLeft(x, width);
             int widgetWidth = WidgetPlacerHelper.getWidth(width);
-            return new EditBoxWidget(left, y, widgetWidth, height, theme, font);
+            return new EditBoxWidget(font, left, y, widgetWidth, height, theme);
         });
         editBoxWidget.setValue(charValue.get().toString());
         editBoxWidget.setMaxLength(1);

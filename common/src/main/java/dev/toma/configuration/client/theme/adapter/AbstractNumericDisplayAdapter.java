@@ -56,23 +56,25 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
 
     public <T extends Number & Comparable<T>> EditBoxWidget initEditBox(WidgetAdder container, ConfigTheme theme, NumericValue<T> value, Field field) {
         Font font = Minecraft.getInstance().font;
-        EditBoxWidget editBoxWidget = container.addConfigWidget((x, y, width, height, configId) -> {
+        EditBoxWidget editBoxWidget = container.addConfigWidget((x, y, width, height, _) -> {
             int left = WidgetPlacerHelper.getLeft(x, width);
             int widgetWidth = WidgetPlacerHelper.getWidth(width);
-            return new EditBoxWidget(left, y, widgetWidth, height, theme, font);
+            return new EditBoxWidget(font, left, y, widgetWidth, height, theme);
         });
         editBoxWidget.setValue(value.get().toString());
         editBoxWidget.setBackgroundRenderer(theme.getEditBoxBackground(editBoxWidget));
         ConfigUtils.adjustCharacterLimit(field, editBoxWidget);
         DecimalFormat decimalFormat = ConfigUtils.getDecimalFormat(field);
         value.getRange().setCustomFormat(decimalFormat);
-        editBoxWidget.setFormatter(decimalFormat, value::get);
+        if (decimalFormat != null) {
+            editBoxWidget.addFormatter(new EditBoxWidget.NumberFormatter(decimalFormat, value::get));
+        }
         return editBoxWidget;
     }
 
     public <T extends Number & Comparable<T>> SliderWidget<T> initSlider(WidgetAdder container, ConfigTheme theme, NumericValue<T> value, Field field) {
         Font font = Minecraft.getInstance().font;
-        SliderWidget<T> slider = container.addConfigWidget((x, y, width, height, configId) -> {
+        SliderWidget<T> slider = container.addConfigWidget((x, y, width, height, _) -> {
             int left = WidgetPlacerHelper.getLeft(x, width);
             int widgetWidth = WidgetPlacerHelper.getWidth(width);
             return new SliderWidget<>(left, y, widgetWidth, height, theme, value, font);

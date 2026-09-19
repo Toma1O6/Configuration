@@ -2,10 +2,7 @@ package dev.toma.configuration.client.theme;
 
 import dev.toma.configuration.client.theme.adapter.DisplayAdapter;
 import dev.toma.configuration.client.theme.adapter.DisplayAdapterManager;
-import dev.toma.configuration.client.widget.AbstractThemeWidget;
-import dev.toma.configuration.client.widget.ColorWidget;
-import dev.toma.configuration.client.widget.EditBoxWidget;
-import dev.toma.configuration.client.widget.SliderWidget;
+import dev.toma.configuration.client.widget.*;
 import dev.toma.configuration.client.widget.render.IRenderer;
 import dev.toma.configuration.config.adapter.AdapterHolder;
 import dev.toma.configuration.config.adapter.TypeMatcher;
@@ -31,7 +28,7 @@ public final class ConfigTheme {
     private int widgetTextColorHovered;
     private int widgetTextColorDisabled;
 
-    private BackgroundRendererFactory<AbstractThemeWidget> buttonBackground = BackgroundRendererFactory.none();
+    private BackgroundRendererFactory<ThemeWidget> buttonBackground = BackgroundRendererFactory.none();
     private BackgroundRendererFactory<EditBoxWidget> editBoxBackground = BackgroundRendererFactory.none();
     private BackgroundRendererFactory<SliderWidget<?>> sliderBackground = BackgroundRendererFactory.none();
     private BackgroundRendererFactory<SliderWidget<?>> sliderHandle = BackgroundRendererFactory.none();
@@ -98,7 +95,7 @@ public final class ConfigTheme {
         this.widgetTextColorDisabled = widgetTextColorDisabled;
     }
 
-    public void setButtonBackground(BackgroundRendererFactory<AbstractThemeWidget> buttonBackground) {
+    public void setButtonBackground(BackgroundRendererFactory<ThemeWidget> buttonBackground) {
         this.buttonBackground = buttonBackground;
     }
 
