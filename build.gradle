@@ -78,6 +78,10 @@ subprojects {
         inputs.properties(props)
     }
 
+    tasks.withType(AbstractArchiveTask).configureEach {
+        archiveVersion = "${project.version}+${minecraft_version}"
+    }
+
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = "UTF-8"
         it.options.getRelease().set(project.java_version.toInteger())

@@ -26,7 +26,7 @@ version = "${project.version}"
 group = project.mod_group
 
 base {
-    archivesName = "${project.mod_id}-${project.platform}-${project.minecraft_version}"
+    archivesName = "${project.mod_id}-${project.platform}"
 }
 
 minecraft {
