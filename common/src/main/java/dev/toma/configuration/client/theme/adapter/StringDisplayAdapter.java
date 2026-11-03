@@ -40,10 +40,10 @@ public class StringDisplayAdapter extends AbstractDisplayAdapter {
             }
             return new EditBoxWidget(left, y, widgetWidth, height, theme, font);
         });
+        ConfigUtils.adjustCharacterLimit(field, editBox);
         editBox.setValue(stringValue.get());
         editBox.setResponder(text -> this.onTextChanged(text, stringValue, container, editBox));
         editBox.setBackgroundRenderer(theme.getEditBoxBackground(editBox));
-        ConfigUtils.adjustCharacterLimit(field, editBox);
 
         ValueReverter reverter = useDefault -> editBox.setValue(useDefault ? stringValue.getValueData().getDefaultValue() : stringValue.getActiveValue());
         ThemedButtonWidget revert = this.createRevertButton(editBox, value, theme, container, reverter);
