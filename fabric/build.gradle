@@ -9,15 +9,13 @@ buildscript {
 
 plugins {
     id 'fabric-loom' version "${fabric_loom}"
-    id 'idea'
-    id 'maven-publish'
 }
 
 version = "${project.version}"
 group = project.mod_group
-def classifier = 'fabric'
+
 base {
-    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
+    archivesName = "${project.mod_id}-${project.platform}-${project.minecraft_version}"
 }
 
 repositories {
@@ -91,23 +89,12 @@ tasks.withType(JavaCompile) {
     source(project(":common").sourceSets.main.allSource)
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = "${project.mod_id}-${project.minecraft_version}"
-            version = "${project.version}-${classifier}"
-            from components.java
-        }
-    }
+// Include common sources, matching the classes compiled into the jar
+sourcesJar {
+    from(project(":common").sourceSets.main.allSource)
+}
 
-    repositories {
-        maven {
-            url = uri(project.findProperty("MAVEN_PUBLIC_URL") ?: "")
-            credentials {
-                username project.findProperty("MAVEN_USERNAME") ?: ""
-                password project.findProperty("MAVEN_PASSWORD") ?: ""
-            }
-        }
-    }
+// Publish the intermediary-mapped jars instead of the dev (Mojang-named) ones
+publishing.publications.mavenJava {
+    setArtifacts([remapJar, remapSourcesJar])
 }

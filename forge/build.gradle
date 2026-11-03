@@ -18,20 +18,16 @@ buildscript {
     }
 }
 plugins {
-    id 'java'
     id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
     id 'org.spongepowered.mixin' version "${mixin_loader}"
-    id 'maven-publish'
 }
 
 version = "${project.version}"
 group = project.mod_group
-def classifier = 'forge'
-base {
-    archivesName = "${project.mod_id}-${classifier}-${project.minecraft_version}"
-}
 
-minecraft.reobf = false
+base {
+    archivesName = "${project.mod_id}-${project.platform}-${project.minecraft_version}"
+}
 
 minecraft {
     mappings channel: 'official', version: minecraft_version
@@ -105,7 +101,16 @@ jar {
     exclude("${mod_id}.accesswidener")
 }
 
+// Include common sources, matching the classes compiled into the jar
+sourcesJar {
+    from(project(":common").sourceSets.main.allSource)
+}
+
+// Forge 1.20.1 runs on SRG names in production, so the jar must be reobfuscated
+jar.finalizedBy('reobfJar')
+
 mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
     config("${mod_id}.mixins.json")
     config("${mod_id}.forge.mixins.json")
 }
@@ -114,25 +119,4 @@ sourceSets.each {
     def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
     it.output.resourcesDir = dir
     it.java.destinationDirectory = dir
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = "${project.mod_id}-${project.minecraft_version}"
-            version = "${project.version}-${classifier}"
-            from components.java
-        }
-    }
-
-    repositories {
-        maven {
-            url = uri(project.findProperty("MAVEN_PUBLIC_URL") ?: "")
-            credentials {
-                username project.findProperty("MAVEN_USERNAME") ?: ""
-                password project.findProperty("MAVEN_PASSWORD") ?: ""
-            }
-        }
-    }
 }
