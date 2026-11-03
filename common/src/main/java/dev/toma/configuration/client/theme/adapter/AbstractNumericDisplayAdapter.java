@@ -61,9 +61,9 @@ public abstract class AbstractNumericDisplayAdapter extends AbstractDisplayAdapt
             int widgetWidth = WidgetPlacerHelper.getWidth(width);
             return new EditBoxWidget(font, left, y, widgetWidth, height, theme);
         });
+        ConfigUtils.adjustCharacterLimit(field, editBoxWidget);
         editBoxWidget.setValue(value.get().toString());
         editBoxWidget.setBackgroundRenderer(theme.getEditBoxBackground(editBoxWidget));
-        ConfigUtils.adjustCharacterLimit(field, editBoxWidget);
         DecimalFormat decimalFormat = ConfigUtils.getDecimalFormat(field);
         value.getRange().setCustomFormat(decimalFormat);
         if (decimalFormat != null) {
